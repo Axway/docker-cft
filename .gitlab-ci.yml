@@ -1,0 +1,31 @@
+before_script:
+- eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+- | # If we're on the master branch, tag the image as latest
+  if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
+    eval export DOCKER_TAG="latest"
+  fi
+- echo Using DOCKER_TAG=$DOCKER_TAG
+
+stages:
+- build
+- test
+- push
+
+build:
+  stage: build
+  script:
+  - docker build -t cft:$DOCKER_TAG .
+
+test:
+  stage: test
+  script:
+  - docker-compose -f docker-compose.test.yml down -v
+  - docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
+  after_script:
+  - docker-compose -f docker-compose.test.yml down -v
+
+push:
+  stage: push
+  script:
+  - docker tag cft:$DOCKER_TAG axway-docker-ci.bintray.io/cft/cft:$DOCKER_TAG
+  - docker push axway-docker-ci.bintray.io/cft/cft:$DOCKER_TAG
