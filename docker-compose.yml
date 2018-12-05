@@ -1,0 +1,24 @@
+version: "3.4"
+
+services:
+  cft:
+    image: cft:3.3.2
+
+    environment:
+      CFT_FQDN:               cft
+      CFT_INSTANCE_ID:        cft_docker_0
+      CFT_INSTANCE_GROUP:     dev.docker
+      CFT_CATALOG_SIZE:       1000
+      CFT_COM_SIZE:           1000
+      CFT_PESIT_PORT:         1761
+      CFT_COMS_PORT:          1765
+      CFT_COPILOT_PORT:       1766
+      CFT_COPILOT_CG_PORT:    1767
+      CFT_RESTAPI_PORT:       1768
+      CFT_CG_ENABLE:          "YES"
+      CFT_CG_HOST:            cg
+      CFT_CG_PORT:            12553
+      CFT_CG_SHARED_SECRET:   Secret01
+      CFT_JVM:                1024
+      CFT_KEY:                "curl http://dml.phx.axway.int/licenses/cft/3.3.2/cft.key"
+      CFT_CFTDIRRUNTIME:      "./data/runtime"
