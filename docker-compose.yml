@@ -1,24 +1,92 @@
-version: "3.4"
+## AMPLIFY Transfer CFT 3.3.2 Docker-compose example
+#
+# Building with:
+# docker-compose up -d
+
+version: "3.1"
 
 services:
-  cft:
-    image: cft:3.3.2
+    cft:
+        build: .
+        image: cft:3.3.2
+        hostname: docker0
 
-    environment:
-      CFT_FQDN:               cft
-      CFT_INSTANCE_ID:        cft_docker_0
-      CFT_INSTANCE_GROUP:     dev.docker
-      CFT_CATALOG_SIZE:       1000
-      CFT_COM_SIZE:           1000
-      CFT_PESIT_PORT:         1761
-      CFT_COMS_PORT:          1765
-      CFT_COPILOT_PORT:       1766
-      CFT_COPILOT_CG_PORT:    1767
-      CFT_RESTAPI_PORT:       1768
-      CFT_CG_ENABLE:          "YES"
-      CFT_CG_HOST:            cg
-      CFT_CG_PORT:            12553
-      CFT_CG_SHARED_SECRET:   Secret01
-      CFT_JVM:                1024
-      CFT_KEY:                "curl http://dml.phx.axway.int/licenses/cft/3.3.2/cft.key"
-      CFT_CFTDIRRUNTIME:      "./data/runtime"
+        environment:
+            CFT_FQDN:                   cft
+            CFT_INSTANCE_ID:            docker0_cft
+            CFT_INSTANCE_GROUP:         dev.docker
+            CFT_CATALOG_SIZE:           1000
+            CFT_COM_SIZE:               1000
+            CFT_PESIT_PORT:             1761
+            CFT_PESITSSL_PORT:          1762
+            CFT_COMS_PORT:              1765
+            CFT_COPILOT_PORT:           1766
+            CFT_COPILOT_CG_PORT:        1767
+            CFT_RESTAPI_PORT:           1768
+            CFT_CG_ENABLE:              "NO"
+            CFT_CG_HOST:                cg
+            CFT_CG_PORT:                12553
+            CFT_CG_SHARED_SECRET:       Secret01
+            CFT_CG_POLICY:              ""
+            CFT_CG_PERIODICITY:         ""
+            CFT_JVM:                    1024
+            CFT_KEY:                    "curl http://dml.phx.axway.int/licenses/cft/3.3.2/cft.key"
+            CFT_CFTDIRRUNTIME:          "./data/runtime"
+            # Script executed at container initialization
+            #USER_SCRIPT_INIT:           "/opt/app/custom/init.sh"
+            # Script executed at each container start-up
+            #USER_SCRIPT_START:          "/opt/app/custom/startup.sh"
+            # Uncomment the next line to customize the CG CA certificate.
+            #USER_CG_CA_CERT:            "/opt/app/custom/cg_ca_cert.pem"
+            # Uncomment the next line to customize the Sentinel CA certificate.
+            #USER_SENTINEL_CA_CERT:      "/opt/app/custom/sentinel_ca_cert.pem"
+            # Uncomment the next two lines to customize the Copilot server certificate. See also secrets sections.
+            # The certificate must refer to a PKCS12 certificate.
+            #USER_COPILOT_CERT:          "/opt/app/custom/copilot.p12"
+            #USER_COPILOT_CERT_PASSWORD: "cat /run/secrets/copilot_p12.pwd"
+            # Uncomment the next two lines to customize the default XFBADM user. See also secrets sections.
+            #USER_XFBADM_LOGIN:          "admin"
+            #USER_XFBADM_PASSWORD:       "cat /run/secrets/xfbadm.pwd"
+
+        ports:
+            # PESIT + PESITSSL:
+            - "1761-1762:1761-1762"
+            # COMS:
+            - "1765:1765"
+            # CFT UI:
+            - "1766:1766"
+            # CG communication port: Only expose if CG not in the same network:
+            - "1767:1767"
+            # REST API:
+            - "1768:1768"
+
+        secrets:
+            - cft.key
+            # Uncomment this for customizing the Copilot server certificate.
+            #- copilot_p12.pwd
+            # Uncomment this for customizing the default XFBADM user.
+            #- xfbadm.pwd
+
+        volumes:
+            # Docker local volume where the runtime is stored
+            - data:/home/cft/data
+            # Localhost mapped volume where customization file are located.
+            # Uncomment this for enabling customization.
+            #- ./custom:/opt/app/custom:ro
+
+secrets:
+    cft.key:
+        file: ./config/cft.key
+    # File containig the Copilot server certificate password.
+    # Uncomment the next two lines to customize the Copilot server certificate.
+    #copilot_p12.pwd:
+    #    file: ./custom/copilot_p12.pwd
+    # File containing the XFBADM user's password.
+    # Uncomment the next two lines to customize the default XFBADM user.
+    #xfbadm.pwd:
+    #    file: ./custom/xfbadm.pwd
+
+volumes:
+    data:
+        driver: local
+

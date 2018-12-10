@@ -24,15 +24,15 @@ RUN yum install -y \
 WORKDIR /home/cft
 
 #####
-ENV VERSION_BASE "3.3.2"
-ENV RELEASE_BASE "BN11707001"
-ENV STATIC_BASE "Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
+ARG VERSION_BASE="3.3.2"
+ARG RELEASE_BASE="BN11707001"
+ARG STATIC_BASE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
 
-ENV VERSION_UP "3.3.2"
-#ENV RELEASE_UP ""
-#ENV STATIC_UP "Transfer_CFT_${VERSION_UP}_linux-x86-64_${RELEASE_UP}.zip"
+ARG VERSION_UP="3.3.2_SP2"
+ARG RELEASE_UP="BN11992000"
+ARG STATIC_UP="Transfer_CFT_${VERSION_UP}_linux-x86-64_${RELEASE_UP}.zip"
 
-ENV URL_BASE "https://delivery.axway.int/download_true_name.php?static="
+ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
 
 #####
 # LABELS
@@ -46,17 +46,6 @@ LABEL maintainer="support@axway.com"
 
 LABEL version="0.1"
 LABEL description="Docker env for CFT ${VERSION_UP}."
-
-#####
-# START POINT
-
-CMD [ "./start.sh" ]
-
-#####
-# COPYING USEFUL SCRIPTS
-
-COPY resources/start.sh ./start.sh
-COPY resources/runtime_create.sh ./runtime_create.sh
 
 #####
 # DOWNLOAD AND INSTALL PRODUCTS
@@ -73,6 +62,11 @@ RUN curl -k $URL_BASE$STATIC_BASE >cft-distrib.zip && \
     unzip cft-distrib.zip -d setup && \
     cd setup && \
     ./setup.sh -s ../Install_Axway_Installer.properties && \
+    cd && \
+    curl -k $URL_BASE$STATIC_UP >cft-distrib.zip && \
+    cd Axway && \
+    ./update.sh -i ../cft-distrib.zip && \
+    ./purge.sh -k 0 && \
     cd && \
     rm -rf setup cft-distrib.zip *.properties runtime && \
     mkdir data
@@ -94,7 +88,7 @@ EXPOSE 1768
 
 # - ENV VARIABLES
 ENV CFT_FQDN             127.0.0.1
-ENV CFT_INSTANCE_ID      cft_docker
+ENV CFT_INSTANCE_ID      docker0_cft
 ENV CFT_INSTANCE_GROUP   dev.docker
 ENV CFT_CATALOG_SIZE     1000
 ENV CFT_COM_SIZE         1000
@@ -108,13 +102,28 @@ ENV CFT_CG_ENABLE        "YES"
 ENV CFT_CG_HOST          127.0.0.1
 ENV CFT_CG_PORT          12553
 ENV CFT_CG_SHARED_SECRET Secret01
+ENV CFT_CG_POLICY        ""
+ENV CFT_CG_PERIODICITY   ""
 ENV CFT_JVM              1024
 ENV CFT_KEY              "cat /run/secrets/cft.key"
 ENV CFT_CFTDIRRUNTIME    /home/cft/data/runtime
 
+#####
+# COPYING USEFUL SCRIPTS
+
+COPY resources/start.sh ./start.sh
+COPY resources/runtime_create.sh ./runtime_create.sh
+COPY resources/export_bases.sh ./export_bases.sh
+COPY resources/import_bases.sh ./import_bases.sh
+
+#####
+# START POINT
+
+CMD [ "./start.sh" ]
 
 HEALTHCHECK --interval=1m \
             --timeout=5s \
             --start-period=5m \
             --retries=3 \
             CMD . $CFT_CFTDIRRUNTIME/profile && copstatus
+

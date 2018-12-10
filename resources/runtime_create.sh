@@ -1,6 +1,7 @@
 #!/bin/sh
 #
-echo "creating runtime..."
+echo "Creating runtime..."
+shopt -s nocasematch
 
 # CREATE RUNTIME DIRECTORY
 $HOME/Axway/Transfer_CFT/home/bin/cftruntime $HOME/Axway/Transfer_CFT/home $CFT_CFTDIRRUNTIME
@@ -23,8 +24,12 @@ if [ -n "$CFT_INSTANCE_GROUP" ]; then
     CFTUTIL /m=2 uconfset id='cft.instance_group', value=$CFT_INSTANCE_GROUP
 fi
 
-# ENCRYPTION KEY
-pass=`head /dev/urandom | tr -dc 'A-Za-z0-9!#$*+?@' | head -c 20  ; echo`
+# ENCRIPTION KEY
+pass=`head /dev/urandom | tr -dcs 'A-Za-z0-9!#$*+?@' 'A-Za-z0-9!#$*+?@' | head -c 20  ; echo`
+pass="${pass}aB0!"
+echo "------------------------"
+echo "Encryption: $pass"
+echo "------------------------"
 cftcrypt --genkey --keyfname data/crypto/crypkey --saltfname data/crypto/crypsalt --pass \"$pass\"
 CFTUTIL /m=2 uconfset id='crypto.key_fname', value="data/crypto/crypkey"
 CFTUTIL /m=2 uconfset id='crypto.salt_fname', value="data/crypto/crypsalt"
@@ -62,7 +67,7 @@ CFTUTIL /m=2 uconfset id='cft.multi_node.enable,', value='No'
 if [ -n "$CFT_CG_ENABLE" ]; then
     CFTUTIL /m=2 uconfset id='cg.enable', value=$CFT_CG_ENABLE
 fi
-if [ "$CFT_CG_ENABLE" = "YES" ]; then
+if [[ "$CFT_CG_ENABLE" = "YES" ]]; then
     CFTUTIL /m=2 uconfset id='cg.ca_cert_id' , value='CG_CA'
     CFTUTIL uconfset id='am.passport.csd_file', value='$(cft.install.extrasPS_dir)csd_Transfer_CFT_CG.xml'
     isCG=1
@@ -82,11 +87,11 @@ fi
 if [ -n "$CFT_CG_SHARED_SECRET" ]; then
     CFTUTIL /m=2 uconfset id='cg.shared_secret', value=$CFT_CG_SHARED_SECRET
 fi
-if [ -n "$CFT_POLICY" ]; then
-    CFTUTIL /m=2 uconfset id='cg.configuration_policy', value=$CFT_POLICY
+if [ -n "$CFT_CG_POLICY" ]; then
+    CFTUTIL /m=2 uconfset id='cg.configuration_policy', value=$CFT_CG_POLICY
 fi
-if [ -n "$CFT_PERIODICITY" ]; then
-    CFTUTIL /m=2 uconfset id='cg.periodicity', value=$CFT_PERIODICITY
+if [ -n "$CFT_CG_PERIODICITY" ]; then
+    CFTUTIL /m=2 uconfset id='cg.periodicity', value=$CFT_CG_PERIODICITY
 fi
 CFTUTIL /m=2 uconfset id='sentinel.trkmsgencoding', value='UTF-8'
 
@@ -95,7 +100,7 @@ if [ -n "$CFT_RESTAPI_PORT" ]; then
     CFTUTIL /m=2 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
     CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='YES'
     # CREATE CERTIFICATES FOR REST API
-    openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj '/CN=$CFT_FQDN'
+    openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj \/CN\=$CFT_FQDN
     openssl pkcs12 -inkey conf/pki/rest_api_key.pem -in conf/pki/rest_api_cert.pem -export -out conf/pki/rest_api_cert.p12 -passout pass:restapi
     # SET UCONF VALUE FOR CERTIFICATES
     CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
@@ -106,7 +111,7 @@ fi
 if [ -n "$CFT_JVM" ]; then
     CFTUTIL /m=2 uconfset id='secure_relay.ma.start_options', value='-Xmx'$CFT_JVM'm'
 fi
-CFTUTIL uconfset id='cft.seed.enable_internal', value='Yes'
+CFTUTIL uconfset id='cft.unix.stop_timeout', value='6'
 #   JAVA
 java=`ls $HOME/Axway/Java/linux-x86/*/bin/java`
 CFTUTIL uconfset id='cft.jre.java_binary_path', value=\'$java\'
@@ -138,10 +143,22 @@ else
     PKIUTIL @conf/cft-pki.conf
 fi
 
-# XFBADM ?
-
-# SET KEY
-echo "$($CFT_KEY)" >$CFTKEY
+# XFBADM
+if [ -n "$USER_XFBADM_LOGIN" ] && [ -n "$USER_XFBADM_PASSWORD" ]; then
+    echo "Creating user $USER_XFBADM_LOGIN..."
+    xfbadmusr add -l $USER_XFBADM_LOGIN -p $($USER_XFBADM_PASSWORD) -u AUTO -g AUTO
+    echo "User $USER_XFBADM_LOGIN created."
+else
+    xfb_pass=`head /dev/urandom | tr -dcs 'A-Za-z0-9' 'A-Za-z0-9' | head -c 8  ; echo`
+    xfbadmusr add -l admin -p $xfb_pass -u AUTO -g AUTO
+    echo "------------------------"
+    echo "    UI user created "
+    echo " username: admin "
+    echo " pass: $xfb_pass "
+    echo "------------------------"
+fi
 
 cd
 echo "runtime created!"
+
+shopt -u nocasematch
