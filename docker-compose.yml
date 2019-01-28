@@ -7,8 +7,7 @@ version: "3.1"
 
 services:
     cft:
-        build: .
-        image: cft:3.3.2
+        image: axway-docker-ci.bintray.io/cft/cft
         hostname: docker0
 
         environment:
@@ -60,8 +59,7 @@ services:
             # REST API:
             - "1768:1768"
 
-        secrets:
-            - cft.key
+        #secrets:
             # Uncomment this for customizing the Copilot server certificate.
             #- copilot_p12.pwd
             # Uncomment this for customizing the default XFBADM user.
@@ -74,9 +72,7 @@ services:
             # Uncomment this for enabling customization.
             #- ./custom:/opt/app/custom:ro
 
-secrets:
-    cft.key:
-        file: ./config/cft.key
+#secrets:
     # File containig the Copilot server certificate password.
     # Uncomment the next two lines to customize the Copilot server certificate.
     #copilot_p12.pwd:

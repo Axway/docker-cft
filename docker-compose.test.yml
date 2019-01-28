@@ -14,7 +14,7 @@ services:
       CFT_FQDN:               cft
 
   cft:
-    image: cft:$DOCKER_TAG
+    image: cft/cft:$DOCKER_TAG
 
     environment:
       CFT_FQDN:               cft

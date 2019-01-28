@@ -14,7 +14,7 @@ stages:
 build:
   stage: build
   script:
-  - docker build -t cft:$DOCKER_TAG .
+  - docker build -t cft/cft:$DOCKER_TAG .
 
 test:
   stage: test
@@ -27,5 +27,5 @@ test:
 push:
   stage: push
   script:
-  - docker tag cft:$DOCKER_TAG axway-docker-ci.bintray.io/cft/cft:$DOCKER_TAG
+  - docker tag cft/cft:$DOCKER_TAG axway-docker-ci.bintray.io/cft/cft:$DOCKER_TAG
   - docker push axway-docker-ci.bintray.io/cft/cft:$DOCKER_TAG
