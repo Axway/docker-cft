@@ -126,4 +126,3 @@ HEALTHCHECK --interval=1m \
             --start-period=5m \
             --retries=3 \
             CMD . $CFT_CFTDIRRUNTIME/profile && copstatus
-

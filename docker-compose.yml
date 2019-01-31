@@ -7,7 +7,7 @@ version: "3.1"
 
 services:
     cft:
-        image: axway-docker-ci.bintray.io/cft/cft
+        image: registry.hub.docker.com/appcelerator/docker-cft
         hostname: docker0
 
         environment:
@@ -29,7 +29,7 @@ services:
             CFT_CG_POLICY:              ""
             CFT_CG_PERIODICITY:         ""
             CFT_JVM:                    1024
-            CFT_KEY:                    "curl http://dml.phx.axway.int/licenses/cft/3.3.2/cft.key"
+            CFT_KEY:                    "cat /run/secrets/cft.key"
             CFT_CFTDIRRUNTIME:          "./data/runtime"
             # Script executed at container initialization
             #USER_SCRIPT_INIT:           "/opt/app/custom/init.sh"
@@ -59,7 +59,8 @@ services:
             # REST API:
             - "1768:1768"
 
-        #secrets:
+        secrets:
+            - cft.key
             # Uncomment this for customizing the Copilot server certificate.
             #- copilot_p12.pwd
             # Uncomment this for customizing the default XFBADM user.
@@ -72,7 +73,9 @@ services:
             # Uncomment this for enabling customization.
             #- ./custom:/opt/app/custom:ro
 
-#secrets:
+secrets:
+    cft.key:
+        file: cft.key
     # File containig the Copilot server certificate password.
     # Uncomment the next two lines to customize the Copilot server certificate.
     #copilot_p12.pwd:
@@ -85,4 +88,3 @@ services:
 volumes:
     data:
         driver: local
-
