@@ -32,7 +32,7 @@ ARG VERSION_UP="3.3.2_SP2"
 ARG RELEASE_UP="BN11992000"
 ARG STATIC_UP="Transfer_CFT_${VERSION_UP}_linux-x86-64_${RELEASE_UP}.zip"
 
-ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
+ARG URL_BASE="https://axway.bintray.com/delivery/"
 
 #####
 # LABELS
@@ -58,12 +58,12 @@ RUN chmod +rw * &&\
     chown cft:cft *
 
 USER cft
-RUN curl -k $URL_BASE$STATIC_BASE >cft-distrib.zip && \
+RUN curl -kL $URL_BASE$STATIC_BASE -o cft-distrib.zip && \
     unzip cft-distrib.zip -d setup && \
     cd setup && \
     ./setup.sh -s ../Install_Axway_Installer.properties && \
     cd && \
-    curl -k $URL_BASE$STATIC_UP >cft-distrib.zip && \
+    curl -kL $URL_BASE$STATIC_UP -o cft-distrib.zip && \
     cd Axway && \
     ./update.sh -i ../cft-distrib.zip && \
     ./purge.sh -k 0 && \
