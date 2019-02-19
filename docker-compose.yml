@@ -7,7 +7,7 @@ version: "3.1"
 
 services:
     cft:
-        image: registry.hub.docker.com/appcelerator/docker-cft
+        image: registry.hub.docker.com/axway/cft
         hostname: docker0
 
         environment:
