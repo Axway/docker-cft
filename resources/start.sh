@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 
 set -Eeo pipefail
@@ -211,7 +211,7 @@ else
 fi
 
 # logs on stdout
-tail -v -F run/cft.out -F run/copsmng.out -F log/cftlog -F run/copui.trc -F run/coprests.out -F run/copsxpam.out &
+tail -v run/cft.out -F run/copsmng.out -F run/copui.trc -F run/copsxpam.out -F log/cftlog &
 
 trap 'finish' SIGTERM SIGHUP SIGINT EXIT
 trap 'export_data' SIGUSR1

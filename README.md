@@ -1,12 +1,11 @@
 # AMPLIFY Transfer CFT Docker
 
-AMPLIFY Transfer CFT 3.3.2 SP2 Docker image construction
+AMPLIFY Transfer CFT 3.4 Docker image
 
-Copyright (c) Axway 2006-2018 - AMPLIFY Transfer CFT
+Copyright (c) Axway 2006-2019 - AMPLIFY Transfer CFT
 
 ## Content
-- Dockerfile: Transfer CFT 3.3.2 Generate the Docker image with CentOS
-- Dockerfile_ci: Transfer CFT 3.3.2 Generate the Docker image used in our CI (latest snapshot)
+- Dockerfile: Transfer CFT 3.4 Generate the Docker image with Debian stretch
 
 ## Before you begin
 
@@ -64,7 +63,7 @@ USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM u
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build -t axway/cft:3.3.2 .
+docker build -t axway/cft:3.4 .
 ```
 *Note* You can customize the VERSION_BASE, RELEASE_BASE, VERSION_UP, RELEASE_UP arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
@@ -80,7 +79,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-axway/cft           3.3.2               6049bb6d4d17        3 days ago          1.55GB
+axway/cft           3.4                 6049bb6d4d17        3 days ago          622MB
 ```
 
 
@@ -176,24 +175,23 @@ docker-compose stop
 
 From the Dockerfile, set the VERSION_UP, RELEASE_UP arguments according to your upgrade needs. For example:
 ```
-ENV VERSION_UP "3.3.2_SPX"
-ENV RELEASE_UP "BNdddddddd"
+ARG VERSION_UP "3.4_SPX"
+ARG RELEASE_UP "BNdddddddd"
 ```
 
 From the folder where the Dockerfile is located, run the command:
 ```console
-docker build -t axway/cft:3.3.2 .
+docker build -t axway/cft:3.4 .
 ```
 
 Notice that we use the same tag for the new image.
 
-##### 2. Stop the container using the following command, replacing CONTAINER with your Transfer CFT container name.
+##### 2. Export the Transfer data and stop the container using the following commands, replacing CONTAINER with your Transfer CFT container name.
  
 ```console
-docker kill --signal="SIGUSR1" CONTAINER
+docker exec CONTAINER ./export_bases.sh
+docker-compose down
 ```
-
-Stopping the container using the signal SIGUSR1 triggers an export of all Transfer CFT databases prior to stopping the container.
 
 ##### 3. Recreate and start the Transfer CFT service
 

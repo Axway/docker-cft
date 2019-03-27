@@ -1,4 +1,4 @@
-## AMPLIFY Transfer CFT 3.3.2 Docker-compose example
+## AMPLIFY Transfer CFT 3.4 Docker-compose example
 #
 # Building with:
 # docker-compose up -d
@@ -7,7 +7,8 @@ version: "3.1"
 
 services:
     cft:
-        image: registry.hub.docker.com/axway/cft
+        build: .
+        image: axway-docker-ci.bintray.io/cft/cft
         hostname: docker0
 
         environment:
@@ -68,14 +69,14 @@ services:
 
         volumes:
             # Docker local volume where the runtime is stored
-            - data:/home/cft/data
+            - data:/opt/axway/data
             # Localhost mapped volume where customization file are located.
             # Uncomment this for enabling customization.
             #- ./custom:/opt/app/custom:ro
 
 secrets:
     cft.key:
-        file: cft.key
+        file: ./cft.key
     # File containig the Copilot server certificate password.
     # Uncomment the next two lines to customize the Copilot server certificate.
     #copilot_p12.pwd:
@@ -88,3 +89,4 @@ secrets:
 volumes:
     data:
         driver: local
+

@@ -1,74 +1,59 @@
-## CFT 3.3.2 docker image with OS preparation inside
+## Transfer CFT 3.4 Docker image
 #
 # Building with:
-# docker build -t  axway/cft:3.3.2 .
+# docker build -f Dockerfile -t axway/cft:3.4 .
 
 #####
 # OS PREPARATION
 
-FROM centos:centos7
+FROM debian:stretch
 
-ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 LC_LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8
-
-RUN yum install -y \
-        binutils \
+RUN apt-get update && apt-get install -y \
+        libncurses5 \
         curl \
-        net-tools \
-        procps \
         unzip \
         openssl \
-        && \
-    adduser cft # Create cft user
+        vim && \
+        rm -rf /var/lib/apt/lists && \
+        mkdir -p /opt/axway && \
+        addgroup axway && \
+        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --ingroup axway axway && \
+        chown -R axway:axway /opt/axway
 
-# Change workdir
-WORKDIR /home/cft
+USER axway
+WORKDIR /opt/axway
+ENV LANG=C.UTF-8
 
 #####
-ARG VERSION_BASE="3.3.2"
-ARG RELEASE_BASE="BN11707001"
-ARG STATIC_BASE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
-
-ARG VERSION_UP="3.3.2_SP2"
-ARG RELEASE_UP="BN11992000"
-ARG STATIC_UP="Transfer_CFT_${VERSION_UP}_linux-x86-64_${RELEASE_UP}.zip"
-
-ARG URL_BASE="https://axway.bintray.com/delivery/"
+ARG VERSION_BASE="3.4"
+ARG RELEASE_BASE="BN12366000"
+ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
+ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
+#ARG URL_BASE="https://axway.bintray.com/delivery/"
 
 #####
 # LABELS
 LABEL vendor=Axway
-LABEL com.axway.cft.os="centos"
+LABEL com.axway.cft.os="debian"
 LABEL com.axway.cft.version="${VERSION_BASE}"
-LABEL com.axway.cft.fullversion="${VERSION_UP}"
-LABEL com.axway.cft.release-date="2017-10-04"
-LABEL com.axway.centos.version=7
+LABEL com.axway.cft.release-date="2019-04-01"
+LABEL com.axway.debian.version=stretch
 LABEL maintainer="support@axway.com"
 
-LABEL version="0.1"
-LABEL description="Docker env for CFT ${VERSION_UP}."
+LABEL version="1.0"
+LABEL description="Transfer CFT ${VERSION_UP} Docker image"
 
 #####
 # DOWNLOAD AND INSTALL PRODUCTS
 
-ENV LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8 LC_LANG=en_US.UTF-8 LANGUAGE=en_US.UTF-8
-
-COPY resources/Install_Axway_Installer.properties .
-COPY resources/Install_Transfer_CFT.properties    .
-RUN chmod +rw * &&\
-    chown cft:cft *
-
-USER cft
-RUN curl -kL $URL_BASE$STATIC_BASE -o cft-distrib.zip && \
+ENV CFT_INSTALLDIR /opt/axway/cft
+RUN curl -k ${URL_BASE}${PACKAGE} >cft-distrib.zip && \
     unzip cft-distrib.zip -d setup && \
     cd setup && \
-    ./setup.sh -s ../Install_Axway_Installer.properties && \
+    chmod +x *.run && \
+    ./Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_*.run  --mode unattended --installdir ${CFT_INSTALLDIR} && \
     cd && \
-    curl -kL $URL_BASE$STATIC_UP -o cft-distrib.zip && \
-    cd Axway && \
-    ./update.sh -i ../cft-distrib.zip && \
-    ./purge.sh -k 0 && \
-    cd && \
-    rm -rf setup cft-distrib.zip *.properties runtime && \
+    rm -rf setup cft-distrib.zip *.properties && \
     mkdir data
 
 #####
@@ -106,7 +91,7 @@ ENV CFT_CG_POLICY        ""
 ENV CFT_CG_PERIODICITY   ""
 ENV CFT_JVM              1024
 ENV CFT_KEY              "cat /run/secrets/cft.key"
-ENV CFT_CFTDIRRUNTIME    /home/cft/data/runtime
+ENV CFT_CFTDIRRUNTIME    /opt/axway/cft/runtime
 
 #####
 # COPYING USEFUL SCRIPTS
@@ -126,3 +111,4 @@ HEALTHCHECK --interval=1m \
             --start-period=5m \
             --retries=3 \
             CMD . $CFT_CFTDIRRUNTIME/profile && copstatus
+

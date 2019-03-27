@@ -1,15 +1,15 @@
-#!/bin/sh
+#!/bin/bash
 #
 echo "Creating runtime..."
 shopt -s nocasematch
 
 # CREATE RUNTIME DIRECTORY
-$HOME/Axway/Transfer_CFT/home/bin/cftruntime $HOME/Axway/Transfer_CFT/home $CFT_CFTDIRRUNTIME
+$CFT_INSTALLDIR/home/bin/cftruntime $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME
 cd $CFT_CFTDIRRUNTIME
 . ./profile
 
 # INSTALLER PARAMETER
-CFTUTIL /m=2 uconfset id='cft.synchrony_dir', value='/home/cft/Axway'
+CFTUTIL /m=2 uconfset id='cft.synchrony_dir', value=$CFT_INSTALLDIR
 
 # CFT IDENTITY
 if [ -n "$CFT_FQDN" ]; then
