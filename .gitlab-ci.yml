@@ -35,8 +35,9 @@ security:
   - TOKEN=$(echo -n "$TWISTLOCK_USER:$TWISTLOCK_PASSWORD" | openssl base64)
   # Download and untar scan results. Scan results file is "analysis.json"
   - "curl -k -H \"Authorization: Basic $TOKEN\" $URL | tar xvz"
-  # TODO: Upload to theadfix instead of printing the file
-  - cat analysis.json | jq .
+  # Upload to theadfix
+  #- cat analysis.json | jq .
+  - "curl --insecure -H \"Accept: application/json\" -H \"Authorization: APIKEY $THREADFIX_APIKEY\" -X POST --form file=@analysis.json https://vulnmgt.psg.axway.int/threadfix/rest/v2.5/applications/$THREADFIX_APPID/upload"
   # Remove scan results.
   - rm -f analysis.json
 
