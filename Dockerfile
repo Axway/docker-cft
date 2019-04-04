@@ -28,8 +28,7 @@ ENV LANG=C.UTF-8
 ARG VERSION_BASE="3.4"
 ARG RELEASE_BASE="BN12390000"
 ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
-ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
-#ARG URL_BASE="https://axway.bintray.com/delivery/"
+ARG URL_BASE="https://axway.bintray.com/delivery/"
 
 #####
 # LABELS
