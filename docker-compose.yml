@@ -7,8 +7,8 @@ version: "3.1"
 
 services:
     cft:
-        build: .
-        image: axway-docker-ci.bintray.io/cft/cft
+        #build: .
+        image: axway-docker-ci.bintray.io/cft/cft:3.4
         hostname: docker0
 
         environment:
@@ -71,7 +71,7 @@ services:
 
         volumes:
             # Docker local volume where the runtime is stored
-            - data:/opt/axway/data
+            - cft_data:/opt/axway/data
             # Localhost mapped volume where customization file are located.
             # Uncomment this for enabling customization.
             #- ./custom:/opt/app/custom:ro
@@ -89,6 +89,6 @@ secrets:
     #    file: ./custom/xfbadm.pwd
 
 volumes:
-    data:
+    cft_data:
         driver: local
 
