@@ -6,7 +6,7 @@
 #####
 # OS PREPARATION
 
-FROM debian:stretch
+FROM ubuntu:bionic
 
 RUN apt-get update && apt-get install -y \
         libncurses5 \
@@ -34,10 +34,10 @@ ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
 #####
 # LABELS
 LABEL vendor=Axway
-LABEL com.axway.cft.os="debian"
+LABEL com.axway.cft.os="ubuntu"
 LABEL com.axway.cft.version="${VERSION_BASE}"
-LABEL com.axway.cft.release-date="2019-04-01"
-LABEL com.axway.debian.version=stretch
+LABEL com.axway.cft.release-date="2019-04-04"
+LABEL com.axway.ubuntu.version=bionic
 LABEL maintainer="support@axway.com"
 
 LABEL version="1.0"
