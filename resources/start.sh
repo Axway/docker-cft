@@ -109,6 +109,10 @@ customize_runtime()
         fi
     fi
 
+    # Passport AM persistent cache
+    if [ -n "$CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL" ]; then
+        CFTUTIL /m=2 uconfset id='am.passport.persistency.check_interval', value=$CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL
+    fi
 
     echo "INF: runtime customized."
 }

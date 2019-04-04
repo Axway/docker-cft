@@ -96,10 +96,10 @@ ENV CFT_CFTDIRRUNTIME    /opt/axway/cft/runtime
 #####
 # COPYING USEFUL SCRIPTS
 
-COPY resources/start.sh ./start.sh
-COPY resources/runtime_create.sh ./runtime_create.sh
-COPY resources/export_bases.sh ./export_bases.sh
-COPY resources/import_bases.sh ./import_bases.sh
+COPY --chown=axway:axway resources/start.sh ./start.sh
+COPY --chown=axway:axway resources/runtime_create.sh ./runtime_create.sh
+COPY --chown=axway:axway resources/export_bases.sh ./export_bases.sh
+COPY --chown=axway:axway resources/import_bases.sh ./import_bases.sh
 
 #####
 # START POINT

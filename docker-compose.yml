@@ -47,6 +47,8 @@ services:
             # Uncomment the next two lines to customize the default XFBADM user. See also secrets sections.
             #USER_XFBADM_LOGIN:          "admin"
             #USER_XFBADM_PASSWORD:       "cat /run/secrets/xfbadm.pwd"
+            # Interval in seconds between two checks of Passport access management updates.
+            #CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL: 60
 
         ports:
             # PESIT + PESITSSL:
