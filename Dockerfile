@@ -46,7 +46,7 @@ LABEL description="Transfer CFT ${VERSION_UP} Docker image"
 # DOWNLOAD AND INSTALL PRODUCTS
 
 ENV CFT_INSTALLDIR /opt/axway/cft
-RUN curl -k ${URL_BASE}${PACKAGE} >cft-distrib.zip && \
+RUN curl -kL ${URL_BASE}${PACKAGE} -o cft-distrib.zip && \
     unzip cft-distrib.zip -d setup && \
     cd setup && \
     chmod +x *.run && \
