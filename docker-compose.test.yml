@@ -1,4 +1,8 @@
-## CFT 3.3.2 Docker-compose for automated test
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+#
+## AMPLIFY Transfer CFT 3.4 Docker-compose for automated test
 #
 # Test with:
 # docker-compose -f docker-compose.test.yml up -d

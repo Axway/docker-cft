@@ -1,4 +1,8 @@
-## Transfer CFT 3.4 Docker image
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+#
+## AMPLIFY Transfer CFT 3.4 Docker image
 #
 # Building with:
 # docker build -f Dockerfile -t axway/cft:3.4 .
