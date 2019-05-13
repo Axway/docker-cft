@@ -2,8 +2,6 @@
 
 AMPLIFY Transfer CFT 3.4 Docker image
 
-Copyright (c) Axway 2006-2019 - AMPLIFY Transfer CFT
-
 ## Content
 - Dockerfile: Transfer CFT 3.4 Generate the Docker image with Debian stretch
 
@@ -294,3 +292,10 @@ service:
             USER_SCRIPT_START:  "/opt/app/custom/startup.sh"
 ```
 
+## Copyright
+
+Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+
+## License
+
+All files in this repository are licensed by Axway Software SA and its affiliates under the Apache License, Version 2.0, available at [http://www.apache.org/licenses/](http://www.apache.org/licenses/).

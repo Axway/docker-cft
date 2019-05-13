@@ -1,3 +1,7 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+#
 before_script:
 - eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
 - | # If we're on the master branch, tag the image as latest

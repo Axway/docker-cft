@@ -1,3 +1,7 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+#
 FROM debian:stretch-slim
 RUN apt-get update && apt-get install -y \
   curl \

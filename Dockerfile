@@ -1,3 +1,7 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+#
 ## Transfer CFT 3.4 Docker image
 #
 # Building with:
@@ -110,4 +114,3 @@ HEALTHCHECK --interval=1m \
             --start-period=5m \
             --retries=3 \
             CMD . $CFT_CFTDIRRUNTIME/profile && copstatus
-
