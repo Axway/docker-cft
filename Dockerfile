@@ -32,7 +32,10 @@ ENV LANG=C.UTF-8
 ARG VERSION_BASE="3.4"
 ARG RELEASE_BASE="BN12392000"
 ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
-ARG URL_BASE="https://axway.bintray.com/delivery/"
+ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
+ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
+
+ADD --chown=axway:axway $INSTALL_KIT installkit.zip
 
 #####
 # LABELS
@@ -44,19 +47,18 @@ LABEL com.axway.ubuntu.version=bionic
 LABEL maintainer="support@axway.com"
 
 LABEL version="1.0"
-LABEL description="Transfer CFT ${VERSION_UP} Docker image"
+LABEL description="Transfer CFT ${VERSION_BASE} Docker image"
 
 #####
 # DOWNLOAD AND INSTALL PRODUCTS
 
 ENV CFT_INSTALLDIR /opt/axway/cft
-RUN curl -kL ${URL_BASE}${PACKAGE} -o cft-distrib.zip && \
-    unzip cft-distrib.zip -d setup && \
+RUN unzip installkit.zip -d setup && \
     cd setup && \
     chmod +x *.run && \
     ./Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_*.run  --mode unattended --installdir ${CFT_INSTALLDIR} && \
     cd && \
-    rm -rf setup cft-distrib.zip *.properties && \
+    rm -rf setup installkit.zip *.properties && \
     mkdir data
 
 #####
@@ -114,4 +116,3 @@ HEALTHCHECK --interval=1m \
             --start-period=5m \
             --retries=3 \
             CMD . $CFT_CFTDIRRUNTIME/profile && copstatus
-

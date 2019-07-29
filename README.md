@@ -61,23 +61,28 @@ USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM u
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build -t axway/cft:3.4 .
+docker build -t cft/cft:3.4 .
 ```
-*Note* You can customize the VERSION_BASE, RELEASE_BASE, VERSION_UP, RELEASE_UP arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
+*Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
+
+If you're not connected to the Axway network, you need to download the product installation kit beforehand and specify it as a build argument, for instance:
+```console
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_Install_linux-x86-64_BN12392000.zip -t cft/cft:3.4 .
+```
 
 #### 2. Check that the Docker image is successfully created
 
 Run the command:
 
 ```console
-docker images --filter reference=axway/cft
+docker images --filter reference=cft/cft
 ```
 
 You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-axway/cft           3.4                 6049bb6d4d17        3 days ago          622MB
+cft/cft           3.4                 6049bb6d4d17        3 days ago          622MB
 ```
 
 
@@ -171,15 +176,20 @@ docker-compose stop
    
 ##### 1. Build a new Transfer CFT Docker image
 
-From the Dockerfile, set the VERSION_UP, RELEASE_UP arguments according to your upgrade needs. For example:
+From the Dockerfile, set the VERSION_BASE, RELEASE_BASE arguments according to your upgrade needs. For example:
 ```
-ARG VERSION_UP "3.4_SPX"
-ARG RELEASE_UP "BNdddddddd"
+ARG VERSION_BASE "3.4_SPX"
+ARG RELEASE_BASE "BNdddddddd"
 ```
 
 From the folder where the Dockerfile is located, run the command:
 ```console
-docker build -t axway/cft:3.4 .
+docker build -t cft/cft:3.4 .
+```
+
+Or, if you're not connected to the Axway network, build the new image using a build argument:
+```console
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_SPX_Install_linux-x86-BNdddddddd.zip -t cft/cft:3.4 .
 ```
 
 Notice that we use the same tag for the new image.
