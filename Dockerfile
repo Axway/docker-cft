@@ -14,7 +14,6 @@ FROM ubuntu:bionic
 
 RUN apt-get update && apt-get install -y \
         libncurses5 \
-        curl \
         unzip \
         openssl \
         vim && \
@@ -56,7 +55,7 @@ ENV CFT_INSTALLDIR /opt/axway/cft
 RUN unzip installkit.zip -d setup && \
     cd setup && \
     chmod +x *.run && \
-    ./Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_*.run  --mode unattended --installdir ${CFT_INSTALLDIR} && \
+    ./Transfer_CFT_${VERSION_BASE}*_linux-x86-64_*.run  --mode unattended --installdir ${CFT_INSTALLDIR} && \
     cd && \
     rm -rf setup installkit.zip *.properties && \
     mkdir data
