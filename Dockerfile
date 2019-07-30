@@ -14,6 +14,7 @@ FROM ubuntu:bionic
 
 RUN apt-get update && apt-get install -y \
         libncurses5 \
+        curl \
         unzip \
         openssl \
         vim && \
