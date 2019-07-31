@@ -58,7 +58,7 @@ USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM u
 
 #### 1. Build the Docker image from your Dockerfile
 
-##### 1.1. General Build
+##### 1.1. Offline Build
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
@@ -73,12 +73,20 @@ From the folder where the Dockerfile is located, using the downloaded package as
 docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_Install_linux-x86-64_BN12392000.zip -t cft/cft:3.4 .
 ```
 
-##### 1.2. Internal Use (inside Axway network)
+##### 1.2. Online Build
+
+1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
+
+The Dockerfile is compatible with Transfer CFT 3.4 base version and its updates.
+
+From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and place it somewhere in your network.
+
+2) Build the Docker image from your Dockerfile
 
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build -t cft/cft:3.4 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.4 .
 ```
 *Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
@@ -194,7 +202,7 @@ ARG VERSION_BASE "3.4_SPX"
 ARG RELEASE_BASE "BNdddddddd"
 ```
 
-##### 1.1. General Build
+###### 1.1. Offline Build
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
@@ -206,16 +214,24 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 
 From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
 ```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_Install_linux-x86-64_BN12392000.zip -t cft/cft:3.4 .
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_SP1_linux-x86-64_BN12392000.zip -t cft/cft:3.4 .
 ```
 *Note* Notice that we use the same tag for the new image.
 
-##### 1.2. Internal Use (inside Axway network)
+###### 1.2. Online Build
+
+1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
+
+The Dockerfile is compatible with Transfer CFT 3.4 base version and its updates.
+
+From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and place it somewhere in your network.
+
+2) Build the Docker image from your Dockerfile
 
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build -t cft/cft:3.4 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.4 .
 ```
 *Note* Notice that we use the same tag for the new image.
 
