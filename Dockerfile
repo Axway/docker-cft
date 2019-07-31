@@ -32,7 +32,7 @@ ENV LANG=C.UTF-8
 ARG VERSION_BASE="3.4"
 ARG RELEASE_BASE="BN12392000"
 ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
-ARG URL_BASE="https://delivery.axway.int/download_true_name.php?static="
+ARG URL_BASE="https://delivery.server.com/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
 
 ADD --chown=axway:axway $INSTALL_KIT installkit.zip
