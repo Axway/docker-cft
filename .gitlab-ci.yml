@@ -19,7 +19,7 @@ stages:
 build:
   stage: build
   script:
-  - docker build -t cft/cft:$DOCKER_TAG .
+  - docker build -t cft/cft:$DOCKER_TAG --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= .
 
 test:
   stage: test
