@@ -79,7 +79,7 @@ docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_Install_linux-x86-64_BN123
 
 The Dockerfile is compatible with Transfer CFT 3.4 base version and its updates.
 
-From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and place it somewhere in your network.
+From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
 2) Build the Docker image from your Dockerfile
 
@@ -224,7 +224,7 @@ docker build --build-arg INSTALL_KIT=Transfer_CFT_3.4_SP1_linux-x86-64_BN1239200
 
 The Dockerfile is compatible with Transfer CFT 3.4 base version and its updates.
 
-From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and place it somewhere in your network.
+From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
 2) Build the Docker image from your Dockerfile
 
