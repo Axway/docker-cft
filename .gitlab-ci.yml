@@ -33,15 +33,16 @@ security:
   stage: security
   script:
   # Scan the image and store the URL of the scan results
-  - eval export URL=$(twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --address $TWISTLOCK_URL --upload cft/cft:$DOCKER_TAG | grep scan | cut -b29-)
-  - echo URL=$URL
+  #- eval export URL=$(twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --address $TWISTLOCK_URL --upload cft/cft:$DOCKER_TAG | grep scan | cut -b29-)
+  #- echo URL=$URL
   # Prepare Twistlock credentials
-  - TOKEN=$(echo -n "$TWISTLOCK_USER:$TWISTLOCK_PASSWORD" | openssl base64)
+  #- TOKEN=$(echo -n "$TWISTLOCK_USER:$TWISTLOCK_PASSWORD" | openssl base64)
   # Download and untar scan results. Scan results file is "analysis.json"
-  - "curl -k -H \"Authorization: Basic $TOKEN\" $URL | tar xvz"
+  #- "curl -k -H \"Authorization: Basic $TOKEN\" $URL | tar xvz"
+  - twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --ci --address $TWISTLOCK_URL cft/cft:$DOCKER_TAG | sed -z 's/^.*DATA//' > analysis.json
   # Upload to theadfix
   #- cat analysis.json | jq .
-  - "curl --insecure -H \"Accept: application/json\" -H \"Authorization: APIKEY $THREADFIX_APIKEY\" -X POST --form file=@analysis.json https://vulnmgt.psg.axway.int/threadfix/rest/v2.5/applications/$THREADFIX_APPID/upload"
+  - "curl --insecure -H \"Accept: application/json\" -H \"Authorization: APIKEY $THREADFIX_APIKEY\" -X POST --form \"file=@analysis.json;type=application/json\" https://vulnmgt.psg.axway.int/threadfix/rest/v2.5/applications/$THREADFIX_APPID/upload"
   # Remove scan results.
   - rm -f analysis.json
 
