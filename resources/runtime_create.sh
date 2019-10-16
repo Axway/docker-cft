@@ -36,8 +36,6 @@ echo "------------------------"
 echo "Encryption: $pass"
 echo "------------------------"
 cftcrypt --genkey --keyfname data/crypto/crypkey --saltfname data/crypto/crypsalt --pass \"$pass\"
-CFTUTIL /m=2 uconfset id='crypto.key_fname', value="data/crypto/crypkey"
-CFTUTIL /m=2 uconfset id='crypto.salt_fname', value="data/crypto/crypsalt"
 
 # BASIC CONFIGURATION
 if [ -n "$CFT_CATALOG_SIZE" ]; then
