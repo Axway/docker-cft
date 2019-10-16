@@ -2,12 +2,12 @@
 #
 # Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
 #
-## AMPLIFY Transfer CFT 3.4 Docker-compose for automated test
+## AMPLIFY Transfer CFT 3.5 Docker-compose for automated test
 #
 # Test with:
 # docker-compose -f docker-compose.test.yml up -d
 
-version: "3.4"
+version: "3.5"
 
 services:
   sut:
