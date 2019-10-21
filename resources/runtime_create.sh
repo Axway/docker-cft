@@ -35,7 +35,7 @@ pass="${pass}aB0!"
 echo "------------------------"
 echo "Encryption: $pass"
 echo "------------------------"
-cftcrypt --genkey --keyfname data/crypto/crypkey --saltfname data/crypto/crypsalt --pass \"$pass\"
+cftcrypt --genkey --keyfname $CFTDIRRUNTIME/data/crypto/crypkey --saltfname $CFTDIRRUNTIME/data/crypto/crypsalt --pass \"$pass\"
 
 # BASIC CONFIGURATION
 if [ -n "$CFT_CATALOG_SIZE" ]; then
