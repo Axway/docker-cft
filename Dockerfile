@@ -30,8 +30,9 @@ ENV LANG=C.UTF-8
 
 #####
 ARG VERSION_BASE="3.5"
-ARG RELEASE_BASE="BN12603000"
-ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_Install_linux-x86-64_${RELEASE_BASE}.zip"
+ARG VERSION_UP="SP1"
+ARG RELEASE_BASE="BN12710000"
+ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_${VERSION_UP}_linux-x86-64_${RELEASE_BASE}.zip"
 ARG URL_BASE="https://delivery.server.com/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
 
@@ -41,13 +42,13 @@ ADD --chown=axway:axway $INSTALL_KIT installkit.zip
 # LABELS
 LABEL vendor=Axway
 LABEL com.axway.cft.os="ubuntu"
-LABEL com.axway.cft.version="${VERSION_BASE}"
-LABEL com.axway.cft.release-date="2019-04-04"
+LABEL com.axway.cft.version="${VERSION_BASE}-${VERSION_UP}"
+LABEL com.axway.cft.release-date="2020-03-20"
 LABEL com.axway.ubuntu.version=bionic
 LABEL maintainer="support@axway.com"
 
 LABEL version="1.0"
-LABEL description="Transfer CFT ${VERSION_BASE} Docker image"
+LABEL description="Transfer CFT ${VERSION_BASE}-${VERSION_UP} Docker image"
 
 #####
 # DOWNLOAD AND INSTALL PRODUCTS
@@ -101,10 +102,7 @@ ENV CFT_CFTDIRRUNTIME    /opt/axway/cft/runtime
 #####
 # COPYING USEFUL SCRIPTS
 
-COPY --chown=axway:axway resources/start.sh ./start.sh
-COPY --chown=axway:axway resources/runtime_create.sh ./runtime_create.sh
-COPY --chown=axway:axway resources/export_bases.sh ./export_bases.sh
-COPY --chown=axway:axway resources/import_bases.sh ./import_bases.sh
+COPY --chown=axway:axway resources/*.sh ./
 
 #####
 # START POINT
