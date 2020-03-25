@@ -20,6 +20,7 @@ build:
   stage: build
   script:
   - docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= .
+  - docker images
 
 test:
   stage: test
@@ -36,6 +37,8 @@ security:
   # Prepare Twistlock credentials
   - CREDENTIALS=$(echo -n "$TWISTLOCK_USER:$TWISTLOCK_PASSWORD" | openssl base64)
   # Scan the image
+  - docker images
+  - "echo \"image: $IMAGE_CFT:$DOCKER_TAG\""
   - twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --ci --address $TWISTLOCK_URL $IMAGE_CFT:$DOCKER_TAG
   # Retrieve the scan result
   - "curl --insecure -H \"Authorization: Basic $CREDENTIALS\" -H \"Content-Type: application/json\" -X GET \"$TWISTLOCK_URL/api/v1/scans?search=$IMAGE_CFT:$DOCKER_TAG&sort=time&reverse=true&limit=1&type=jenkins\" > analysis.json"
