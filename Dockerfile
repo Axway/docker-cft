@@ -2,10 +2,10 @@
 #
 # Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
 #
-## AMPLIFY Transfer CFT 3.5 Docker image
+## AMPLIFY Transfer CFT 3.6 Docker image
 #
 # Building with:
-# docker build -f Dockerfile -t axway/cft:3.5 .
+# docker build -f Dockerfile -t axway/cft:3.6 .
 
 #####
 # OS PREPARATION
@@ -31,7 +31,7 @@ ENV LANG=C.UTF-8
 #####
 ARG VERSION_BASE="3.6"
 ARG VERSION_UP="Install"
-ARG RELEASE_BASE="BN12794000"
+ARG RELEASE_BASE="BN12804000"
 ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_${VERSION_UP}_linux-x86-64_${RELEASE_BASE}.zip"
 ARG URL_BASE="https://delivery.server.com/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
@@ -43,7 +43,7 @@ ADD --chown=axway:axway $INSTALL_KIT installkit.zip
 LABEL vendor=Axway
 LABEL com.axway.cft.os="ubuntu"
 LABEL com.axway.cft.version="${VERSION_BASE}-${VERSION_UP}"
-LABEL com.axway.cft.release-date="2020-03-20"
+LABEL com.axway.cft.release-date="2020-03-31"
 LABEL com.axway.ubuntu.version=bionic
 LABEL maintainer="support@axway.com"
 
