@@ -2,7 +2,7 @@
 #
 # Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
 #
-## AMPLIFY Transfer CFT 3.5 Docker-compose example
+## AMPLIFY Transfer CFT 3.6 Docker-compose example
 #
 # Building with:
 # docker-compose up -d
@@ -12,7 +12,7 @@ version: "3.5"
 services:
   cft:
     build: .
-    image: cft/cft:3.5
+    image: cft/cft:3.6
     hostname: docker0
 
     environment:
@@ -23,6 +23,7 @@ services:
       CFT_COM_SIZE:               1000
       CFT_PESIT_PORT:             1761
       CFT_PESITSSL_PORT:          1762
+      CFT_SFTP_PORT:              1763
       CFT_COMS_PORT:              1765
       CFT_COPILOT_PORT:           1766
       CFT_COPILOT_CG_PORT:        1767
@@ -57,6 +58,8 @@ services:
     ports:
     # PESIT + PESITSSL:
     - "1761-1762:1761-1762"
+    # SFTP:
+    - "1763:1763"
     # COMS:
     - "1765:1765"
     # CFT UI:

@@ -1,9 +1,9 @@
 # AMPLIFY Transfer CFT Docker
 
-AMPLIFY Transfer CFT 3.5 Docker image
+AMPLIFY Transfer CFT 3.6 Docker image
 
 ## Content
-- Dockerfile: Transfer CFT 3.5 Generate the Docker image with Ubuntu
+- Dockerfile: Transfer CFT 3.6 Generate the Docker image with Ubuntu
 
 ## Before you begin
 
@@ -32,6 +32,7 @@ CFT_CATALOG_SIZE           |  \<number>   |  Catalog size.
 CFT_COM_SIZE               |  \<number>   |  Communication file size.
 CFT_PESIT_PORT             |  \<number>   |  Port number of the PeSIT protocol called PESITANY.
 CFT_PESITSSL_PORT          |  \<number>   |  Port number of the PeSIT protocol called PESITSSL.
+CFT_SFTP_PORT              |  \<number>   |  Port number previewed for the SFTP protocol.
 CFT_COMS_PORT              |  \<number>   |  Port number of the synchronous communication media called COMS.
 CFT_COPILOT_PORT           |  \<number>   |  Port number for the Transfer CFT UI server that listens for incoming unsecured and secured (SSL) connections.
 CFT_COPILOT_CG_PORT        |  \<number>   |  Port number for the Transfer CFT UI server used to connect to Central Governance.
@@ -62,7 +63,7 @@ USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM u
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
-The Dockerfile is compatible with Transfer CFT 3.5 base version and its updates.
+The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64.
 
@@ -70,14 +71,14 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 
 From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
 ```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.5_Install_linux-x86-64_BN12603000.zip -t cft/cft:3.5 .
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_Install_linux-x86-64_BN12805000.zip -t cft/cft:3.6 .
 ```
 
 ##### 1.2. Online Build
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
-The Dockerfile is compatible with Transfer CFT 3.5 base version and its updates.
+The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
@@ -86,7 +87,7 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.5 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.6 .
 ```
 *Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
@@ -102,7 +103,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft           3.5                 6049bb6d4d17        3 days ago          622MB
+cft/cft           3.6                 6049bb6d4d17        3 days ago          622MB
 ```
 
 
@@ -198,7 +199,8 @@ docker-compose stop
 
 From the Dockerfile, set the VERSION_BASE, RELEASE_BASE arguments according to your upgrade needs. For example:
 ```
-ARG VERSION_BASE "3.5_SPX"
+ARG VERSION_BASE "3.6"
+ARG VERSION_UP="Install"
 ARG RELEASE_BASE "BNdddddddd"
 ```
 
@@ -206,7 +208,7 @@ ARG RELEASE_BASE "BNdddddddd"
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
-The Dockerfile is compatible with Transfer CFT 3.5 base version and its updates.
+The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64.
 
@@ -214,7 +216,7 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 
 From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
 ```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.5_SP1_linux-x86-64_BN12603000.zip -t cft/cft:3.5 .
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_Install_linux-x86-64_BN12805000.zip -t cft/cft:3.6 .
 ```
 *Note* Notice that we use the same tag for the new image.
 
@@ -222,7 +224,7 @@ docker build --build-arg INSTALL_KIT=Transfer_CFT_3.5_SP1_linux-x86-64_BN1260300
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
-The Dockerfile is compatible with Transfer CFT 3.5 base version and its updates.
+The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
@@ -231,7 +233,7 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.5 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.6 .
 ```
 *Note* Notice that we use the same tag for the new image.
 
