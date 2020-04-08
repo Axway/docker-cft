@@ -98,6 +98,12 @@ customize_runtime()
         fi
     fi
 
+    # Flow Manager Agent Name
+    if [[ -n "$CFT_CG_AGENT_NAME" ]]; then
+        echo "INF: Setting the customized Agent Name $CFT_CG_AGENT_NAME..."
+        CFTUTIL /m=2 uconfset id='cg.metadata.agent.value', value=$CFT_CG_AGENT_NAME
+    fi
+
     # User custom start-up script
     if [[ -n "$USER_SCRIPT_START" && ! -e "$USER_SCRIPT_START" ]]; then
         echo "ERR: Custom start-up script $USER_SCRIPT_START not found."

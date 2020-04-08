@@ -88,7 +88,7 @@ if [ -n "$CFT_CG_PORT" ]; then
     CFTUTIL /m=2 uconfset id='cg.port', value=$CFT_CG_PORT
 fi
 if [ -n "$CFT_CG_SHARED_SECRET" ]; then
-    CFTUTIL /m=2 uconfset id='cg.shared_secret', value=$CFT_CG_SHARED_SECRET
+    CFTUTIL /m=2 uconfset id='cg.shared_secret', value=$($CFT_CG_SHARED_SECRET)
 fi
 if [ -n "$CFT_CG_POLICY" ]; then
     CFTUTIL /m=2 uconfset id='cg.configuration_policy', value=$CFT_CG_POLICY
@@ -122,7 +122,6 @@ CFTUTIL uconfset id='cft.jre.java_binary_path', value=\'$java\'
 # UPDATE CONFIGURATION SAMPLE 
 if [ $isCG = 1 ]; then
     fname=conf/cft-cg.conf
-    sed -i 's#<CFT_CG_CUSTOM_CA>#conf/pki/passportCA.pem#g'       conf/cft-cg-pki.conf
 else
     fname=conf/cft-tcp.conf
 fi
@@ -140,7 +139,7 @@ sed -i 's/<OPERMSGVALUE>/0/g'       $fname
 # CREATE BASES
 if [ $isCG = 1 ]; then
     cftinit conf/cft-cg.conf
-    PKIUTIL @conf/cft-cg-pki.conf
+    PKIUTIL @conf/cft-pki.conf
 else
     cftinit conf/cft-tcp.conf conf/cft-tcp-part.conf
     PKIUTIL @conf/cft-pki.conf

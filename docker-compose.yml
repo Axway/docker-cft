@@ -31,9 +31,10 @@ services:
       CFT_CG_ENABLE:              "NO"
       CFT_CG_HOST:                cg
       CFT_CG_PORT:                12553
-      CFT_CG_SHARED_SECRET:       Secret01
+      #CFT_CG_SHARED_SECRET:       "cat /run/secrets/shared_secret"
       CFT_CG_POLICY:              ""
       CFT_CG_PERIODICITY:         ""
+      CFT_CG_AGENT_NAME:          ""
       CFT_JVM:                    1024
       CFT_KEY:                    "cat /run/secrets/cft.key"
       CFT_CFTDIRRUNTIME:          "./data/runtime"
@@ -75,6 +76,8 @@ services:
     #- copilot_p12.pwd
     # Uncomment this for customizing the default XFBADM user.
     #- xfbadm.pwd
+    # Uncomment this for specifying the Flow Manager/Central Governance shared secret.
+    #- shared_secret
 
     volumes:
     # Docker local volume where the runtime is stored
@@ -89,11 +92,15 @@ secrets:
   # File containig the Copilot server certificate password.
   # Uncomment the next two lines to customize the Copilot server certificate.
   #copilot_p12.pwd:
-  #    file: ./custom/copilot_p12.pwd
+  #    file: ./secrets/copilot_p12.pwd
   # File containing the XFBADM user's password.
   # Uncomment the next two lines to customize the default XFBADM user.
   #xfbadm.pwd:
-  #    file: ./custom/xfbadm.pwd
+  #    file: ./secrets/xfbadm.pwd
+  # File containig the shared secret to register to Flow Manager or Central Governance.
+  # Uncomment the next two lines to specify the shared secret.
+  #shared_secret:
+  #    file: ./secrets/shared_secret
 
 volumes:
   cft_data:

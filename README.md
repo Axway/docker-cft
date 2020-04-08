@@ -40,11 +40,12 @@ CFT_RESTAPI_PORT           |  \<number>   |  Port number used to connect to the 
 CFT_CG_ENABLE              |  "YES"/"NO"  |  Connectivity with Central Governance.
 CFT_CG_HOST                |  \<string>   |  Host address of the Central Governance server.
 CFT_CG_PORT                |  \<number>   |  Central Governance port on which the connector connects.
-CFT_CG_SHARED_SECRET       |  \<string>   |  Shared secret needed to register with the Central Governance server.
+CFT_CG_SHARED_SECRET       |  \<string>   |  A shell command that returns the shared secret needed to register with the Flow Manager or Central Governance server.
 CFT_CG_POLICY              |  \<string>   |  Central Governance policy, which is a set of defined parameters.
 CFT_CG_PERIODICITY         |  \<number>   |  Central Governance interval between notifications.
+CFT_CG_AGENT_NAME          |  \<string>   |  The name of the agent that Flow Manager SaaS uses to connect to the Transfer CFT instance.
 CFT_JVM                    |  \<number>   |  Amount of memory that the Secure Relay JVM can use.
-CFT_KEY                    |  \<string>   |  A command that returns the Transfer CFT license key.
+CFT_KEY                    |  \<string>   |  A shell command that returns the Transfer CFT license key.
 CFT_CFTDIRRUNTIME          |  \<string>   |  Location of the Transfer CFT runtime.
 USER_SCRIPT_INIT           |  \<string>   |  Path to a script executed when you create the container.
 USER_SCRIPT_START          |  \<string>   |  Path to a script that executes each time you start the container.
