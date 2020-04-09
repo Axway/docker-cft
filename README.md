@@ -19,6 +19,8 @@ If needed, see [Get started with Docker](https://docs.docker.com/get-started/) f
 
 The Dockerfile contains all commands required to assemble a Transfer CFT image. The docker-compose.yml describes the Transfer CFT service. This file allows management of the Transfer CFT service.
 
+You can use the Dockerfile to build your own Transfer CFT image or use the official Axway Transfer CFT Docker image.
+
 ### Dockerfile and docker-compose.yml parameters
 
 The following parameters are available in the Dockerfile and docker-compose.yml files. Use these parameters to customize the Transfer CFT image and service. The values can be a string, number, or null.
@@ -55,6 +57,35 @@ USER_COPILOT_CERT          |  \<string>   |  Copilot server certificate. It must
 USER_COPILOT_CERT_PASSWORD |  \<string>   |  A command that returns the Copilot server certificate password.
 USER_XFBADM_LOGIN          |  \<string>   |  The XFBADM user login, which is created when you create the container.
 USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM user's password.
+
+### How to use the official Axway Transfer CFT Docker image
+
+1) Download the Transfer CFT DockerImage package from [Axway Support](https://support.axway.com/).
+
+2) Unzip the downloaded package.
+
+3) Load the image.
+
+From the folder where the transfer_cft_3.6.tar.gz is located, run the command:
+
+```console
+docker image load -i transfer_cft_3.6.tar.gz
+```
+
+4) Check that the image is successfully loaded.
+
+Run the command:
+
+```console
+docker images --filter reference=cft/cft
+```
+
+You should get an output like:
+```console
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+cft/cft             3.6                 9f24d3a77fbb        18 hours ago        519MB
+```
 
 ### How to build the Docker image
 
@@ -104,7 +135,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft           3.6                 6049bb6d4d17        3 days ago          622MB
+cft/cft             3.6                 9f24d3a77fbb        18 hours ago        519MB
 ```
 
 
