@@ -4,10 +4,6 @@
 #
 before_script:
 - eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
-- | # If we're on the master branch, tag the image as latest
-  if [[ "$CI_COMMIT_REF_NAME" == "master" ]]; then
-    eval export DOCKER_TAG="latest"
-  fi
 - echo Using DOCKER_TAG=$DOCKER_TAG
 
 stages:
@@ -55,3 +51,14 @@ push:
   script:
   - docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
   - docker push $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
+
+
+push-latest:
+  stage: push
+  only:
+    refs:
+    # Push the "latest" mutable Docker version only when tagging
+    - /^\d+.\d+.\d+\-?/
+  script:
+  - docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:latest
+  - docker push $REGISTRY_URL/$IMAGE_CFT:latest
