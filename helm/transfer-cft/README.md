@@ -166,9 +166,9 @@ For memory use, you should add the value related with the Catalog size and the o
 #### Catalog size
 Catalog Size | Disk space (MB) | Memory (Mi)
 --- | --- | ---
- 1000 | 512 | 250
- 10000 | 1000 | 500
- 100000 | 3000 | 2500
+ 1000 | 512 * cft.multinode.nodesNumber | 250
+ 10000 | 1000 * cft.multinode.nodesNumber | 500
+ 100000 | 3000 * cft.multinode.nodesNumber | 2500
 
 #### Transfers per hour
 transfers/h | CPU (m) | Memory (Mi)
