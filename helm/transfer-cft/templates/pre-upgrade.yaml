@@ -1,0 +1,59 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "transfer-cft.fullname" . }}-pre-upgrade
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+  annotations:
+    "helm.sh/hook": pre-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  backoffLimit: 2
+  template:
+    metadata:
+      name: {{ include "transfer-cft.fullname" . }}
+      labels:
+        {{- include "transfer-cft.labels" . | nindent 8 }}
+        helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    spec:
+      restartPolicy: Never
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 10 }}
+      containers:
+      - name: {{ include "transfer-cft.fullname" . }}-pre-upgrade
+        securityContext:
+          {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: "CFT_RESTAPI_HOST"
+          value: {{ include "transfer-cft.fullname" . | quote }}
+          # value: {{ include "transfer-cft.name" . }}-0
+        - name: "CFT_RESTAPI_PORT"
+          value: {{ include "cft.ports.restapi" . | quote }}
+        - name: "CFT_API_LOGIN"
+          value: {{ .Values.cft.apiLogin | quote }}
+        - name: "CFT_API_PASSWORD"
+          value: "/run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}/{{ .Values.cft.apiPassword.secretName }}"
+        command: ["sh", "-c", "$HOME/export_bases_job.sh"]
+        volumeMounts:
+        ## Secrets created by helm
+      {{- if and (.Values.cft.apiPassword.secretName) (or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile) }}
+        - name: {{ .Values.cft.apiPassword.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}
+      {{- end }}
+      volumes:
+      {{- if and (.Values.cft.apiPassword.secretName) (or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile) }}
+      - name: {{ .Values.cft.apiPassword.secretName }}
+        secret:
+          {{- if .Values.cft.apiPassword.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.apiPassword.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.apiPassword.existingSecretFile }}
+          {{- end }}
+          defaultMode: 0777
+      {{- end }}

@@ -15,6 +15,7 @@ FROM ubuntu:bionic
 RUN apt-get update && apt-get install -y \
         libncurses5 \
         curl \
+        jq \
         unzip \
         openssl \
         vim && \
@@ -30,8 +31,8 @@ ENV LANG=C.UTF-8
 
 #####
 ARG VERSION_BASE="3.6"
-ARG VERSION_UP="Install"
-ARG RELEASE_BASE="BN12807000"
+ARG VERSION_UP="SP1"
+ARG RELEASE_BASE="BN12987000"
 ARG PACKAGE="Transfer_CFT_${VERSION_BASE}_${VERSION_UP}_linux-x86-64_${RELEASE_BASE}.zip"
 ARG URL_BASE="https://delivery.server.com/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
@@ -78,7 +79,7 @@ EXPOSE 1767
 EXPOSE 1768
 
 # - ENV VARIABLES
-ENV CFT_FQDN             127.0.0.1
+ENV CFT_FQDN             ""
 ENV CFT_INSTANCE_ID      docker0_cft
 ENV CFT_INSTANCE_GROUP   dev.docker
 ENV CFT_CATALOG_SIZE     1000
@@ -99,7 +100,9 @@ ENV CFT_CG_PERIODICITY   ""
 ENV CFT_CG_AGENT_NAME    ""
 ENV CFT_JVM              1024
 ENV CFT_KEY              "cat /run/secrets/cft.key"
-ENV CFT_CFTDIRRUNTIME    /opt/axway/cft/runtime
+ENV CFT_CFTDIRRUNTIME    "/opt/axway/data/runtime"
+ENV CFT_EXPORTDIR        ".export"
+ENV CFT_EXPORTCMD        "/opt/axway/export_bases.sh"
 
 #####
 # COPYING USEFUL SCRIPTS

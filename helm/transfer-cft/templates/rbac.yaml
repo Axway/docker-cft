@@ -1,0 +1,75 @@
+{{- if .Values.rbac.create -}}
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: {{ template "transfer-cft.fullname" . }}-deploy
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: [""]
+    resources: ["events"]
+    verbs: ["list", "watch", "create", "update", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: {{ template "transfer-cft.fullname" . }}-deploy
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ template "transfer-cft.fullname" . }}-deploy
+subjects:
+  - name: {{ template "transfer-cft.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace | quote }}
+    kind: ServiceAccount
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: Role
+metadata:
+  name: {{ template "transfer-cft.fullname" . }}-read
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+rules:
+- apiGroups: 
+  - "" 
+  resources:
+  - secrets
+  - configmaps
+  verbs:
+  - list
+  - get
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: RoleBinding
+metadata:
+  name: {{ template "transfer-cft.fullname" . }}-read
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ template "transfer-cft.fullname" . }}-read
+subjects:
+  - name: {{ template "transfer-cft.serviceAccountName" . }}
+    namespace: {{ .Release.Namespace | quote }}
+    kind: ServiceAccount
+{{- end -}}

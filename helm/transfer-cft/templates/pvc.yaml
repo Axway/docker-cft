@@ -1,0 +1,32 @@
+{{- if and .Values.persistence.enabled (not .Values.persistence.cftData.existingClaim) -}}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ include "transfer-cft.fullname" . }}-claim
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+    {{- if .Values.persistence.keep }}
+    helm.sh/resource-policy: keep
+    {{- end }}
+spec:
+  accessModes:
+    - {{ .Values.persistence.cftData.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.cftData.size | quote }}
+{{- if .Values.persistence.cftData.storageClass }}
+  {{- if (eq "-" .Values.persistence.cftData.storageClass) }}
+  storageClassName: ""
+  {{- else }}
+  storageClassName: "{{ .Values.persistence.cftData.storageClass }}"
+  {{- end }}
+{{- else }}
+  {{- if and .Values.persistence.cftData.nfsPath .Values.persistence.cftData.nfsServer}}
+  storageClassName: {{ include "transfer-cft.fullname" . }}-nfs
+  {{- end }}
+{{- end }}
+{{- end -}}

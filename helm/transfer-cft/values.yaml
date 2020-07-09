@@ -1,0 +1,371 @@
+# Default values for transfer-cft.
+
+replicaCount: 1
+
+image:
+  repository: cft/cft
+  tag: 3.6-SP1
+    
+  ## Specify a imagePullPolicy
+  ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
+  ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
+  ##
+  pullPolicy: IfNotPresent
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  # pullSecrets:
+  #   - name: regcred
+
+## String to partially override cft.fullname template (will maintain the release name)
+nameOverride: ""
+
+## String to fully override cft.fullname template
+fullnameOverride: ""
+
+## Additional Labels
+## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/
+podLabels: {}
+
+## Configure resource requests and limits
+## ref: http://kubernetes.io/docs/user-guide/compute-resources/
+##
+resources:
+  ## If you do want to specify resources, uncomment the following
+  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  ## These values are for a Catalog with 1000 records and 1000 transfers/h
+  ## Please refer to the README.md for different usages' values.
+  requests:
+    cpu: 100m
+    memory: 280Mi
+
+livenessProbe:
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+readinessProbe:
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
+####################################
+# Security Parameters - replace false per true to restrict deployment
+# Remove {} and uncomment the values
+####################################
+serviceAccount:
+  create: false
+  # name: ~
+
+rbac:
+  create: false
+
+pspEnable: false
+
+## Annotations
+## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+podAnnotations: {}
+
+# Security Context for all containers in the pod.
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podsecuritycontext-v1-core
+podSecurityContext:
+  runAsUser: 1000
+  runAsGroup: 1000
+  fsGroup: 1000
+  # supplementalGroups: []
+  
+# Security Context for the Transfer CFT container specifically
+# https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#securitycontext-v1-core
+containerSecurityContext: 
+  # privileged: false
+  # allowPrivilegeEscalation: false
+  # readOnlyRootFilesystem: false
+  # capabilities:
+  #   drop:
+  #     - ALL
+  runAsNonRoot: true
+  runAsUser: 1000
+  runAsGroup: 1000
+
+## Name of the priority class to be used, priority class needs to be created beforehand
+## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+priorityClassName: ""
+
+####################################
+# Pod location inside the cluster
+####################################
+
+## Node labels for pod assignment
+## Ref: https://kubernetes.io/docs/user-guide/node-selection/
+##
+nodeSelector: {}
+
+## Tolerations for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+##
+tolerations: []
+
+## Affinity for pod assignment
+## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+##
+affinity: {}
+
+####################################
+# MAIN CFT CONFIGURATION
+####################################
+
+cft:
+  fqdn: "" # A fully qualified domain name (FQDN) or an  IP address used to connect to your Transfer CFT deployment.
+  instanceId: docker0_cft
+  instanceGroup: dev.docker
+  ## When changing catalogSize, the value of persistence.cftData.size
+  catalogSize: 1000
+  comSize: 1000
+  
+  licenseKey:
+    secretName: license-key
+    ## Should the secret file for the key be automatically created?
+    createSecretFile: false
+    ## Where is located the local file to use on creating the secret? - use relative path 
+    # localFile: {} # conf/cft.key
+    ## If not creating, which secret should be used?
+    # existingSecretFile: {} # secret name
+
+  multinode:
+    nodesNumber: 1
+
+  jvm: 1024
+
+  cg:
+    enabled: false
+    host: cg
+    port: 12553
+    policy: ""
+    periodicity: ""
+    ## For the next 2 parameters:
+    # - createSecretFile ==>> create secret file or not
+    # - secretName ==>> name of the file inside the secret
+    # - localFile ==>> where is located the local file - use relative path  
+    # - existingSecretFile ==>> used only if the secret already exist 
+    caCert:
+      secretName: cg-ca-cert
+      createSecretFile: false
+      # localFile: {} # conf/cg_ca.pem
+      # existingSecretFile: {} # secret name
+    sharedSecret:
+      secretName: cg-shared-secret
+      createSecretFile: false
+      # localFile: {} # conf/shared_secret
+      # existingSecretFile: {} # secret name 
+ 
+  ## CUSTOMIZATION
+
+  ## For the next 2 parameters:
+  # - createConfigMap ==>> create the config map file or not
+  # - fileName ==>> name of the file inside the config map
+  # - localFile ==>> where is located the local file - use relative path  
+  # - existingConfigMap ==>> used only if the secret already exist 
+  ## Script executed at container initialization
+  initScript:
+    fileName: init-sh
+    createConfigMap: false
+    # localFile: {} # conf/init.sh
+    # existingConfigMap: {} # configMap name 
+  ## Script executed at each container start-up
+  startScript:
+    fileName: startup-sh
+    createConfigMap: false
+    # localFile: {} # conf/startup.sh
+    # existingConfigMap: {} # configMap name 
+
+  ## Interval in seconds between two checks of Passport access management updates.
+  # passportPersistencyCheckInterval: 60
+
+  ## For the next parameters:
+  # - createSecretFile ==>> create secret file or not
+  # - secretName ==>> name of the file inside the secret
+  # - localFile ==>> where is located the local file - use relative path  
+  # - existingSecretFile ==>> used only if the secret already exist
+  
+  ## The next two values are used to  customize the Copilot server certificate
+  ## The certificate must refer to a PKCS12 certificate.
+  copilotCert:
+    secretName: copilot-cert
+    createSecretFile: false
+    # localFile: {} # conf/copilot.p12
+    # existingSecretFile: {} # secret name
+  copilotCertPassword:
+    secretName: copilot-cert-password
+    createSecretFile: false
+    # localFile: {} # conf/copilot.p12.pwd
+    # existingSecretFile: {} # secret name
+
+  ## Uncomment the next line to customize the Sentinel CA certificate.
+  sentinelCACert:
+    secretName: sentinel-ca-cert
+    createSecretFile: false
+    # localFile: {} # conf/sentinel_ca_cert.pem
+    # existingSecretFile: {} # secret name
+  
+  ## The next two values are used to customize the default XFBADM user.
+  xfbadmLogin: "admin"
+  xfbadmPassword:
+    secretName: xfbadm-password
+    createSecretFile: false
+    # localFile: {} # conf/xfbadm.pwd
+    # existingSecretFile: {} # secret name
+
+  ## The next two values are used to specify the REST API credentials required when upgrading the Transfer CFT service.
+  apiLogin: "admin"
+  apiPassword:
+    secretName: api-password
+    createSecretFile: false
+    # localFile: {} # conf/xfbadm.pwd
+    # existingSecretFile: {} # secret name
+
+####################################
+# STORAGE
+####################################
+
+### DEFAULT STORAGE (RUNTIME) ###
+
+## Enable persistence using Persistent Volume Claims
+## ref: http://kubernetes.io/docs/user-guide/persistent-volumes/
+##
+persistence:
+  enabled: true
+  
+  ## persistence.keep Keep persistent volume after helm delete
+  keep: false
+  
+  cftData:
+    ## CFT Runtime Persistent Volume Storage Class
+    ## If defined, storageClassName: <storageClass>
+    ## If set to "-", storageClassName: "", which disables dynamic provisioning
+    ## If undefined (the default) or set to null, no storageClassName spec is
+    ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
+    ##   GKE, AWS & OpenStack)
+    ##
+    # storageClass:
+    
+    ## CFT Runtime Persistent Volume AccessMode
+    ## When multinode is enabled this should be ReadWriteMany (the volume can be mounted
+    ## as read-write by many nodes). This mode is not supported by some of the 
+    ## default provisioners.
+    ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
+    accessMode: ReadWriteOnce
+    size: 2Gi
+
+    ## A manually managed Persistent Volume Claim
+    ## Requires persistence.enabled: true
+    ## If defined, PVC must be created manually before volume will be bound
+    ##
+    # existingClaim: 
+
+    ## NFS-specific information if NFS is to be used
+    # nfsPath:
+    # nfsServer:
+
+    ## Retain, Recycle or Delete.
+    ## Only NFS support recycling
+    ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaim-policy
+    # reclaimPolicy: 
+    
+    ## When using NFS, additional mount options can be set.
+    ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options
+    # mountOptions: []
+    ## If using NFS the recommended options are:
+    # mountOptions: 
+    #   - vers=4
+    #   - hard
+    #   - nointr
+    #   - lock
+    #   - local_lock=none
+    #   - cto
+    #   - async
+
+### SECRET MOUNTS ###
+
+## Additional CFT secret mounts
+# Defines additional mounts with secrets. Secrets must be manually created in the namespace.
+extraSecretMounts: []
+  # - name: cft-secrets
+  #   mountPath: /run/secrets/cft
+  #   secretName: cft-secrets
+  #   readOnly: true
+  #   subPath: ""
+  #   existingClaim: volume-claim
+
+### OTHER MOUNTS () ###
+
+## Additional CFT volume mounts
+## Defines additional volume mounts.
+extraVolumeMounts: []
+## Mapped volume where transfer files are located.
+## Uncomment these for enabling.
+  # - name: cft-app-data
+  #   mountPath: /mnt/cft-app-data
+  #   readOnly: false
+  #   existingClaim: volume-claim
+
+### ENVIRONMENT VARIABLES ###
+
+## Additional environment variables
+# Defines additional environment variables.
+extraEnv: []
+  # CFT_STATUS_SLEEP: "10"
+
+####################################
+# NETWORK
+####################################
+
+## Kubernetes configuration
+## For minikube, set this to NodePort, elsewhere use LoadBalancer
+##
+service:
+  type: LoadBalancer
+
+  ports:
+    - name: restapi
+      port: 1768
+      # targetPort: 1768
+      # protocol: TCP
+      # nodePort: 31768
+      # hostPort: 1768
+    - name: pesit
+      port: 1761
+      # targetPort: 1761
+      # protocol: TCP
+      # nodePort: 31761
+      # hostPort: 1761
+    - name: pesitssl
+      port: 1762
+      # targetPort: 1762
+      # protocol: TCP
+      # nodePort: 31762
+      # hostPort: 1762
+    - name: sftp
+      port: 1763
+      # targetPort: 1763
+      # protocol: TCP
+      # nodePort: 31763
+      # hostPort: 1763
+    - name: copilot
+      port: 1766
+      # targetPort: 1766
+      # protocol: TCP
+      # nodePort: 31766
+      # hostPort: 1766
+    - name: copilotcg
+      port: 1767
+      # targetPort: 1767
+      # protocol: TCP
+      # nodePort: 31767
+      # hostPort: 1767
+  
+  annotations: {}
+    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+    # external-dns.alpha.kubernetes.io/hostname: CFT_FQDN.

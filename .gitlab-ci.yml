@@ -15,15 +15,19 @@ stages:
 build:
   stage: build
   script:
-  - docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= .
+  - docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= docker
 
 test:
   stage: test
   script:
+  - cd compose
   - docker-compose -f docker-compose.test.yml down -v
   - docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
+  - cd ..
   after_script:
+  - cd compose
   - docker-compose -f docker-compose.test.yml down -v
+  - cd ..
 
 security:
   stage: security

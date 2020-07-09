@@ -1,0 +1,35 @@
+{{ if .Values.cft.initScript.createConfigMap }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.initScript.fileName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+data:
+  {{ .Values.cft.initScript.fileName | quote }} : |-
+{{ .Files.Get .Values.cft.initScript.localFile | indent 4}}
+{{ end -}}
+
+{{ if .Values.cft.startScript.createConfigMap }}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.startScript.fileName }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+data:
+  {{ .Values.cft.startScript.fileName | quote }} : |-
+{{ .Files.Get .Values.cft.startScript.localFile | indent 4}}
+{{ end -}}
+
+

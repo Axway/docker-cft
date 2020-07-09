@@ -4,6 +4,22 @@
 #
 # Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
 #
+set -Eeo pipefail
+
+get_value()
+{
+    in=$*
+
+    if [ -f "$in" ]; then
+        out=$(cat $in)
+    else
+        out=$($in)
+        if [ $? -ne 0 ]; then
+            out=$in
+        fi
+    fi
+    echo $out
+}
 
 echo "Creating runtime..."
 shopt -s nocasematch
@@ -13,13 +29,7 @@ $CFT_INSTALLDIR/home/bin/cftruntime $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME
 cd $CFT_CFTDIRRUNTIME
 . ./profile
 
-# INSTALLER PARAMETER
-CFTUTIL /m=2 uconfset id='cft.synchrony_dir', value=$CFT_INSTALLDIR
-
 # CFT IDENTITY
-if [ -n "$CFT_FQDN" ]; then
-    CFTUTIL /m=2 uconfset id='cft.full_hostname', value=$CFT_FQDN
-fi
 if [ -n "$CFT_INSTANCE_ID" ]; then
     CFTUTIL /m=2 uconfset id='cft.instance_id', value=$CFT_INSTANCE_ID
 else
@@ -27,6 +37,13 @@ else
 fi
 if [ -n "$CFT_INSTANCE_GROUP" ]; then
     CFTUTIL /m=2 uconfset id='cft.instance_group', value=$CFT_INSTANCE_GROUP
+fi
+isMulti=0
+if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
+    CFTUTIL /m=2 uconfset id='cft.multi_node.enable', value=$CFT_MULTINODE_ENABLE
+    CFTUTIL /m=2 uconfset id='cft.multi_node.nodes', value=$CFT_MULTINODE_NUMBER
+    CFTUTIL /m=2 uconfset id='cft.multi_node.max_per_host', value=$CFT_MULTINODE_NODE_PER_HOST
+    isMulti=1
 fi
 
 # ENCRIPTION KEY
@@ -63,9 +80,6 @@ if [ -n "$CFT_COPILOT_CG_PORT" ]; then
     CFTUTIL /m=2 uconfset id='copilot.general.ssl_serverport', value=$CFT_COPILOT_CG_PORT
 fi
 
-# MULTINODE
-CFTUTIL /m=2 uconfset id='cft.multi_node.enable,', value='No'
-
 # CG CONFIGURATION
 if [ -n "$CFT_CG_ENABLE" ]; then
     CFTUTIL /m=2 uconfset id='cg.enable', value=$CFT_CG_ENABLE
@@ -86,9 +100,7 @@ if [ -n "$CFT_CG_HOST" ]; then
 fi
 if [ -n "$CFT_CG_PORT" ]; then
     CFTUTIL /m=2 uconfset id='cg.port', value=$CFT_CG_PORT
-fi
-if [ -n "$CFT_CG_SHARED_SECRET" ]; then
-    CFTUTIL /m=2 uconfset id='cg.shared_secret', value=$($CFT_CG_SHARED_SECRET)
+    CFTUTIL /m=2 uconfset id='cg.restapi_port', value=$CFT_CG_PORT
 fi
 if [ -n "$CFT_CG_POLICY" ]; then
     CFTUTIL /m=2 uconfset id='cg.configuration_policy', value=$CFT_CG_POLICY
@@ -115,9 +127,9 @@ if [ -n "$CFT_JVM" ]; then
     CFTUTIL /m=2 uconfset id='secure_relay.ma.start_options', value='-Xmx'$CFT_JVM'm'
 fi
 CFTUTIL uconfset id='cft.unix.stop_timeout', value='6'
-#   JAVA
-java=`ls $HOME/Axway/Java/linux-x86/*/bin/java`
-CFTUTIL uconfset id='cft.jre.java_binary_path', value=\'$java\'
+#JAVA
+CFTUTIL uconfset id='cft.jre.java_binary_path', value=\'$JAVA_HOME/bin/java\'
+
 
 # UPDATE CONFIGURATION SAMPLE 
 if [ $isCG = 1 ]; then
@@ -148,16 +160,22 @@ fi
 # XFBADM
 if [ -n "$USER_XFBADM_LOGIN" ] && [ -n "$USER_XFBADM_PASSWORD" ]; then
     echo "Creating user $USER_XFBADM_LOGIN..."
-    xfbadmusr add -l $USER_XFBADM_LOGIN -p $($USER_XFBADM_PASSWORD) -u AUTO -g AUTO
+    xfbadmusr add -l $USER_XFBADM_LOGIN -p $(get_value $USER_XFBADM_PASSWORD) -u AUTO -g AUTO
     echo "User $USER_XFBADM_LOGIN created."
 else
-    xfb_pass=`head /dev/urandom | tr -dcs 'A-Za-z0-9' 'A-Za-z0-9' | head -c 8  ; echo`
-    xfbadmusr add -l admin -p $xfb_pass -u AUTO -g AUTO
     echo "------------------------"
-    echo "    UI user created "
-    echo " username: admin "
-    echo " pass: $xfb_pass "
-    echo "------------------------"
+    echo "WARNING: Password required to create an user. Not creating one!"
+fi
+
+#Enable nodes
+if [ $isMulti = 1 ]; then
+    echo "CFT Multinode"
+    echo "Enable nodes"
+    for ((i=0;  i<$CFT_MULTINODE_NUMBER; i++ ))
+    do
+        cft enable_node -n $i
+        echo "cft enable_node -n $i"
+    done
 fi
 
 cd

@@ -1,0 +1,416 @@
+{{- $fullName := include "transfer-cft.fullname" . -}}
+{{- $cftPesit := include "cft.ports.pesit" . -}}
+{{- $cftPesitSSL := include "cft.ports.pesitssl" . -}}
+{{- $cftSftp := include "cft.ports.sftp" . -}}
+{{- $cftCopilot := include "cft.ports.copilot" . -}}
+{{- $cftCopilotCG := include "cft.ports.copilotcg" . -}}
+{{- $cftRestapi := include "cft.ports.restapi" . -}}
+{{- $customPath := include "cft.custom_path" . -}}
+{{- $secretsPath := include "cft.secrets_path" . -}}
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "transfer-cft.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    {{- include "transfer-cft.labels" . | nindent 4 }}
+    {{- if .Values.podLabels }}
+    {{ toYaml .Values.podLabels }}
+    {{- end }}
+spec:
+  serviceName: {{ include "transfer-cft.fullname" . }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "transfer-cft.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "transfer-cft.selectorLabels" . | nindent 8 }}
+      {{- if .Values.podAnnotations }}
+      annotations:
+        {{- toYaml .Values.podAnnotations | nindent 8 }}
+      {{- end }}
+    spec:
+    {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "transfer-cft.serviceAccountName" . }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName | quote }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: {{ .Chart.Name }}
+        securityContext:
+          {{- toYaml .Values.containerSecurityContext | nindent 12 }}
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+          {{- if $cftPesit }}
+          - name: pesit
+            containerPort: {{ $cftPesit }}
+            protocol: TCP
+          {{- end }}
+          {{- if $cftPesitSSL }}
+          - name: pesitssl
+            containerPort: {{ $cftPesitSSL }}
+            protocol: TCP
+          {{- end }}
+          {{- if $cftSftp }}
+          - name: sftp
+            containerPort: {{ $cftSftp }}
+            protocol: TCP
+          {{- end }}
+          {{- if $cftCopilot }}
+          - name: copilot
+            containerPort: {{ $cftCopilot }}
+            protocol: TCP
+          {{- end }}
+          {{- if $cftCopilotCG }}
+          - name: copilotcg
+            containerPort: {{ $cftCopilotCG }}
+            protocol: TCP
+          {{- end }}
+          {{- if $cftRestapi }}
+          - name: restapi
+            containerPort: {{ $cftRestapi }}
+            protocol: TCP
+          {{- end }}
+        env:
+          {{- if $cftPesit }}
+          - name: "CFT_PESIT_PORT"
+            value: {{ $cftPesit | quote }}
+          {{- end }}
+          {{- if $cftPesitSSL }}
+          - name: "CFT_PESITSSL_PORT"
+            value: {{ $cftPesitSSL | quote }}
+          {{- end }}
+          {{- if $cftSftp }}
+          - name: "CFT_SFTP_PORT"
+            value: {{ $cftSftp | quote }}
+          {{- end }}
+          - name: "CFT_COMS_PORT"
+            value: "1765"
+          {{- if $cftCopilot }}
+          - name: "CFT_COPILOT_PORT"
+            value: {{ $cftCopilot | quote }}
+          {{- end }}
+          {{- if $cftCopilotCG }}
+          - name: "CFT_COPILOT_CG_PORT"
+            value: {{ $cftCopilotCG | quote }}
+          {{- end }}
+          {{- if $cftRestapi }}
+          - name: "CFT_RESTAPI_PORT"
+            value: {{ $cftRestapi | quote }}
+          {{- end }}
+        {{- with .Values.cft }}
+          - name: "CFT_FQDN"
+            value: {{ .fqdn | quote }}
+          - name: "CFT_INSTANCE_ID"
+            value: {{ .instanceId | quote }}
+          - name: "CFT_INSTANCE_GROUP"
+            value: {{ .instanceGroup | quote }}
+          {{- if and (.licenseKey.secretName) (or .licenseKey.createSecretFile .licenseKey.existingSecretFile) }}
+          - name: "CFT_KEY"
+            value: "/run/secrets/cft/{{ .licenseKey.secretName }}/{{ .licenseKey.secretName }}"
+          {{- end }}
+          - name: "CFT_CATALOG_SIZE"
+            value: {{ .catalogSize | quote }}
+          - name: "CFT_COM_SIZE"
+            value: {{ .comSize | quote }}
+          - name: "CFT_MULTINODE_ENABLE"
+            value: "YES"
+          - name: "CFT_MULTINODE_NUMBER"
+            value: {{ .multinode.nodesNumber | quote }}
+          - name: "CFT_MULTINODE_NODE_PER_HOST"
+            value: "1"
+          {{- if .cg.enabled }}
+          - name: "CFT_CG_ENABLE"
+            value: "YES"
+          - name: "CFT_CG_HOST"
+            value: {{ .cg.host | quote }}
+          - name: "CFT_CG_PORT"
+            value: {{ .cg.port | quote }}
+          - name: "CFT_CG_POLICY"
+            value: {{ .cg.policy | quote }}
+          - name: "CFT_CG_PERIODICITY"
+            value: {{ .cg.periodicity | quote }}
+          {{- if and (.cg.caCert.secretName) (or .cg.caCert.createSecretFile .cg.caCert.existingSecretFile) }}
+          - name: "USER_CG_CA_CERT"
+            value: "/run/secrets/cft/{{ .cg.caCert.secretName }}/{{ .cg.caCert.secretName }}"
+          {{- end }}
+          {{- if and (.cg.sharedSecret.secretName) (or .cg.sharedSecret.createSecretFile .cg.sharedSecret.existingSecretFile) }}
+          - name: "CFT_CG_SHARED_SECRET"
+            value: "/run/secrets/cft/{{ .cg.sharedSecret.secretName }}/{{ .cg.sharedSecret.secretName }}"
+          {{- end }}
+          {{- else }}
+          - name: "CFT_CG_ENABLE"
+            value: "NO"
+          {{- end }}
+          {{- if and (.copilotCert.secretName) (or .copilotCert.createSecretFile .copilotCert.existingSecretFile) }}
+          - name: "USER_COPILOT_CERT"
+            value: "/run/secrets/cft/{{ .copilotCert.secretName }}/{{ .copilotCert.secretName }}"
+          {{- end }}
+          {{- if and (.copilotCertPassword.secretName) (or .copilotCertPassword.createSecretFile .copilotCertPassword.existingSecretFile) }}
+          - name: "USER_COPILOT_CERT_PASSWORD"
+            value: "/run/secrets/cft/{{ .copilotCertPassword.secretName }}/{{ .copilotCertPassword.secretName }}"
+          {{- end }}
+          {{- if and (.sentinelCACert.secretName) (or .sentinelCACert.createSecretFile .sentinelCACert.existingSecretFile) }}
+          - name: "USER_SENTINEL_CA_CERT"
+            value: "/run/secrets/cft/{{ .sentinelCACert.secretName }}/{{ .sentinelCACert.secretName }}"
+          {{- end }}
+          {{- if .passportPersistencyCheckInterval }}
+          - name: "CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL"
+            value: {{ .passportPersistencyCheckInterval | quote }}
+          {{- end }}
+          {{- if .xfbadmLogin }}
+          - name: "USER_XFBADM_LOGIN"
+            value: {{ .xfbadmLogin | quote }}
+          {{- end }}
+          {{- if and (.xfbadmPassword.secretName) (or .xfbadmPassword.createSecretFile .xfbadmPassword.existingSecretFile) }}
+          - name: "USER_XFBADM_PASSWORD"
+            value: "/run/secrets/cft/{{ .xfbadmPassword.secretName }}/{{ .xfbadmPassword.secretName }}"
+          {{- end }}
+          {{- if .jvm }}
+          - name: "CFT_JVM"
+            value: {{ .jvm | quote }}
+          {{- end }}
+          {{- if and (.initScript.fileName) (or .initScript.createConfigMap .initScript.existingConfigMap) }}
+          - name: "USER_SCRIPT_INIT"
+            value: "/mnt/custom/{{ .initScript.fileName }}/{{ .initScript.fileName }}"
+          {{- end }}
+          {{- if and (.startScript.fileName) (or .startScript.createConfigMap .startScript.existingConfigMap) }}
+          - name: "USER_SCRIPT_START"
+            value: "/mnt/custom/{{ .startScript.fileName }}/{{ .startScript.fileName }}"
+          {{- end }}
+        {{- end }}
+          - name: "CFT_CFTDIRRUNTIME"
+            value: "/opt/axway/data/runtime"
+          - name: "CFT_KUBERNETES_SERVICE"
+            value: {{ include "transfer-cft.fullname" . | upper }}
+        {{- if .Values.extraEnv }}
+          {{- range $key, $value := .Values.extraEnv }}
+          - name: {{ $key }}
+            value: {{ $value | quote }}
+          {{- end }}
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: restapi
+            scheme: HTTPS
+          periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+          successThreshold: {{ .Values.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+        {{- if .Values.livenessProbe.timeoutSeconds }}
+          timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+        {{- end }}
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: restapi
+            scheme: HTTPS
+          periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+          successThreshold: {{ .Values.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+        {{- if .Values.readinessProbe.timeoutSeconds }}
+          timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+        {{- end }}
+
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+
+        volumeMounts:
+        - name: {{ include "transfer-cft.fullname" . }}-volume
+          mountPath: /opt/axway/data
+        ## Secrets
+      {{- if and (.Values.cft.licenseKey.secretName) (or .Values.cft.licenseKey.createSecretFile .Values.cft.licenseKey.existingSecretFile) }}
+        - name: {{ .Values.cft.licenseKey.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.licenseKey.secretName }}
+      {{- end }}
+      {{- if and (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
+        - name: {{ .Values.cft.cg.caCert.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.cg.caCert.secretName }}
+      {{- end }}
+      {{- if and (.Values.cft.cg.sharedSecret.secretName) (or .Values.cft.cg.sharedSecret.createSecretFile .Values.cft.cg.sharedSecret.existingSecretFile) }}
+        - name: {{ .Values.cft.cg.sharedSecret.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.cg.sharedSecret.secretName }}
+      {{- end }}
+      {{- if and (.Values.cft.copilotCert.secretName) (or .Values.cft.copilotCert.createSecretFile .Values.cft.copilotCert.existingSecretFile) }}
+        - name: {{ .Values.cft.copilotCert.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.copilotCert.secretName }}
+      {{- end }}
+      {{- if and (.Values.cft.copilotCertPassword.secretName) (or .Values.cft.copilotCertPassword.createSecretFile .Values.cft.copilotCertPassword.existingSecretFile) }}
+        - name: {{ .Values.cft.copilotCertPassword.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.copilotCertPassword.secretName }}
+      {{- end }}
+      {{- if and (.Values.cft.xfbadmPassword.secretName) (or .Values.cft.xfbadmPassword.createSecretFile .Values.cft.xfbadmPassword.existingSecretFile) }}
+        - name: {{ .Values.cft.xfbadmPassword.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.xfbadmPassword.secretName }}
+      {{- end }}
+      {{- if and (.Values.cft.sentinelCACert.secretName) (or .Values.cft.sentinelCACert.createSecretFile .Values.cft.sentinelCACert.existingSecretFile) }}
+        - name: {{ .Values.cft.sentinelCACert.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.sentinelCACert.secretName }}
+      {{- end }}
+        ## ConfigMaps
+      {{- if and (.Values.cft.initScript.fileName) (or .Values.cft.initScript.createConfigMap .Values.cft.initScript.existingConfigMap) }}
+        - name: {{ .Values.cft.initScript.fileName }}
+          mountPath: "/mnt/custom/{{ .Values.cft.initScript.fileName }}"
+      {{- end }}
+      {{- if and (.Values.cft.startScript.fileName) (or .Values.cft.startScript.createConfigMap .Values.cft.startScript.existingConfigMap) }}
+        - name: {{ .Values.cft.startScript.fileName }}
+          mountPath: "/mnt/custom/{{ .Values.cft.startScript.fileName }}"
+      {{- end }}
+        ## Other secrets created by user
+      {{- range .Values.extraSecretMounts }}
+        - name: {{ .name }}
+          mountPath: {{ .mountPath }}
+          readOnly: {{ .readOnly }}
+          subPath: {{ .subPath | default "" }}
+      {{- end }}
+        ## Other volumes
+      {{- range .Values.extraVolumeMounts }}
+        - name: {{ .name }}
+          mountPath: {{ .mountPath }}
+          subPath: {{ .subPath | default "" }}
+          readOnly: {{ .readOnly }}
+      {{- end }}
+
+      volumes:
+    {{- if and .Values.persistence.enabled }}
+      - name: {{ include "transfer-cft.fullname" . }}-volume
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.cftData.existingClaim | default (printf "%s-claim" (include "transfer-cft.fullname" .))}}
+    {{- else }}
+      - name: {{ include "transfer-cft.fullname" . }}-volume
+        emptyDir: {}
+    {{- end -}}
+      {{- if and (.Values.cft.licenseKey.secretName) (or .Values.cft.licenseKey.createSecretFile .Values.cft.licenseKey.existingSecretFile) }}
+      - name: {{ .Values.cft.licenseKey.secretName }}
+        secret:
+          {{ if .Values.cft.licenseKey.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.licenseKey.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.licenseKey.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+      {{- if and (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
+      - name: {{ .Values.cft.cg.caCert.secretName }}
+        secret:
+          {{ if .Values.cft.cg.caCert.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.cg.caCert.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.cg.caCert.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+      {{- if and (.Values.cft.cg.sharedSecret.secretName) (or .Values.cft.cg.sharedSecret.createSecretFile .Values.cft.cg.sharedSecret.existingSecretFile) }}
+      - name: {{ .Values.cft.cg.sharedSecret.secretName }}
+        secret:
+          {{ if .Values.cft.cg.sharedSecret.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.cg.sharedSecret.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.cg.sharedSecret.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+      {{- if and (.Values.cft.copilotCert.secretName) (or .Values.cft.copilotCert.createSecretFile .Values.cft.copilotCert.existingSecretFile) }}
+      - name: {{ .Values.cft.copilotCert.secretName }}
+        secret:
+          {{ if .Values.cft.copilotCert.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.copilotCert.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.copilotCert.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+     {{- if and (.Values.cft.copilotCertPassword.secretName) (or .Values.cft.copilotCertPassword.createSecretFile .Values.cft.copilotCertPassword.existingSecretFile) }}
+      - name: {{ .Values.cft.copilotCertPassword.secretName }}
+        secret:
+          {{ if .Values.cft.copilotCertPassword.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.copilotCertPassword.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.copilotCertPassword.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+      {{- if and (.Values.cft.xfbadmPassword.secretName) (or .Values.cft.xfbadmPassword.createSecretFile .Values.cft.xfbadmPassword.existingSecretFile) }}
+      - name: {{ .Values.cft.xfbadmPassword.secretName }}
+        secret:
+          {{ if .Values.cft.xfbadmPassword.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.xfbadmPassword.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.xfbadmPassword.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+      {{- if and (.Values.cft.sentinelCACert.secretName) (or .Values.cft.sentinelCACert.createSecretFile .Values.cft.sentinelCACert.existingSecretFile) }}
+      - name: {{ .Values.cft.sentinelCACert.secretName }}
+        secret:
+          {{ if .Values.cft.sentinelCACert.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.sentinelCACert.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.sentinelCACert.existingSecretFile }}
+          {{ end }}
+          defaultMode: 0777 
+      {{- end }}
+      {{- if and (.Values.cft.initScript.fileName) (or .Values.cft.initScript.createConfigMap .Values.cft.initScript.existingConfigMap) }}
+      - name: {{ .Values.cft.initScript.fileName }}
+        configMap:
+          {{ if .Values.cft.initScript.createConfigMap }}
+          name: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.initScript.fileName }}
+          {{ else }}
+          name: {{ .Values.cft.initScript.existingConfigMap }}
+          {{ end }}
+          defaultMode: 0777
+      {{- end }}
+      {{- if and (.Values.cft.startScript.fileName) (or .Values.cft.startScript.createConfigMap .Values.cft.startScript.existingConfigMap) }}
+      - name: {{ .Values.cft.startScript.fileName }}
+        configMap:
+          {{ if .Values.cft.startScript.createConfigMap }}
+          name: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.startScript.fileName }}
+          {{ else }}
+          name: {{ .Values.cft.startScript.existingConfigMap }}
+          {{ end }}
+          defaultMode: 0777
+      {{- end }}
+    {{- range .Values.extraSecretMounts }}
+      - name: {{ .name }}
+        secret:
+          secretName: {{ .secretName }}
+          defaultMode: {{ .defaultMode }}
+    {{- end }}
+    {{- range .Values.extraVolumeMounts }}
+      - name: {{ .name }}
+        {{- if .hostPath }}
+        hostPath:
+          path: {{ .hostPath }}
+        {{- else }}
+        persistentVolumeClaim:
+          claimName: {{ .existingClaim }}
+        {{- end }}
+    {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}

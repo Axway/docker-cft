@@ -6,24 +6,108 @@
 #
 set -euo pipefail
 
-sleep 4
-nc -z cft 1768
+sleep 5
+
+# Test Copilot port
+nc -z cft $CFT_COPILOT_PORT
 if [ "$?" -ne "0" ]; then
-  echo "Fail to connect to cft"
+  echo "ERROR: failed to connect to cft:$CFT_COPILOT_PORT"
   exit 1
 fi
-echo "Successful connection to cft"
+echo "Successful connection to cft:$CFT_COPILOT_PORT"
 
-curl http://$CFT_FQDN:1766/wsdl > /dev/null
+# Retrive WSDL
+curl http://$CFT_FQDN:$CFT_COPILOT_PORT/wsdl > /dev/null
 if [ "$?" -ne "0" ]; then
-  echo "Fail to access webservice"
+  echo "ERROR: failed to access webservice"
   exit 1
 fi
 echo "Successful access to webservice"
 
-curl -k https://$CFT_FQDN:1768/cft/api/v1/api-docs/service.json > /dev/null
+# Test REST API port
+nc -z cft $CFT_RESTAPI_PORT
 if [ "$?" -ne "0" ]; then
-  echo "Fail to access rest api"
+  echo "ERROR: failed to connect to cft:$CFT_RESTAPI_PORT"
+  exit 1
+fi
+echo "Successful connection to cft:$CFT_RESTAPI_PORT"
+
+# Retrieve REST API doc
+curl -k https://$CFT_FQDN:$CFT_RESTAPI_PORT/cft/api/v1/api-docs/service.json > /dev/null
+if [ "$?" -ne "0" ]; then
+  echo "ERROR: failed to access rest api"
   exit 1
 fi
 echo "Successful access to rest api"
+
+# Test liveness
+cmd="curl -k -s -w %{http_code} https://$CFT_FQDN:$CFT_RESTAPI_PORT/healthz"
+out=$($cmd)
+rc=$?
+if [ "$rc" -ne "0" ]; then
+    echo "ERROR: curl GET /healthz failed, rc=$rc, output=$out"
+    exit 1
+elif [ "$out" != "200" ]; then
+    echo "ERROR: GET /healthz returned $out"
+    exit 1
+else
+    echo "INFO: REST API server is up"
+fi
+
+# Test readiness
+cmd="curl -k -s -w %{http_code} https://$CFT_FQDN:$CFT_RESTAPI_PORT/healthz?component=cft"
+out=$($cmd)
+rc=$?
+if [ "$rc" -ne "0" ]; then
+    echo "ERROR: curl GET /healthz?component=cft failed, rc=$rc, output=$out"
+    exit 1
+elif [ "$out" != "200" ]; then
+    echo "ERROR: GET /healthz?component=cft returned $out"
+    exit 1
+else
+    echo "INFO: Transfer CFT server is up"
+fi
+
+# export databases
+cmd="curl -k -s -w %{http_code} -u $USER_XFBADM_LOGIN:$USER_XFBADM_PASSWORD -X PUT https://$CFT_FQDN:$CFT_RESTAPI_PORT/cft/api/v1/cft/container/export"
+out=$($cmd)
+rc=$?
+if [ "$rc" -ne "0" ]; then
+    echo "ERROR: curl PUT /cft/container/export failed, rc=$rc, output=$out"
+    exit 1
+elif [ "$out" != "200" ]; then
+    echo "ERROR: PUT /cft/container/export returned $out"
+    exit 1
+else
+    echo "INFO: databases are successfully exported"
+fi
+
+# Test readiness, expect 503
+cmd="curl -k -s -w %{http_code} https://$CFT_FQDN:$CFT_RESTAPI_PORT/healthz?component=cft"
+out=$($cmd)
+rc=$?
+if [ "$rc" -ne "0" ]; then
+    echo "ERROR: curl GET /healthz?component=cft failed, rc=$rc, output=$out"
+    exit 1
+elif [ "$out" != "503" ]; then
+    echo "ERROR: GET /healthz?component=cft returned $out, 503 expected"
+    exit 1
+else
+    echo "INFO: Transfer CFT server is down"
+fi
+
+# Test liveness
+cmd="curl -k -s -w %{http_code} https://$CFT_FQDN:$CFT_RESTAPI_PORT/healthz"
+out=$($cmd)
+rc=$?
+if [ "$rc" -ne "0" ]; then
+    echo "ERROR: curl GET /healthz failed, rc=$rc, output=$out"
+    exit 1
+elif [ "$out" != "200" ]; then
+    echo "ERROR: GET /healthz returned $out"
+    exit 1
+else
+    echo "INFO: REST API server is up"
+fi
+
+exit 0

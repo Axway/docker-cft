@@ -1,0 +1,151 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+#
+## AMPLIFY Transfer CFT 3.6 Docker-compose example
+#
+# Building with:
+# docker-compose -f docker-compose-multinode.yml up --scale cft=2  -d
+
+version: "3.5"
+
+services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - cft
+    ports:
+      # PESIT + PESITSSL:
+      - "1761-1762:1761-1762"
+      # SFTP:
+      - "1763"
+      # CFT UI:
+      - "1766:1766"
+      # CG communication port: Only expose if CG not in the same network:
+      - "1767:1767"
+      # REST API:
+      - "1768:1768"
+  cft:
+    build: ../docker
+    image: cft/cft:3.6-SP1
+
+    environment:
+      CFT_FQDN:                    cft
+      CFT_INSTANCE_ID:             docker0_cft
+      CFT_INSTANCE_GROUP:          dev.docker
+      CFT_CATALOG_SIZE:            1000
+      CFT_COM_SIZE:                1000
+      CFT_KEY:                     "cat /run/secrets/cft.key"
+      CFT_CFTDIRRUNTIME:           "/opt/axway/data/runtime"
+      CFT_PESIT_PORT:              1761
+      CFT_PESITSSL_PORT:           1762
+      CFT_SFTP_PORT:               1763
+      CFT_COMS_PORT:               1765
+      CFT_COPILOT_PORT:            1766
+      CFT_COPILOT_CG_PORT:         1767
+      CFT_RESTAPI_PORT:            1768
+      CFT_CG_ENABLE:               "NO"
+      CFT_CG_HOST:                 cg
+      CFT_CG_PORT:                 12553
+      CFT_CG_POLICY:               ""
+      CFT_CG_PERIODICITY:          ""
+      CFT_CG_AGENT_NAME:           ""
+      # Uncomment the next line to customize the CG CA certificate.
+      #USER_CG_CA_CERT:             "/run/secrets/cg_ca_cert.pem"
+      # Uncomment the next line to customize the CG shared secret.
+      #CFT_CG_SHARED_SECRET:        "cat /run/secrets/shared_secret"
+      CFT_MULTINODE_ENABLE:        "YES"
+      CFT_MULTINODE_NUMBER:        2
+      CFT_MULTINODE_NODE_PER_HOST: 1
+      CFT_JVM:                     1024
+      CFT_KEY:                     "cat /run/secrets/cft.key"
+      CFT_CFTDIRRUNTIME:           "./data/runtime"
+      # Script executed at container initialization
+      #USER_SCRIPT_INIT:            "/opt/app/custom/init.sh"
+      # Script executed at each container start-up
+      #USER_SCRIPT_START:           "/opt/app/custom/startup.sh"
+      # Uncomment the next line to customize the CG CA certificate.
+      USER_CG_CA_CERT:             "/opt/app/custom/cg_ca_cert.pem"
+      # Uncomment the next line to customize the Sentinel CA certificate.
+      #USER_SENTINEL_CA_CERT:       "/opt/app/custom/sentinel_ca_cert.pem"
+      # Uncomment the next two lines to customize the Copilot server certificate. See also secrets sections.
+      # The certificate must refer to a PKCS12 certificate.
+      #USER_COPILOT_CERT:           "/run/secrets/copilot.p12"
+      #USER_COPILOT_CERT_PASSWORD:  "cat /run/secrets/copilot_p12.pwd"
+      # Uncomment the next two lines to customize the default XFBADM user. See also secrets sections.
+      #USER_XFBADM_LOGIN:           "admin"
+      #USER_XFBADM_PASSWORD:        "cat /run/secrets/xfbadm.pwd"
+      # Uncomment the next line to customize the Sentinel CA certificate.
+      #USER_SENTINEL_CA_CERT:       "/run/secrets/sentinel_ca_cert.pem"
+      # Interval in seconds between two checks of Passport access management updates.
+      #CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL: 60
+      # Script executed at container initialization
+      #USER_SCRIPT_INIT:            "/opt/app/custom/init.sh"
+      # Script executed at each container start-up
+      #USER_SCRIPT_START:           "/opt/app/custom/startup.sh"
+
+    expose:
+      # PESIT + PESITSSL:
+      - "1761-1762"
+      # SFTP:
+      - "1763"
+      # CFT UI:
+      - "1766"
+      # CG communication port: Only expose if CG not in the same network:
+      - "1767"
+      # REST API:
+      - "1768"
+
+    secrets:
+    - cft.key
+    # Uncomment this for specifying the Flow Manager/Central Governance CA certificate.
+    #- cg_ca_cert.pem
+    # Uncomment this for specifying the Flow Manager/Central Governance shared secret.
+    #- shared_secret
+    # Uncomment these 2 lines for customizing the Copilot server certificate.
+    #- copilot_p12
+    #- copilot_p12.pwd
+    # Uncomment this for customizing the default XFBADM user.
+    #- xfbadm.pwd
+    # Uncomment this for customizing the Sentinel CA certificate.
+    #- sentinel_ca_cert.pem
+
+    volumes:
+    # Docker local volume where the runtime is stored
+    - cft_data:/opt/axway/data
+    # Localhost mapped volume where customization files are located.
+    # Uncomment this for enabling customization.
+    #- ./custom:/opt/app/custom:ro
+
+secrets:
+  cft.key:
+    file: ./conf/license-key
+  # File containig the CA certificate of Flow Manager or Central Governance.
+  # Uncomment the next two lines to specify the CA certificate.
+  #cg_ca_cert.pem:
+  #    file: ./conf/cg_ca_cert.pem
+  # File containig the shared secret to register to Flow Manager or Central Governance.
+  # Uncomment the next two lines to specify the shared secret.
+  #shared_secret:
+  #    file: ./conf/shared_secret
+  # Files containig the Copilot server certificate and password.
+  # Uncomment the next four lines to customize the Copilot server certificate.
+  #copilot_p12:
+  #    file: ./conf/copilot_p12
+  #copilot_p12.pwd:
+  #    file: ./conf/copilot_p12.pwd
+  # File containing the XFBADM user's password.
+  # Uncomment the next two lines to customize the default XFBADM user.
+  #xfbadm.pwd:
+  #    file: ./conf/xfbadm.pwd
+  # File containig the CA certificate of Sentinel.
+  # Uncomment the next two lines to specify the CA certificate.
+  #sentinel_ca_cert.pem:
+  #    file: ./conf/sentinel_ca_cert.pem
+
+volumes:
+  cft_data:
+    driver: local
+
