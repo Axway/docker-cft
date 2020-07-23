@@ -1,6 +1,6 @@
 # AMPLIFY Transfer CFT Docker
 
-AMPLIFY Transfer CFT 3.6 Docker image
+AMPLIFY Transfer CFT 3.6-SP1 Docker image
 
 ## Before you begin
 
@@ -52,7 +52,7 @@ CFT_CFTDIRRUNTIME          |  \<string>   |  Location of the Transfer CFT runtim
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
-The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
+The Dockerfile is compatible with Transfer CFT 3.6-SP1 version and higher.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64.
 
@@ -60,14 +60,14 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 
 From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
 ```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_Install_linux-x86-64_BN12603000.zip -t cft/cft:3.6 .
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_SP1_linux-x86-64_BN12987000.zip -t cft/cft:3.6-SP1 .
 ```
 
 ##### 1.2. Build using a Transfer CFT package stored on your own HTTP server
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
 
-The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
+The Dockerfile is compatible with Transfer CFT 3.6-SP1 version and higher.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
@@ -76,7 +76,7 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.6 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.6-SP1 .
 ```
 *Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
@@ -92,39 +92,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft           3.6                 6049bb6d4d17        3 days ago          622MB
-```
-
-### Connecting to interfaces
-
-When you start the Transfer CFT container for the first time, a user/password pair is created, which you can find in the container logs.
-
-The information displays as:
-
-```
-    ------------------------
-        UI user created 
-    username: admin 
-    pass: PASS
-    ------------------------
-```
-
-Access the Transfer CFT REST API documentation by connecting to: 
-
-```
-https://CFT_FQDN:1768/cft/api/v1/ui/index.html
-```
-
-Access the Transfer CFT UI by connecting to:
-
-```
-https://CFT_FQDN:1768/cft/ui
-```
-
-Access the former Transfer CFT UI (Copilot UI) by connecting to:
-
-```
-http://CFT_FQDN:1766/index.html
+cft/cft             3.6-SP1             d9d764b02cc8        18 hours ago        522MB
 ```
 
 ## Copyright

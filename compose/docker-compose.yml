@@ -11,7 +11,7 @@ version: "3.5"
 
 services:
   cft:
-    build: ../docker
+    # build: ../docker
     image: cft/cft:3.6-SP1
     hostname: docker0
 
@@ -47,7 +47,7 @@ services:
       # The certificate must refer to a PKCS12 certificate.
       #USER_COPILOT_CERT:           "/run/secrets/copilot.p12"
       #USER_COPILOT_CERT_PASSWORD:  "cat /run/secrets/copilot_p12.pwd"
-      # Uncomment the next two lines to customize the default XFBADM user. See also secrets sections.
+      # Uncomment the next two lines to create a XFBADM user. See also secrets sections.
       #USER_XFBADM_LOGIN:           "admin"
       #USER_XFBADM_PASSWORD:        "cat /run/secrets/xfbadm.pwd"
       # Uncomment the next line to customize the Sentinel CA certificate.

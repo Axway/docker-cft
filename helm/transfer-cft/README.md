@@ -124,7 +124,7 @@ Parameter | Description | Default
 `persistence.enabled` | enable config persistence using PVC | `true`
 `persistence.keep` | keep persistent volume after helm delete | `false`
 `persistence.cftData.storageClass` | Persistent Volume Claim Storage Class for config volume | `nil`
-`persistence.cftData.accessMode` | Persistent Volume Claim Access Mode for config volume | `ReadWriteOnce`
+`persistence.cftData.accessMode` | Persistent Volume Claim Access Mode for config volume. Should be `ReadWriteMany` if `replicaCount` > 1 | `ReadWriteOnce`
 `persistence.cftData.size` | Persistent Volume Claim Storage Request for config volume (see information on resources to chose the good value for your application) | `2Gi`
 `persistence.cftData.existingClaim` | manually managed Persistent Volume Claim | `nil`
 `persistence.cftData.nfsPath` | basepath of the mount point to be used | `nil`

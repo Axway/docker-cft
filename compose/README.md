@@ -1,6 +1,6 @@
 # AMPLIFY Transfer CFT Docker
 
-AMPLIFY Transfer CFT 3.6 Docker image
+AMPLIFY Transfer CFT Docker image
 
 ## Before you begin
 
@@ -16,6 +16,8 @@ If needed, see [Get started with Docker](https://docs.docker.com/get-started/) f
 
 The docker-compose.yml describes the Transfer CFT service. This file allows management of the Transfer CFT service.
 The docker-compose-multinode.yml describes the Transfer CFT service in a multinode environment. This file allows management of an scalable Transfer CFT service.
+
+You can use the ../docker/Dockerfile to build your own Transfer CFT image or use the official Axway Transfer CFT Docker image.
 
 ### docker-compose parameters
 
@@ -54,8 +56,37 @@ USER_CG_CA_CERT            |  \<string>   |  Central Governance root CA certific
 USER_SENTINEL_CA_CERT      |  \<string>   |  Sentinel CA certificate.
 USER_COPILOT_CERT          |  \<string>   |  Copilot server certificate. It must refer to a PKCS12 certificate.
 USER_COPILOT_CERT_PASSWORD |  \<string>   |  A command that returns the Copilot server certificate password.
-USER_XFBADM_LOGIN          |  \<string>   |  The XFBADM user login, which is created when you create the container.
+USER_XFBADM_LOGIN          |  \<string>   |  Login of the xfbadm user to create at container creation. If both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
 USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM user's password.
+
+### How to use the official Transfer CFT Docker image
+
+1) Download the Transfer CFT DockerImage package from [Axway Support](https://support.axway.com/).
+
+2) Unzip the downloaded package.
+
+3) Load the image.
+
+From the folder where the transfer_cft_3.6_SP1.tar.gz is located, run the command:
+
+```console
+docker image load -i transfer_cft_3.6_SP1.tar.gz
+```
+
+4) Check that the image is successfully loaded.
+
+Run the command:
+
+```console
+docker images --filter reference=cft/cft
+```
+
+You should get an output like:
+```console
+
+REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
+cft/cft             3.6-SP1             d9d764b02cc8        18 hours ago        522MB
+```
 
 ### How to manage the Transfer CFT service from your docker-compose.yml file
 
@@ -64,6 +95,8 @@ You can use docker-compose to automate building container images, as well as app
 #### 1. Customization
 
 Before you start, customize the parameters in the docker-compose.yml.
+
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.6-SP1".
 
 If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN variable to reflect the actual host machine’s address.  
 **ATTENTION:** You cannot connect to an interface if this parameter is not correct.
@@ -147,66 +180,36 @@ docker-compose stop
 
 #### 8. Upgrade Transfer CFT
 
-   It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel. 
+It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
+
+You need first to load a new Transfer CFT image to your repository. You can either:
+- use an official Transfer CFT image, refers to the section "How to use the official Transfer CFT Docker image"
+- build a new Transfer CFT image, by following instructions from ../docker/README.md
    
-   The upgrade procedure is as follows:
+The upgrade procedure is as follows:
    
-##### 1. Build a new Transfer CFT Docker image
+##### 1. Update the image parameter
 
-From the Dockerfile (placed in ../docker), set the VERSION_BASE, RELEASE_BASE arguments according to your upgrade needs. For example:
-```
-ARG VERSION_BASE "3.6_SPX"
-ARG RELEASE_BASE "BNdddddddd"
-```
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
 
-###### 1.1. Build using a local Transfer CFT package
+##### 2. Export the Transfer data (optional)
 
-1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
+This step is mandatory only if you upgrade to a new major release of Transfer CFT.
 
-The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
-
-From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64.
-
-2) Build the Docker image from your Dockerfile
-
-From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
-```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_SP1_linux-x86-64_BN12603000.zip -t cft/cft:3.6 .
-```
-*Note* Notice that we use the same tag for the new image.
-
-###### 1.2. Build using a Transfer CFT package stored on a HTTP server
-
-1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
-
-The Dockerfile is compatible with Transfer CFT 3.6 base version and its updates.
-
-From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
-
-2) Build the Docker image from your Dockerfile
-
-From the folder where the Dockerfile is located, run the command:
-
-```console
-docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.6 .
-```
-*Note* Notice that we use the same tag for the new image.
-
-##### 2. Export the Transfer data and stop the container using the following command.
-
-It invokes a Transfer CFT REST API that stops Transfer CFT and export the data. Replace user:password with credentials of an authorized user.
- 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
 ```
 Check that the REST API call returns 200.
 
-Stop the container.
+##### 3. Stop and remove the container
+
+To stop and remove the container, run the command:
+
 ```console
 docker-compose down
 ```
 
-##### 3. Recreate and start the Transfer CFT service
+##### 4. Recreate and start the Transfer CFT service
 
 From the folder where the docker-compose.yml is located, run the command:
 
@@ -220,16 +223,16 @@ This command recreates and starts a Transfer CFT container based on the new imag
 
 ### Connecting to interfaces
 
-When you start the Transfer CFT container for the first time, a user/password pair is created, which you can find in the container logs.
+When you start the Transfer CFT container for the first time, if both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
 
-The information displays as:
-
+When an user is create, you can find in the container logs:
 ```
-    ------------------------
-        UI user created 
-    username: admin 
-    pass: PASS
-    ------------------------
+Creating user $USER_XFBADM_LOGIN...
+User $USER_XFBADM_LOGIN created.
+```
+Otherwise, you will see the following message:
+```
+WARNING: Password required to create an user. Not creating one!
 ```
 
 Access the Transfer CFT REST API documentation by connecting to: 
@@ -263,7 +266,7 @@ volumes:
 
 #### Default XFBADM user
 
-To specify the login and password for an XFBADM user to create during the container creation, set variables USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD as follow:
+To create an XFBADM user during the container creation, set variables USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD as follow:
 - USER_XFBADM_LOGIN: A string that refers to the login.
 - USER_XFBADM_PASSWORD: A command that returns the password such as 'cat userpassword.txt', where the file, for example userpassword.txt, contains the password.
 
@@ -282,11 +285,17 @@ For example:
 service:
     cft:
         environment:
-            USER_CG_CA_CERT:            "/opt/app/custom/cg_ca_cert.pem"
-            USER_SENTINEL_CA_CERT:      "/opt/app/custom/sentinel_ca_cert.pem"
-            USER_COPILOT_CERT:          "/opt/app/custom/copilot.p12"
+            USER_CG_CA_CERT:            "/run/secrets/cg_ca_cert.pem"
+            USER_SENTINEL_CA_CERT:      "/run/secrets/sentinel_ca_cert.pem"
+            USER_COPILOT_CERT:          "/run/secrets/copilot.p12"
             USER_COPILOT_CERT_PASSWORD: "cat /run/secrets/copilot_p12.pwd"
 secrets:
+    cg_ca_cert.pem:
+        file: ./conf/cg_ca_cert.pem
+    sentinel_ca_cert.pem:
+        file: ./conf/sentinel_ca_cert.pem
+    copilot_p12:
+       file: ./conf/copilot.p12
     copilot_p12.pwd:
         file: ./conf/copilot_p12.pwd
 ```

@@ -252,7 +252,7 @@ persistence:
     # storageClass:
     
     ## CFT Runtime Persistent Volume AccessMode
-    ## When multinode is enabled this should be ReadWriteMany (the volume can be mounted
+    ## When replicaCount > 1, this should be ReadWriteMany (the volume can be mounted
     ## as read-write by many nodes). This mode is not supported by some of the 
     ## default provisioners.
     ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
