@@ -1,6 +1,6 @@
 # AMPLIFY Transfer CFT Docker
 
-AMPLIFY Transfer CFT 3.6-SP1 Docker image
+AMPLIFY Transfer CFT 3.6 SP1 Docker image
 
 ## Before you begin
 
@@ -44,34 +44,34 @@ CFT_JVM                    |  \<number>   |  Amount of memory that the Secure Re
 CFT_KEY                    |  \<string>   |  A command that returns the Transfer CFT license key.
 CFT_CFTDIRRUNTIME          |  \<string>   |  Location of the Transfer CFT runtime.
 
-### How to build the Docker image
+## How to build the Docker image
 
-#### 1. Build the Docker image from your Dockerfile
+### 1. Build the Docker image from your Dockerfile
 
-##### 1.1. Build using a local Transfer CFT package
+#### 1.1. Build using a local Transfer CFT package
 
-1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
+1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/).
 
 The Dockerfile is compatible with Transfer CFT 3.6-SP1 version and higher.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64.
 
-2) Build the Docker image from your Dockerfile
+2) Build the Docker image from your Dockerfile.
 
 From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
 ```console
 docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_SP1_linux-x86-64_BN12987000.zip -t cft/cft:3.6-SP1 .
 ```
 
-##### 1.2. Build using a Transfer CFT package stored on your own HTTP server
+#### 1.2. Build using a Transfer CFT package stored on your own HTTP server
 
-1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/)
+1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/).
 
 The Dockerfile is compatible with Transfer CFT 3.6-SP1 version and higher.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
-2) Build the Docker image from your Dockerfile
+2) Build the Docker image from your Dockerfile.
 
 From the folder where the Dockerfile is located, run the command:
 
@@ -80,7 +80,7 @@ docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3
 ```
 *Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
-#### 2. Check that the Docker image is successfully created
+### 2. Check that the Docker image is successfully created
 
 Run the command:
 

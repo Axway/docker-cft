@@ -1,8 +1,8 @@
-# Transfer CFT's helm templates for Kubernetes
+# Helm templates for Transfer CFT on Kubernetes
 
 ## Introduction
 
-This chart bootstraps a Transfer CFT deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+The delivered chart bootstraps a Transfer CFT deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
 
 ## Prerequisites
 
@@ -10,7 +10,7 @@ This chart bootstraps a Transfer CFT deployment on a [Kubernetes](http://kuberne
   - Helm 2.16+
   - Helm 3+ 
 
-## Installing the Chart
+## Installing the chart
 
 To install the chart with the release name `transfer-cft`:
 
@@ -22,7 +22,7 @@ The command deploys Transfer CFT on the Kubernetes cluster in the default config
 
 > **Tip**: List all releases using `helm list`
 
-## Uninstalling the Chart
+## Uninstalling the chart
 
 To uninstall/delete the `transfer-cft` deployment:
 
@@ -34,9 +34,9 @@ The command removes all the Kubernetes components associated with the chart and 
 
 ## Configuration
 
-**For the cert files or license file, when you desire to use local files you can put all in the path transfer-cft/conf or using a custom path to do it (e.g. ../../config/certs/myfile.p12)**
+**If you want to use local files for the certicates or license files, you can put all in the path transfer-cft/conf, or use a custom path (e.g. ../../config/certs/myfile.p12)**
 
-The following table lists the configurable parameters of the Transfer CFT chart and their default values.
+The following table lists the configurable Transfer CFT chart parameters and their default values.
 
 Parameter | Description | Default
 --- | --- | ---
@@ -138,7 +138,7 @@ Parameter | Description | Default
 `service.ports` | Ports definitions for CFT services | `[{"name": "restapi","port": 1768},{"name": "pesit","port": 1761},{"name": "pesitssl","port": 1762},{"name": "sftp","port": 1763},{"name": "copilot","port": 1766},{"name": "copilotcg","port": 1767}]`
 `service.annotations` | Custom annotations for service | `{}`
 
-These parameters can be passed via Helm's `--set` option
+You can pass these parameters using the Helm `--set` option:
 ```console
 $ helm install --name transfer-cft ./transfer-cft \
   --set image.repository=cft/cft \
@@ -146,22 +146,22 @@ $ helm install --name transfer-cft ./transfer-cft \
   --set resources={ "limits":{"cpu":"1000m","memory":"600Mi"},"requests":{"cpu":"200m","memory":"300Mi"}}
 ```
 
-Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart. For example,
+Alternatively, you can provide a YAML file that specifies the parameter values during the chart installion. For example:
 
 ```console
 $ helm install --name transfer-cft ./transfer-cft -f my-values.yaml
 ```
 
-> **Tip**: You can modify and use the default [values.yaml](values.yaml)
+> **Tip**: You can modify and use the default [values.yaml](values.yaml).
 
 ## Resources
 The resources needed for Transfer CFT to run correctly depends on how Transfer CFT is used.
 
-The resources needed to run Transfer CFT properly are based on the Catalog size and in the number of transfers per hour.
+The resources needed to run Transfer CFT properly are based on the catalog size and in the number of transfers per hour.
 
-For memory use, you should add the value related with the Catalog size and the one from the transfers per hour.
+For memory use, you should add the value related to the catalog size to the value from the transfers per hour.
 
-> **Example** for a Catalog with 10000 records and 1000 transfers/h, you should have 550Mi of memory = 500Mi (for Catalog) + 50Mi (for Transfers' load)
+> **Example**: For a catalog with 10000 records and 1000 transfers/h, you should have 550Mi of memory = 500Mi (for the catalog) + 50Mi (for the transfer load).
 
 #### Catalog size
 Catalog Size | Disk space (MB) | Memory (Mi)
