@@ -103,6 +103,7 @@ ENV CFT_KEY              "cat /run/secrets/cft.key"
 ENV CFT_CFTDIRRUNTIME    "/opt/axway/data/runtime"
 ENV CFT_EXPORTDIR        ".export"
 ENV CFT_EXPORTCMD        "/opt/axway/export_bases.sh"
+ENV CFT_MULTINODE_ENABLE "NO"
 
 #####
 # COPYING USEFUL SCRIPTS
