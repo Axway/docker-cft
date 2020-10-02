@@ -303,6 +303,20 @@ fi
 # show customize information
 CFTUTIL /m=2 LISTUCONF scope=user
 
+if cft start ; then
+    echo "INF: cft start success"
+else
+    echo "ERR: cft start returns:"$?
+    if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
+        cat run/cft[0-9][0-9].out
+        cat log/cftlog[0-9][0-9]
+    else
+        cat run/cft.out
+        cat log/cftlog
+    fi
+    exit 1
+fi
+
 # start:
 if copstart ; then
     echo "INF: copstart success"
@@ -318,20 +332,6 @@ else
         cat run/copui.trc
         cat run/coprests.out
         cat run/copsxpam.out
-    fi
-    exit 1
-fi
-
-if cft start ; then
-    echo "INF: cft start success"
-else
-    echo "ERR: cft start returns:"$?
-    if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
-        cat run/cft[0-9][0-9].out
-        cat log/cftlog[0-9][0-9]
-    else
-        cat run/cft.out
-        cat log/cftlog
     fi
     exit 1
 fi
