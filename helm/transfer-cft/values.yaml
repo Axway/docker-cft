@@ -159,7 +159,21 @@ cft:
       secretName: cg-shared-secret
       createSecretFile: false
       # localFile: {} # conf/shared_secret
-      # existingSecretFile: {} # secret name 
+      # existingSecretFile: {} # secret name
+      
+  sentinel:
+    enabled: false
+    host: sentinel
+    port: 1305
+    useSsl: false
+    logFilter: EF
+    transferFilter: ALL
+    ## Uncomment the next line to customize the Sentinel CA certificate.
+    caCert:
+      secretName: sentinel-ca-cert
+      createSecretFile: false
+      # localFile: {} # conf/sentinel_ca_cert.pem
+      # existingSecretFile: {} # secret name
  
   ## CUSTOMIZATION
 
@@ -201,13 +215,6 @@ cft:
     secretName: copilot-cert-password
     createSecretFile: false
     # localFile: {} # conf/copilot.p12.pwd
-    # existingSecretFile: {} # secret name
-
-  ## Uncomment the next line to customize the Sentinel CA certificate.
-  sentinelCACert:
-    secretName: sentinel-ca-cert
-    createSecretFile: false
-    # localFile: {} # conf/sentinel_ca_cert.pem
     # existingSecretFile: {} # secret name
   
   ## The next two values are used to customize the default XFBADM user.

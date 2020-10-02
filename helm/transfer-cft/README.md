@@ -98,10 +98,16 @@ Parameter | Description | Default
 `cft.copilotCertPassword.createSecretFile` | Create the Copilot certificate password secret at installation using a local file | `false`
 `cft.copilotCertPassword.localFile` | Relative path to the Copilot certificate password (you can use conf directory in the helm chart) | `{} (eg. conf/copilot.p12.pwd)`
 `cft.copilotCertPassword.existingSecretFile` | Name of an existing secret to use | `{}`
-`cft.sentinelCACert.secretName` | Name of the secret used to store the Sentinel root Certificate Authority (secretname is mandatory) | `sentinel-ca-cert`
-`cft.sentinelCACert.createSecretFile` | Create the Sentinel root Certificate Authority secret at installation using a local file | `false`
-`cft.sentinelCACert.localFile` | Relative path to the Sentinel root Certificate Authority (you can use conf directory in the helm chart) | `{} (eg. conf/sentinel_ca_cert.pem)`
-`cft.sentinelCACert.existingSecretFile` | Name of an existing secret to use | `{}`
+`cft.sentinel.enabled` | Connectivity to Sentinel. This shouldn't be used if connectivity with Central Governance activated. | `false`
+`cft.sentinel.host` | Host address of the Sentinel server. | `sentinel`
+`cft.sentinel.port` | Listening port of the Sentinel server. | `1305`
+`cft.sentinel.useSsl` | Enables SSL cryptography when connecting to Sentinel | `false`
+`cft.sentinel.logFilter` | Sentinel Log Filter: (I)nformation, (W)arning, (E)rror, (F)atal. Authorized characters are only I, W, E, F. Each of them only once. | `EF`
+`cft.sentinel.transferFilter` | Sentinel Transfer Filter. Possible values are: ALL, SUMMARY, NO, ERROR. | `ALL`
+`cft.sentinel.caCert.secretName` | Name of the secret used to store the Sentinel root Certificate Authority (secretname is mandatory) | `sentinel-ca-cert`
+`cft.sentinel.caCert.createSecretFile` | Create the Sentinel root Certificate Authority secret at installation using a local file | `false`
+`cft.sentinel.caCert.localFile` | Relative path to the Sentinel root Certificate Authority (you can use conf directory in the helm chart) | `{} (eg. conf/sentinel_ca_cert.pem)`
+`cft.sentinel.caCert.existingSecretFile` | Name of an existing secret to use | `{}`
 `cft.xfbadmLogin` | Login of the xfbadm user to create at container creation. If both xfbadmLogin and xfbadmPassword.secretName are defined, the corresponding user is added to xfbadmusr database. | `admin`
 `cft.xfbadmPassword.secretName` | Name of the secret used to store the xfbadm user password (secretname is mandatory) | `xfbadm-password`
 `cft.xfbadmPassword.createSecretFile` | Create the xfbadm user password secret at installation using a local file | `false`

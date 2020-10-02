@@ -40,6 +40,14 @@ services:
       #USER_CG_CA_CERT:             "/run/secrets/cg_ca_cert.pem"
       # Uncomment the next line to customize the CG shared secret.
       #CFT_CG_SHARED_SECRET:        "cat /run/secrets/shared_secret"
+      CFT_SENTINEL_ENABLE:          "NO"
+      CFT_SENTINEL_HOST:            sentinel
+      CFT_SENTINEL_PORT:            1305
+      CFT_SENTINEL_SSL:             "NO"
+      CFT_SENTINEL_LOG_FILTER:      EF
+      CFT_SENTINEL_TRANSFER_FILTER: ALL
+      # Uncomment the next line to customize the Sentinel CA certificate.
+      #USER_SENTINEL_CA_CERT:       "/run/secrets/sentinel_ca_cert.pem"
       CFT_MULTINODE_ENABLE:        "NO"
       CFT_MULTINODE_NUMBER:        1
       CFT_JVM:                     1024
@@ -50,8 +58,6 @@ services:
       # Uncomment the next two lines to create a XFBADM user. See also secrets sections.
       #USER_XFBADM_LOGIN:           "admin"
       #USER_XFBADM_PASSWORD:        "cat /run/secrets/xfbadm.pwd"
-      # Uncomment the next line to customize the Sentinel CA certificate.
-      #USER_SENTINEL_CA_CERT:       "/run/secrets/sentinel_ca_cert.pem"
       # Interval in seconds between two checks of Passport access management updates.
       #CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL: 60
       # Script executed at container initialization
@@ -77,13 +83,13 @@ services:
     #- cg_ca_cert.pem
     # Uncomment this for specifying the Flow Manager/Central Governance shared secret.
     #- shared_secret
+    # Uncomment this for customizing the Sentinel CA certificate.
+    #- sentinel_ca_cert.pem
     # Uncomment these 2 lines for customizing the Copilot server certificate.
     #- copilot_p12
     #- copilot_p12.pwd
     # Uncomment this for customizing the default XFBADM user.
     #- xfbadm.pwd
-    # Uncomment this for customizing the Sentinel CA certificate.
-    #- sentinel_ca_cert.pem
 
     volumes:
     # Docker local volume where the runtime is stored
@@ -103,6 +109,10 @@ secrets:
   # Uncomment the next two lines to specify the shared secret.
   #shared_secret:
   #    file: ./conf/shared_secret
+  # File containig the CA certificate of Sentinel.
+  # Uncomment the next two lines to specify the CA certificate.
+  #sentinel_ca_cert.pem:
+  #    file: ./conf/sentinel_ca_cert.pem
   # Files containig the Copilot server certificate and password.
   # Uncomment the next four lines to customize the Copilot server certificate.
   #copilot_p12:
@@ -113,10 +123,6 @@ secrets:
   # Uncomment the next two lines to customize the default XFBADM user.
   #xfbadm.pwd:
   #    file: ./conf/xfbadm.pwd
-  # File containig the CA certificate of Sentinel.
-  # Uncomment the next two lines to specify the CA certificate.
-  #sentinel_ca_cert.pem:
-  #    file: ./conf/sentinel_ca_cert.pem
 
 volumes:
   cft_data:

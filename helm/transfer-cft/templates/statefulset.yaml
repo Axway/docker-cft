@@ -151,6 +151,32 @@ spec:
           - name: "CFT_CG_ENABLE"
             value: "NO"
           {{- end }}
+          {{- if .sentinel.enabled }}
+          - name: "CFT_SENTINEL_ENABLE"
+            value: "YES"
+          - name: "CFT_SENTINEL_HOST"
+            value: {{ .sentinel.host | quote }}
+          - name: "CFT_SENTINEL_PORT"
+            value: {{ .sentinel.port | quote }}
+          {{- if .sentinel.useSsl }}
+          - name: "CFT_SENTINEL_SSL"
+            value: "YES"
+          {{- else }}
+          - name: "CFT_SENTINEL_SSL"
+            value: "NO"
+          {{- end }}
+          - name: "CFT_SENTINEL_LOG_FILTER"
+            value: {{ .sentinel.logFilter | quote }}
+          - name: "CFT_SENTINEL_TRANSFER_FILTER"
+            value: {{ .sentinel.transferFilter | quote }}
+          {{- if and (.sentinel.caCert.secretName) (or .sentinel.caCert.createSecretFile .sentinel.caCert.existingSecretFile) }}
+          - name: "USER_SENTINEL_CA_CERT"
+            value: "/run/secrets/cft/{{ .sentinel.caCert.secretName }}/{{ .sentinel.caCert.secretName }}"
+          {{- end }}
+          {{- else }}
+          - name: "CFT_SENTINEL_ENABLE"
+            value: "NO"
+          {{- end }}
           {{- if and (.copilotCert.secretName) (or .copilotCert.createSecretFile .copilotCert.existingSecretFile) }}
           - name: "USER_COPILOT_CERT"
             value: "/run/secrets/cft/{{ .copilotCert.secretName }}/{{ .copilotCert.secretName }}"
@@ -158,10 +184,6 @@ spec:
           {{- if and (.copilotCertPassword.secretName) (or .copilotCertPassword.createSecretFile .copilotCertPassword.existingSecretFile) }}
           - name: "USER_COPILOT_CERT_PASSWORD"
             value: "/run/secrets/cft/{{ .copilotCertPassword.secretName }}/{{ .copilotCertPassword.secretName }}"
-          {{- end }}
-          {{- if and (.sentinelCACert.secretName) (or .sentinelCACert.createSecretFile .sentinelCACert.existingSecretFile) }}
-          - name: "USER_SENTINEL_CA_CERT"
-            value: "/run/secrets/cft/{{ .sentinelCACert.secretName }}/{{ .sentinelCACert.secretName }}"
           {{- end }}
           {{- if .passportPersistencyCheckInterval }}
           - name: "CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL"
@@ -258,10 +280,10 @@ spec:
           readOnly: true
           mountPath: /run/secrets/cft/{{ .Values.cft.xfbadmPassword.secretName }}
       {{- end }}
-      {{- if and (.Values.cft.sentinelCACert.secretName) (or .Values.cft.sentinelCACert.createSecretFile .Values.cft.sentinelCACert.existingSecretFile) }}
-        - name: {{ .Values.cft.sentinelCACert.secretName }}
+      {{- if and (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
+        - name: {{ .Values.cft.sentinel.caCert.secretName }}
           readOnly: true
-          mountPath: /run/secrets/cft/{{ .Values.cft.sentinelCACert.secretName }}
+          mountPath: /run/secrets/cft/{{ .Values.cft.sentinel.caCert.secretName }}
       {{- end }}
         ## ConfigMaps
       {{- if and (.Values.cft.initScript.fileName) (or .Values.cft.initScript.createConfigMap .Values.cft.initScript.existingConfigMap) }}
@@ -356,13 +378,13 @@ spec:
           {{ end }}
           defaultMode: 0777 
       {{- end }}
-      {{- if and (.Values.cft.sentinelCACert.secretName) (or .Values.cft.sentinelCACert.createSecretFile .Values.cft.sentinelCACert.existingSecretFile) }}
-      - name: {{ .Values.cft.sentinelCACert.secretName }}
+      {{- if and (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
+      - name: {{ .Values.cft.sentinel.caCert.secretName }}
         secret:
-          {{ if .Values.cft.sentinelCACert.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.sentinelCACert.secretName }}
+          {{ if .Values.cft.sentinel.caCert.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.sentinel.caCert.secretName }}
           {{ else }}
-          secretName: {{ .Values.cft.sentinelCACert.existingSecretFile }}
+          secretName: {{ .Values.cft.sentinel.caCert.existingSecretFile }}
           {{ end }}
           defaultMode: 0777 
       {{- end }}

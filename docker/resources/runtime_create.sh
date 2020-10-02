@@ -108,6 +108,26 @@ fi
 if [ -n "$CFT_CG_PERIODICITY" ]; then
     CFTUTIL /m=2 uconfset id='cg.periodicity', value=$CFT_CG_PERIODICITY
 fi
+
+# SENTINEL CONFIGURATION
+if [ -n "$CFT_SENTINEL_ENABLE" ]; then
+    CFTUTIL /m=2 uconfset id='sentinel.xfb.enable', value=$CFT_SENTINEL_ENABLE
+fi
+if [ -n "$CFT_SENTINEL_HOST" ]; then
+    CFTUTIL /m=2 uconfset id='sentinel.trkipaddr', value=$CFT_SENTINEL_HOST
+fi
+if [ -n "$CFT_SENTINEL_PORT" ]; then
+    CFTUTIL /m=2 uconfset id='sentinel.trkipport', value=$CFT_SENTINEL_PORT
+fi
+if [ -n "$CFT_SENTINEL_SSL" ]; then
+    CFTUTIL /m=2 uconfset id='sentinel.xfb.use_ssl', value=$CFT_SENTINEL_SSL
+fi
+if [ -n "$CFT_SENTINEL_LOG_FILTER" ]; then
+    CFTUTIL /m=2 uconfset id='sentinel.xfb.log', value=$CFT_SENTINEL_LOG_FILTER
+fi
+if [ -n "$CFT_SENTINEL_TRANSFER_FILTER" ]; then
+    CFTUTIL /m=2 uconfset id='sentinel.xfb.transfer', value=$CFT_SENTINEL_TRANSFER_FILTER
+fi
 CFTUTIL /m=2 uconfset id='sentinel.trkmsgencoding', value='UTF-8'
 
 # REST API CONFIGURATION

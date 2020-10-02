@@ -23,41 +23,47 @@ You can use the ../docker/Dockerfile to build your own Transfer CFT image or use
 
 The following parameters are available in the Dockerfile and docker-compose.yml files. Use these parameters to customize the Transfer CFT image and service. The values can be a string, number, or null.
   
- **Parameter**             |  **Values**  |  **Description**
- ------------------------- | :----------: | --------------- 
-CFT_FQDN                   |  \<string>   |  Host address of the local server.
-CFT_INSTANCE_ID            |  \<string>   |  Name of the Transfer CFT instance.
-CFT_INSTANCE_GROUP         |  \<string>   |  The Transfer CFT instance's group.
-CFT_CATALOG_SIZE           |  \<number>   |  Catalog size.
-CFT_COM_SIZE               |  \<number>   |  Communication file size.
-CFT_PESIT_PORT             |  \<number>   |  Port number of the PeSIT protocol called PESITANY.
-CFT_PESITSSL_PORT          |  \<number>   |  Port number of the PeSIT protocol called PESITSSL.
-CFT_SFTP_PORT              |  \<number>   |  Port number of the SFTP protocol.
-CFT_COMS_PORT              |  \<number>   |  Port number of the synchronous communication media called COMS.
-CFT_COPILOT_PORT           |  \<number>   |  Port number for the Transfer CFT UI server that listens for incoming unsecured and secured (SSL) connections.
-CFT_COPILOT_CG_PORT        |  \<number>   |  Port number for the Transfer CFT UI server used to connect to Central Governance.
-CFT_RESTAPI_PORT           |  \<number>   |  Port number used to connect to the REST API server.
-CFT_CG_ENABLE              |  "YES"/"NO"  |  Connectivity with Central Governance.
-CFT_CG_HOST                |  \<string>   |  Host address of the Central Governance server.
-CFT_CG_PORT                |  \<number>   |  Listening port of the Central Governance server.
-CFT_CG_SHARED_SECRET       |  \<string>   |  Shared secret needed to register with the Central Governance server.
-CFT_CG_POLICY              |  \<string>   |  Central Governance configuration policy to applied at Transfer CFT registration.
-CFT_CG_PERIODICITY         |  \<number>   |  Central Governance interval between notifications.
-CFT_CG_AGENT_NAME          |  \<string>   |  Central Governance agent name.
-CFT_JVM                    |  \<number>   |  Amount of memory that the Secure Relay JVM can use.
-CFT_KEY                    |  \<string>   |  A command that returns the Transfer CFT license key.
-CFT_CFTDIRRUNTIME          |  \<string>   |  Location of the Transfer CFT runtime.
-CFT_MULTINODE_ENABLE       |  "YES"/"NO"  |  Activate multinode architecture.
-CFT_MULTINODE_NUMBER       |  \<number>   |  Number of nodes.
-CFT_MULTINODE_NODE_PER_HOST|  \<number>   |  Number of CFT nodes per container. The recommended value is 1. Be sure to have as many or more replicas as the number of nodes.
-USER_SCRIPT_INIT           |  \<string>   |  Path to a script executed when you create the container.
-USER_SCRIPT_START          |  \<string>   |  Path to a script that executes each time you start the container.
-USER_CG_CA_CERT            |  \<string>   |  Central Governance root CA certificate.
-USER_SENTINEL_CA_CERT      |  \<string>   |  Sentinel CA certificate.
-USER_COPILOT_CERT          |  \<string>   |  Copilot server certificate. It must refer to a PKCS12 certificate.
-USER_COPILOT_CERT_PASSWORD |  \<string>   |  A command that returns the Copilot server certificate password.
-USER_XFBADM_LOGIN          |  \<string>   |  Login of the xfbadm user to create at container creation. If both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
-USER_XFBADM_PASSWORD       |  \<string>   |  A command that returns the XFBADM user's password.
+ **Parameter**              |  **Values**  |  **Description**
+ -------------------------- | :----------: | --------------- 
+CFT_FQDN                    |  \<string>   |  Host address of the local server.
+CFT_INSTANCE_ID             |  \<string>   |  Name of the Transfer CFT instance.
+CFT_INSTANCE_GROUP          |  \<string>   |  The Transfer CFT instance's group.
+CFT_CATALOG_SIZE            |  \<number>   |  Catalog size.
+CFT_COM_SIZE                |  \<number>   |  Communication file size.
+CFT_PESIT_PORT              |  \<number>   |  Port number of the PeSIT protocol called PESITANY.
+CFT_PESITSSL_PORT           |  \<number>   |  Port number of the PeSIT protocol called PESITSSL.
+CFT_SFTP_PORT               |  \<number>   |  Port number of the SFTP protocol.
+CFT_COMS_PORT               |  \<number>   |  Port number of the synchronous communication media called COMS.
+CFT_COPILOT_PORT            |  \<number>   |  Port number for the Transfer CFT UI server that listens for incoming unsecured and secured (SSL) connections.
+CFT_COPILOT_CG_PORT         |  \<number>   |  Port number for the Transfer CFT UI server used to connect to Central Governance.
+CFT_RESTAPI_PORT            |  \<number>   |  Port number used to connect to the REST API server.
+CFT_CG_ENABLE               |  "YES"/"NO"  |  Connectivity with Central Governance.
+CFT_CG_HOST                 |  \<string>   |  Host address of the Central Governance server.
+CFT_CG_PORT                 |  \<number>   |  Listening port of the Central Governance server.
+CFT_CG_SHARED_SECRET        |  \<string>   |  Shared secret needed to register with the Central Governance server.
+CFT_CG_POLICY               |  \<string>   |  Central Governance configuration policy to applied at Transfer CFT registration.
+CFT_CG_PERIODICITY          |  \<number>   |  Central Governance interval between notifications.
+CFT_CG_AGENT_NAME           |  \<string>   |  Central Governance agent name.
+CFT_SENTINEL_ENABLE         |  "YES"/"NO"  |  Connectivity to Sentinel. This shouldn't be used if connectivity with Central Governance activated.
+CFT_SENTINEL_HOST           |  \<string>   |  Host address of the Sentinel server.
+CFT_SENTINEL_PORT           |  \<number>   |  Listening port of the Sentinel server.
+CFT_SENTINEL_SSL            |  "YES"/"NO"  |  Enables SSL cryptography when connecting to Sentinel
+CFT_SENTINEL_LOG_FILTER     |  \<string>   |  Sentinel Log Filter: (I)nformation, (W)arning, (E)rror, (F)atal. Authorized characters are only I, W, E, F. Each of them only once.
+CFT_SENTINEL_TRANSFER_FILTER|  \<string>   |  Sentinel Transfer Filter. Possible values are: ALL, SUMMARY, NO, ERROR.
+CFT_JVM                     |  \<number>   |  Amount of memory that the Secure Relay JVM can use.
+CFT_KEY                     |  \<string>   |  A command that returns the Transfer CFT license key.
+CFT_CFTDIRRUNTIME           |  \<string>   |  Location of the Transfer CFT runtime.
+CFT_MULTINODE_ENABLE        |  "YES"/"NO"  |  Activate multinode architecture.
+CFT_MULTINODE_NUMBER        |  \<number>   |  Number of nodes.
+CFT_MULTINODE_NODE_PER_HOST |  \<number>   |  Number of CFT nodes per container. The recommended value is 1. Be sure to have as many or more replicas as the number of nodes.
+USER_SCRIPT_INIT            |  \<string>   |  Path to a script executed when you create the container.
+USER_SCRIPT_START           |  \<string>   |  Path to a script that executes each time you start the container.
+USER_CG_CA_CERT             |  \<string>   |  Central Governance root CA certificate.
+USER_SENTINEL_CA_CERT       |  \<string>   |  Sentinel CA certificate.
+USER_COPILOT_CERT           |  \<string>   |  Copilot server certificate. It must refer to a PKCS12 certificate.
+USER_COPILOT_CERT_PASSWORD  |  \<string>   |  A command that returns the Copilot server certificate password.
+USER_XFBADM_LOGIN           |  \<string>   |  Login of the xfbadm user to create at container creation. If both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
+USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM user's password.
 
 ### How to use the official Transfer CFT Docker image
 
