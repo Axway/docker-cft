@@ -73,10 +73,10 @@ USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM 
 
 3) Load the image.
 
-From the folder where the transfer_cft_3.6_SP1.tar.gz is located, run the command:
+From the folder where the transfer_cft_3.7.tar.gz is located, run the command:
 
 ```console
-docker image load -i transfer_cft_3.6_SP1.tar.gz
+docker image load -i transfer_cft_3.7.tar.gz
 ```
 
 4) Check that the image is successfully loaded.
@@ -91,7 +91,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft             3.6-SP1             d9d764b02cc8        18 hours ago        522MB
+cft/cft             3.7                 d9d764b02cc8        18 hours ago        522MB
 ```
 
 ### How to manage the Transfer CFT service from your docker-compose.yml file
@@ -102,7 +102,7 @@ You can use Docker Compose to automate building container images, as well as app
 
 Before you start, customize the parameters in the docker-compose.yml.
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.6-SP1".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
 
 If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN variable to reflect the actual host machine’s address.  
 **ATTENTION:** You cannot connect to an interface if this parameter is incorrect.

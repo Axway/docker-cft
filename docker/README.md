@@ -1,6 +1,6 @@
 # AMPLIFY Transfer CFT Docker
 
-AMPLIFY Transfer CFT 3.6 SP1 Docker image
+AMPLIFY Transfer CFT 3.7 Docker image
 
 ## Before you begin
 
@@ -60,7 +60,7 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 
 From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
 ```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.6_SP1_linux-x86-64_BN12987000.zip -t cft/cft:3.6-SP1 .
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.7_linux-x86-64_BN13062000.zip -t cft/cft:3.7 .
 ```
 
 #### 1.2. Build using a Transfer CFT package stored on your own HTTP server
@@ -76,7 +76,7 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.6-SP1 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.7 .
 ```
 *Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
@@ -92,7 +92,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft             3.6-SP1             d9d764b02cc8        18 hours ago        522MB
+cft/cft             3.7                d9d764b02cc8        18 hours ago        522MB
 ```
 
 ## Copyright

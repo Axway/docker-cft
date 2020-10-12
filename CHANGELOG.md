@@ -1,6 +1,16 @@
 # Changelog
 All notable changes to this project will be documented in this file.
  
+## [3.7] - 2020-09-30
+
+### Added
+- Sentinel parameters support.
+
+### Changed
+ 
+### Fixed
+- A single node Transfer CFT instance running inside a podman container did not stop properly. 
+
 ## [3.6 SP1] - 2020-06-30
 
 ### Added

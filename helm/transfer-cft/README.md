@@ -40,14 +40,14 @@ The following table lists the configurable Transfer CFT chart parameters and the
 
 Parameter | Description | Default
 --- | --- | ---
-`replicaCount` | number of replicas deployed | `1`
-`image.repository` | image repository for docker image | `cft/cft`
-`image.tag` | image tag used for the deployment | `3.6-SP1`
+`replicaCount` | Number of replicas deployed | `1`
+`image.repository` | Image repository for docker image | `cft/cft`
+`image.tag` | Image tag used for the deployment | `3.7`
 `image.pullPolicy` | Pull Policy Action for docker image | `IfNotPresent`
-`image.imagePullSecrets` | secret used for Pulling image | `regcred`
-`nameOverride` | new name use for the deployment | `nil`
-`fullnameOverride` | name use for the release | `nil`
-`podLabels` | additional labels | `nil`
+`image.imagePullSecrets` | Secret used for Pulling image | `regcred`
+`nameOverride` | New name use for the deployment | `nil`
+`fullnameOverride` | Name use for the release | `nil`
+`podLabels` | Additional labels | `nil`
 `resources` | CPU/memory resource requests/limits | `{"requests":{"cpu":"100m","memory":"280Mi"}}`
 `livenessProbe.periodSeconds`        | How often to perform the probe                                                               | 10
 `livenessProbe.successThreshold`     | Minimum consecutive successes for the probe to be considered successful after having failed. | 1 
@@ -118,25 +118,25 @@ Parameter | Description | Default
 `cft.apiPassword.createSecretFile` | Create the API user password secret at installation using a local file | `false`
 `cft.apiPassword.localFile` | Relative path to the file API user password (you can use conf directory in the helm chart) | `{} (eg. conf/xfbadm.pwd)`
 `cft.apiPassword.existingSecretFile` | Name of an existing secret to use | `{}`
-`cft.initScript.fileName` | name of a script to be executed at container initialization (filename is mandatory) | `init-sh`
-`cft.initScript.createConfigMap` | create a configmap for the initialization script | `false`
-`cft.initScript.localFile` | relative path to the initialization script (you can use conf directory in the helm chart) | `{} (eg. conf/init.sh`
-`cft.initScript.existingConfigMap` | name of an existing configmap to use | `{}`
-`cft.startScript.fileName` | name of a script to be executed at each container start-up (filename is mandatory) | `startup-sh`
-`cft.startScript.createConfigMap` | create a configmap for the start-up script | `false`
-`cft.startScript.localFile` | relative path to the start-up script (you can use conf directory in the helm chart) | `{} (eg. conf/startup.sh)`
-`cft.startScript.existingConfigMap` | name of an existing configmap to use | `{}`
-`cft.passportPersistencyCheckInterval` | interval in seconds between two checks of Passport access management updates | `60`
-`persistence.enabled` | enable config persistence using PVC | `true`
-`persistence.keep` | keep persistent volume after helm delete | `false`
+`cft.initScript.fileName` | Name of a script to be executed at container initialization (filename is mandatory) | `init-sh`
+`cft.initScript.createConfigMap` | Create a configmap for the initialization script | `false`
+`cft.initScript.localFile` | Relative path to the initialization script (you can use conf directory in the helm chart) | `{} (eg. conf/init.sh`
+`cft.initScript.existingConfigMap` | Name of an existing configmap to use | `{}`
+`cft.startScript.fileName` | Name of a script to be executed at each container start-up (filename is mandatory) | `startup-sh`
+`cft.startScript.createConfigMap` | Create a configmap for the start-up script | `false`
+`cft.startScript.localFile` | Relative path to the start-up script (you can use conf directory in the helm chart) | `{} (eg. conf/startup.sh)`
+`cft.startScript.existingConfigMap` | Name of an existing configmap to use | `{}`
+`cft.passportPersistencyCheckInterval` | Interval in seconds between two checks of Passport access management updates | `60`
+`persistence.enabled` | Enable config persistence using PVC | `true`
+`persistence.keep` | Keep persistent volume after helm delete | `false`
 `persistence.cftData.storageClass` | Persistent Volume Claim Storage Class for config volume | `nil`
 `persistence.cftData.accessMode` | Persistent Volume Claim Access Mode for config volume. Should be `ReadWriteMany` if `replicaCount` > 1 | `ReadWriteOnce`
 `persistence.cftData.size` | Persistent Volume Claim Storage Request for config volume (see information on resources to chose the good value for your application) | `2Gi`
-`persistence.cftData.existingClaim` | manually managed Persistent Volume Claim | `nil`
-`persistence.cftData.nfsPath` | basepath of the mount point to be used | `nil`
-`persistence.cftData.nfsServer` | hostname of the NFS server | `nil (ip or hostname)`
-`persistence.cftData.reclaimPolicy` | retain, recycle or delete. Only NFS support recycling | `retain`
-`persistence.cftData.mountOptions` | mount options for NFS | `nil`
+`persistence.cftData.existingClaim` | Manually managed Persistent Volume Claim | `nil`
+`persistence.cftData.nfsPath` | Basepath of the mount point to be used | `nil`
+`persistence.cftData.nfsServer` | Hostname of the NFS server | `nil (ip or hostname)`
+`persistence.cftData.reclaimPolicy` | Retain, recycle or delete. Only NFS support recycling | `retain`
+`persistence.cftData.mountOptions` | Mount options for NFS | `nil`
 `extraSecretMounts` | Additionnal secret mounts to be added | `[]`
 `extraVolumeMounts` | Additionnal volume mounts to be added (volume where transfer files are located) | `[]`
 `extraEnv` | Additional environment variables | `[]`
@@ -148,7 +148,7 @@ You can pass these parameters using the Helm `--set` option:
 ```console
 $ helm install --name transfer-cft ./transfer-cft \
   --set image.repository=cft/cft \
-  --set image.tag=3.6
+  --set image.tag=3.7
   --set resources={ "limits":{"cpu":"1000m","memory":"600Mi"},"requests":{"cpu":"200m","memory":"300Mi"}}
 ```
 
