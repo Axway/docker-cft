@@ -9,7 +9,8 @@ All notable changes to this project will be documented in this file.
 ### Changed
  
 ### Fixed
-- A single node Transfer CFT instance running inside a podman container did not stop properly. 
+- A single node Transfer CFT instance running inside a podman container did not stop properly.
+- Missing imagePullSecrets in pre-upgrade would cause upgrade to fail when a imagePullSecret was needed.
 
 ## [3.6 SP1] - 2020-06-30
 

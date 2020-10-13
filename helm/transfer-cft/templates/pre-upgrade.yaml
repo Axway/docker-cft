@@ -19,6 +19,10 @@ spec:
         {{- include "transfer-cft.labels" . | nindent 8 }}
         helm.sh/chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     spec:
+    {{- with .Values.image.pullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
       restartPolicy: Never
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 10 }}
