@@ -122,9 +122,7 @@ fi
 if [ -n "$CFT_SENTINEL_SSL" ]; then
     CFTUTIL /m=2 uconfset id='sentinel.xfb.use_ssl', value=$CFT_SENTINEL_SSL
 fi
-if [ -n "$CFT_SENTINEL_LOG_FILTER" ]; then
-    CFTUTIL /m=2 uconfset id='sentinel.xfb.log', value=$CFT_SENTINEL_LOG_FILTER
-fi
+CFTUTIL /m=2 uconfset id='sentinel.xfb.log', value=$CFT_SENTINEL_LOG_FILTER
 if [ -n "$CFT_SENTINEL_TRANSFER_FILTER" ]; then
     CFTUTIL /m=2 uconfset id='sentinel.xfb.transfer', value=$CFT_SENTINEL_TRANSFER_FILTER
 fi
