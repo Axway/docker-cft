@@ -26,6 +26,8 @@ The following parameters are available in the Dockerfile and docker-compose.yml 
  **Parameter**              |  **Values**  |  **Description**
  -------------------------- | :----------: | --------------- 
 CFT_FQDN                    |  \<string>   |  Host address of the local server.
+CFT_LOAD_BALANCER_HOST      |  \<string>   |  Load balancer address (FQDN or IP address) used by Central Governance to connect to Transfer CFT UI Server for multinode active/active deployment.
+CFT_LOAD_BALANCER_PORT      |  \<number>   |  Load balancer port used by Central Governance to connect to Transfer CFT UI Server CFT_COPILOT_CG_PORT port. Used for multinode active/active deployment.
 CFT_INSTANCE_ID             |  \<string>   |  Name of the Transfer CFT instance.
 CFT_INSTANCE_GROUP          |  \<string>   |  The Transfer CFT instance's group.
 CFT_CATALOG_SIZE            |  \<number>   |  Catalog size.

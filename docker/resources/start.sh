@@ -99,9 +99,18 @@ customize_runtime()
     fi
 
     # FQDN
-    CFTUTIL /m=2 uconfset id='cft.full_hostname', value=$CFT_FQDN
-    CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_FQDN
-    CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_COPILOT_CG_PORT
+    if [ -n "$CFT_LOAD_BALANCER_HOST" ]; then
+        CFTUTIL /m=2 uconfset id='cft.full_hostname', value=$CFT_LOAD_BALANCER_HOST
+        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_LOAD_BALANCER_HOST
+    else
+        CFTUTIL /m=2 uconfset id='cft.full_hostname', value=$CFT_FQDN
+        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_FQDN
+    fi
+    if [ -n "$CFT_LOAD_BALANCER_PORT" ]; then
+        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_LOAD_BALANCER_PORT
+    else
+        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_COPILOT_CG_PORT
+    fi
 
     # User customization
     customdir="$HOME/custom"
@@ -297,7 +306,14 @@ CFTUTIL /m=2 about
 
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
     echo "INF: Add HOST $HOSTNAME"
-    cft add_host -hostname $HOSTNAME -host $HOSTNAME
+    
+    if [ -n "$CFT_KUBERNETES_SERVICE" ]; then
+        servicename=$(echo $CFT_KUBERNETES_SERVICE | sed 's/\(.*\)/\L\1/')
+
+        cft add_host -hostname $HOSTNAME -host $HOSTNAME.$servicename
+    else
+        cft add_host -hostname $HOSTNAME -host $CFT_FQDN
+    fi
 fi
 
 # show customize information

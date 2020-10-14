@@ -33,6 +33,8 @@ services:
 
     environment:
       CFT_FQDN:                    cft
+      CFT_LOAD_BALANCER_HOST:      cft
+      CFT_LOAD_BALANCER_PORT:      1767
       CFT_INSTANCE_ID:             docker0_cft
       CFT_INSTANCE_GROUP:          dev.docker
       CFT_CATALOG_SIZE:            1000

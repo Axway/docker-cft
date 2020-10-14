@@ -1,7 +1,7 @@
 #!/bin/bash
 #
 
-HELM_NAME="transfer-cft"
+HELM_NAME="cft"
 
 set -uoe pipefail
 

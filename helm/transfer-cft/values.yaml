@@ -41,7 +41,7 @@ resources:
   ## Please refer to the README.md for different usages' values.
   requests:
     cpu: 100m
-    memory: 280Mi
+    memory: 1000Mi
 
 livenessProbe:
   periodSeconds: 10
@@ -338,37 +338,31 @@ service:
   ports:
     - name: restapi
       port: 1768
-      # targetPort: 1768
       # protocol: TCP
       # nodePort: 31768
       # hostPort: 1768
     - name: pesit
       port: 1761
-      # targetPort: 1761
       # protocol: TCP
       # nodePort: 31761
       # hostPort: 1761
     - name: pesitssl
       port: 1762
-      # targetPort: 1762
       # protocol: TCP
       # nodePort: 31762
       # hostPort: 1762
     - name: sftp
       port: 1763
-      # targetPort: 1763
       # protocol: TCP
       # nodePort: 31763
       # hostPort: 1763
     - name: copilot
       port: 1766
-      # targetPort: 1766
       # protocol: TCP
       # nodePort: 31766
       # hostPort: 1766
     - name: copilotcg
       port: 1767
-      # targetPort: 1767
       # protocol: TCP
       # nodePort: 31767
       # hostPort: 1767

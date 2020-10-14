@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - Sentinel parameters support.
 
 ### Changed
+- Host information calculation for add_host command.
  
 ### Fixed
 - A single node Transfer CFT instance running inside a podman container did not stop properly.
