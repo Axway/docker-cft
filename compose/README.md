@@ -117,6 +117,8 @@ Customizing other parameters is optional.
 
 You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the docker-compose.yml file.
 
+**Note**: The default value for hostname in docker-compose.yml is docker0, if you do not change this, this is the value you should use for your key.
+
 #### 3. Data persistence
 
 The Transfer CFT docker-compose.yml file defines a volume as a mechanism for persisting data generated and used by Transfer CFT.  

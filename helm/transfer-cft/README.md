@@ -160,6 +160,8 @@ $ helm install --name transfer-cft ./transfer-cft -f my-values.yaml
 
 > **Tip**: You can modify and use the default [values.yaml](values.yaml).
 
+> **Note**: You need a license for the linux-x86-64 platform without hostname.
+
 ## Resources
 The resources needed for Transfer CFT to run correctly depends on how Transfer CFT is used.
 
