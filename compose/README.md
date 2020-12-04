@@ -5,7 +5,7 @@ AMPLIFY Transfer CFT Docker image
 ## Before you begin
 
 This document assumes a basic understanding of core Docker concepts such as containers, container images, and basic Docker commands.
-If needed, see [Get started with Docker](https://docs.docker.com/get-started/) for a primer on container basics or [Docker Compose Overview] (https://docs.docker.com/compose/) for details on using Docker Compose.
+If needed, see [Get started with Docker](https://docs.docker.com/get-started/) for a primer on container basics or [Docker Compose Overview](https://docs.docker.com/compose/) for details on using Docker Compose.
 
 ### Prerequisites
 
@@ -113,9 +113,9 @@ If you want to register Transfer CFT with Central Governance, set CFT_CG_ENABLE 
 
 Customizing other parameters is optional.
 
-#### 2. Enter your Transfer CFT license key in the conf/license-key file
+#### 2. Transfer CFT license key
 
-You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the docker-compose.yml file.
+Enter your Transfer CFT license key in the conf/license-key file. You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the docker-compose.yml file.
 
 **Note**: The default value for hostname in docker-compose.yml is docker0, if you do not change this, this is the value you should use for your key.
 
@@ -134,12 +134,6 @@ From the folder where the docker-compose.yml file is located, run the command:
 docker-compose up  
 ```
 
-For multinode use:
-
-```console  
-docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER OF NODES>
-```
-
 The `up` command builds (if needed), recreates, starts, and attaches to a container for services.  
 Unless they are already running, this command also starts any linked services.
 
@@ -155,7 +149,7 @@ You can use the -V option to recreate anonymous volumes instead of retrieving da
 docker-compose up -V
 ```
 
-Run the docker `ps` command to see the running containers.
+Run the `docker ps` command to see the running containers.
 
 ```console
 docker ps
@@ -230,6 +224,234 @@ docker-compose up
 This command recreates and starts a Transfer CFT container based on the new image. When the container starts, it detects the exported data and imports it during startup.
 
 
+### Multinode architecture
+
+There are two ways of configuring the Transfer CFT in multinode architecture using docker-compose.
+
+#### Multinode on a Docker cluster
+
+In this use case, all the Transfer CFT nodes run in the same Docker cluster and the scale command from docker-compose defines the number of nodes to start.
+
+The file docker-compose-multinode.yml is written considering this case. Using the list described [here](#docker-compose-parameters) you can change the parameters as needed.
+
+The information presented in topics from [Customization](#1-customization) through [Data persistence](#3-data persistence) are valid in this case.
+
+**NOTE:** You need to change the file nginx.conf to integrate the desired number of nodes.
+
+##### 1. Create and start the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, run the command:
+
+```console  
+docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER OF NODES>
+```
+Where NUMBER_OF_NODES should have the same value as CFT_MULTINODE_NUMBER inside the docker-compose-multinode.yaml file.
+
+The `up` command builds (if needed), recreates, starts, and attaches to a container for services.  
+Unless they are already running, this command also starts any linked services.
+
+You can use the -d option to run containers in the background.
+
+```console  
+docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER OF NODES> -d  
+```
+##### 2. Stop and remove the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, you can stop the containers using the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml down
+```
+
+The `down` command stops containers, and removes containers, networks, anonymous volumes, and images created by `up`.  
+You can use the -v option to remove named volumes declared in the `volumes` section of the Compose file, and anonymous volumes attached to containers.
+
+##### 3. Start the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, you can start the Transfer CFT service using `start` if it was stopped using `stop`.
+
+```console
+docker-compose -f docker-compose-multinode.yml start
+```
+
+##### 4. Stop the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, you can stop the containers using the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml stop
+```
+
+##### 5. Upgrade Transfer CFT
+
+It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
+
+You must first load the new Transfer CFT image in your repository. You can either:
+- Use an official Transfer CFT image, as describe in the section "How to use the official Transfer CFT Docker image"
+- Build a new Transfer CFT image, using the instructions in ../docker/README.md
+   
+Upgrade as follows:
+   
+###### 1. Update the image parameter
+
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+
+###### 2. Export the Transfer data (optional)
+
+This step is only mandatory if you upgrade to a new major release of Transfer CFT.
+
+```console
+curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
+```
+Check that the REST API call returns 200.
+
+###### 3. Stop and remove the container
+
+To stop and remove the container, run the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml down
+```
+
+###### 4. Recreate and start the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml is located, run the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER OF NODES>
+```
+
+This command recreates and starts a Transfer CFT container based on the new image. When the container starts, it detects the exported data and imports it during startup.
+
+**NOTE:** This command should use the same NULBER_OF_NODES previously used.
+
+
+#### Multinode on multiple standalone Docker servers
+
+In this set-up, different Docker servers will be used to run each of the Transfer CFT containers.
+
+The file docker-compose-multinode.yml need to be changed to adapt do this case and there are a few prerequisites to make it work.
+
+Prerequisites:
+
+1. External load-balancer;
+2. External NFS shared disk.
+
+The modifications are:
+
+1. NGINX wont be used, so the block for service nginx should be removed from file docker-compose-multinode.yml;
+2. CFT_LOAD_BALANCER_HOST and CFT_LOAD_BALANCER_PORT should be set to refflect the load balancer information;
+3. CFT_FQDN should be set using the host machine information, this should change from each of the host machines;
+4. You need to add `- "33000-33100"` to the expose section of file docker-compose-multinode.yml;
+5. You need to define the Transfer CFT's listening port range, according to the port range set in the previous step. For that, you must set up a custom initialization script using the parameter USER_SCRIPT_INIT. The script must contain the following lines:
+```console
+. $CFT_CFTDIRRUNTIME/profile
+CFTUTIL uconfset id=cft.multi_node.listen_port_range, value="33000-33100"
+```
+
+After that, using the list described [here](#docker-compose-parameters) you can change the parameters as needed.
+
+The information presented in topics from [Customization](#1-customization) and [License Key](#2-transfer-cft-license-key) are valid in this case.
+
+##### 1. Data persistence
+
+Transfer CFT volume should point to a NFS disk. The volumes section of file docker-compose-multinode.yml should look like:
+
+```console
+volumes:
+  cft_data:
+    driver: local
+    driver_opts:
+      type: "nfs4"
+      o: "addr=[YOUR_EFS_DNS],nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,cto,nointr,lock,async"
+      device: "[YOUR_EFS_DNS]:/"
+```
+
+##### 2. Create and start the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, on each Docker server, run the command:
+
+```console  
+docker-compose -f docker-compose-multinode.yml up
+```
+
+The `up` command builds (if needed), recreates, starts, and attaches to a container for services.  
+Unless they are already running, this command also starts any linked services.
+
+You can use the -d option to run containers in the background.
+
+```console  
+docker-compose -f docker-compose-multinode.yml up -d  
+```
+##### 2. Stop and remove the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, on each Docker server, you can stop the containers using the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml down
+```
+
+The `down` command stops containers, and removes containers, networks, anonymous volumes, and images created by `up`.  
+You can use the -v option to remove named volumes declared in the `volumes` section of the Compose file, and anonymous volumes attached to containers.
+
+##### 3. Start the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, on each Docker server, you can start the Transfer CFT service using `start` if it was stopped using `stop`.
+
+```console
+docker-compose -f docker-compose-multinode.yml start
+```
+
+##### 4. Stop the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml file is located, on each Docker server, you can stop the containers using the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml stop
+```
+
+##### 5. Upgrade Transfer CFT
+
+It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
+
+You must first load the new Transfer CFT image in your repository. You can either:
+- Use an official Transfer CFT image, as describe in the section "How to use the official Transfer CFT Docker image"
+- Build a new Transfer CFT image, using the instructions in ../docker/README.md
+   
+Upgrade as follows:
+   
+###### 1. Update the image parameter
+
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+
+###### 2. Export the Transfer data (optional)
+
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, and should be executed only once.
+
+```console
+curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
+```
+Check that the REST API call returns 200.
+
+###### 3. Stop and remove the container
+
+To stop and remove the container, run the command, on each Docker server:
+
+```console
+docker-compose -f docker-compose-multinode.yml down
+```
+
+###### 4. Recreate and start the Transfer CFT service
+
+From the folder where the docker-compose-multinode.yml is located, on each Docker server, run the command:
+
+```console
+docker-compose -f docker-compose-multinode.yml up
+```
+
+This command recreates and starts a Transfer CFT container based on the new image. When the container starts, it detects the exported data and imports it during startup.
+
+
 ### Connecting to interfaces
 
 When you start the Transfer CFT container for the first time, if both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
@@ -261,6 +483,8 @@ Access the former Transfer CFT UI (Copilot UI) by connecting to:
 ```
 http://CFT_FQDN:1766/index.html
 ```
+
+**NOTE:** When using multinode, instead of CFT_FQDN, the load balancer address should be used.
 
 ### Customization
 
@@ -303,7 +527,7 @@ secrets:
         file: ./conf/cg_ca_cert.pem
     sentinel_ca_cert.pem:
         file: ./conf/sentinel_ca_cert.pem
-    copilot_p12:
+    copilot.p12:
        file: ./conf/copilot.p12
     copilot_p12.pwd:
         file: ./conf/copilot_p12.pwd
