@@ -12,7 +12,7 @@ version: "3.5"
 services:
   cft:
     # build: ../docker
-    image: cft/cft:3.7
+    image: cft/cft:3.6-SP2
     hostname: docker0
 
     environment:

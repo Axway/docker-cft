@@ -104,7 +104,7 @@ You can use Docker Compose to automate building container images, as well as app
 
 Before you start, customize the parameters in the docker-compose.yml.
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.6-SP2".
 
 If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN variable to reflect the actual host machine’s address.  
 **ATTENTION:** You cannot connect to an interface if this parameter is incorrect.
@@ -194,7 +194,7 @@ Upgrade as follows:
    
 ##### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.6-SP2".
 
 ##### 2. Export the Transfer data (optional)
 
@@ -294,7 +294,7 @@ Upgrade as follows:
    
 ###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.6-SP2".
 
 ###### 2. Export the Transfer data (optional)
 
@@ -422,7 +422,7 @@ Upgrade as follows:
    
 ###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.6-SP2".
 
 ###### 2. Export the Transfer data (optional)
 
