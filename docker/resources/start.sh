@@ -261,7 +261,7 @@ echo "INF: $HOSTNAME got lock to create runtime"
 if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
     echo "INF: runtime exists"
     # import databases...
-    ~/import_bases.sh
+    ./import_bases.sh
 else
     ./runtime_create.sh
     # user custom init script
