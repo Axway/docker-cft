@@ -1,7 +1,13 @@
 # Changelog
 All notable changes to this project will be documented in this file.
- 
-## [3.7] - 2020-09-30
+
+## [3.6 SP2 Patch1] 2021-01-13
+
+### Fixed
+- In some environments the character '~' was not correctly replaced.
+
+
+## [3.7] - 2020-09-30 / [3.6 SP2] - 2020-12-04
 
 ### Added
 - Sentinel parameters support.
@@ -12,6 +18,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - A single node Transfer CFT instance running inside a podman container did not stop properly.
 - Missing imagePullSecrets in pre-upgrade would cause upgrade to fail when a imagePullSecret was needed.
+
 
 ## [3.6 SP1] - 2020-06-30
 
