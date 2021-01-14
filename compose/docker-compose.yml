@@ -2,7 +2,7 @@
 #
 # Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
 #
-## AMPLIFY Transfer CFT 3.7 Docker-compose example
+## AMPLIFY Transfer CFT Docker-compose example
 #
 # Building with:
 # docker-compose up -d
@@ -12,7 +12,7 @@ version: "3.5"
 services:
   cft:
     # build: ../docker
-    image: cft/cft:3.7
+    image: cft/cft:3.6-SP2-P1
     hostname: docker0
 
     environment:

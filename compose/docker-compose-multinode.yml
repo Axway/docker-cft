@@ -2,7 +2,7 @@
 #
 # Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
 #
-## AMPLIFY Transfer CFT 3.7 Docker-compose example
+## AMPLIFY Transfer CFT Docker-compose example
 #
 # Building with:
 # docker-compose -f docker-compose-multinode.yml up --scale cft=2  -d
@@ -29,7 +29,7 @@ services:
       - "1768:1768"
   cft:
     # build: ../docker
-    image: cft/cft:3.7
+    image: cft/cft:3.6-SP2-P1
 
     environment:
       CFT_FQDN:                    cft
