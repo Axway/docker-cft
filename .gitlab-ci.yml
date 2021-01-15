@@ -5,6 +5,7 @@
 before_script:
 - eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
 - echo Using DOCKER_TAG=$DOCKER_TAG
+- eval export KEY_CFT=`$CFTKEY`
 
 stages:
 - build

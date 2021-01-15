@@ -43,7 +43,7 @@ services:
             CFT_CG_POLICY:              ""
             CFT_CG_PERIODICITY:         ""
             CFT_JVM:                    1024
-            CFT_KEY:                    "curl http://svmwin2008cft2.lab1.lab.ptx.axway.int:60606/linux-x86-64"
+            CFT_KEY:                    $KEY_CFT
             CFT_CFTDIRRUNTIME:          "./data/runtime"
             CFT_EXPORTDIR:              "./_export"
             USER_XFBADM_LOGIN:          "admin"
