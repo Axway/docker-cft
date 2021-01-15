@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: cft/cft
-  tag: 3.6-SP2
+  tag: 3.6-SP2-P1
     
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'

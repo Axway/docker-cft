@@ -29,7 +29,7 @@ services:
       - "1768:1768"
   cft:
     # build: ../docker
-    image: cft/cft:3.6-SP2
+    image: cft/cft:3.6-SP2-P1
 
     environment:
       CFT_FQDN:                    cft
