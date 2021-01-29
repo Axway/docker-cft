@@ -97,7 +97,7 @@ cft/cft             3.7                d9d764b02cc8        18 hours ago        5
 
 ## Copyright
 
-Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
 
 ## License
 

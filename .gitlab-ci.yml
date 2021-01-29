@@ -1,10 +1,11 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2019 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
 #
-before_script:
-- eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
-- echo Using DOCKER_TAG=$DOCKER_TAG
+default:
+  before_script:
+  - eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+  - echo Using DOCKER_TAG=$DOCKER_TAG
 
 stages:
 - build
@@ -56,7 +57,6 @@ push:
   script:
   - docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
   - docker push $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
-
 
 push-latest:
   stage: push
