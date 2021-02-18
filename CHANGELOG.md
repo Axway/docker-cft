@@ -24,6 +24,7 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - File and folder organization in the repository.
 - CFT_KEY, CFT_CG_SHARED_SECRET, USER_COPILOT_CERT_PASSWORD, USER_XFBADM_PASSWORD can be a command, a file, or a string value.
+- Parameter USER_XFBADM_PASSWORD is mandatory to create the user defined by USER_XFBADM_LOGIN.
 - Stop Transfer CFT using 'cft stop' command instead of 'cft force-stop'.
 - Remove COMS from exposed ports.
  

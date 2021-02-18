@@ -124,7 +124,8 @@ cft:
   ## When changing catalogSize, the value of persistence.cftData.size
   catalogSize: 1000
   comSize: 1000
-  
+
+  ## ATTENTION: You need a license for the linux-x86-64 platform without hostname.
   licenseKey:
     secretName: license-key
     ## Should the secret file for the key be automatically created?

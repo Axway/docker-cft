@@ -22,7 +22,7 @@ services:
             USER_XFBADM_PASSWORD:   "alwaysCFT"
         container_name:             test_sut_1
     cft:
-        image: cft/cft:$DOCKER_TAG
+        image: cft:$DOCKER_TAG
 
         environment:
             CFT_FQDN:                   cft
