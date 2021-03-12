@@ -35,15 +35,13 @@ security:
   stage: security
   script:
   # Scan the image and store the URL of the scan results
-  # Prepare Twistlock credentials
-  - CREDENTIALS=$(echo -n "$TWISTLOCK_USER:$TWISTLOCK_PASSWORD" | openssl base64)
   # Scan the image. The image name scanned is not deterministic; retrieve it from the output...
   - out=`twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --address $TWISTLOCK_URL $IMAGE_CFT:$DOCKER_TAG`
   - echo $out
-  - eval export SEARCHING=`echo $out | cut -d ' ' -f 25`
+  - eval export SEARCHING=`echo $out | cut -d ' ' -f 5 | cut -d '/' -f 2`
   - echo get scan result for image=$SEARCHING
   # Retrieve the scan result
-  - "curl --insecure -H \"Authorization: Basic $CREDENTIALS\" -H \"Content-Type: application/json\" -X GET \"$TWISTLOCK_URL/api/v1/scans?search=$SEARCHING&sort=time&reverse=true&limit=1&type=twistcli\" > analysis.json"
+  - "curl --insecure -u$TWISTLOCK_USER:$TWISTLOCK_PASSWORD -H \"Content-Type: application/json\" -X GET $TWISTLOCK_URL\"api/v1/scans?search=$SEARCHING&sort=time&reverse=true&limit=1&type=ciImage\" >analysis.json"
   - echo ">>>> analysis.json"
   - cat analysis.json | jq .
   - echo "<<<< analysis.json"
