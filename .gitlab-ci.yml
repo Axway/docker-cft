@@ -16,7 +16,7 @@ stages:
 build:
   stage: build
   script:
-  - docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= docker
+  - docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= docker
 
 test:
   stage: test
