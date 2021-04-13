@@ -69,16 +69,14 @@ USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM 
 
 ### How to use the official Transfer CFT Docker image
 
-1) Download the Transfer CFT DockerImage package from [Axway Support](https://support.axway.com/).
+1) Download the Transfer CFT DockerImage from [Axway Support](https://support.axway.com/).
 
-2) Unzip the downloaded package.
+2) Load the image.
 
-3) Load the image.
-
-From the folder where the transfer_cft_3.7.tar.gz is located, run the command:
+From the folder where the Transfer_CFT_3.8_DockerImage_linux-x86-64_BN13377000.tar.gz is located, run the command:
 
 ```console
-docker image load -i transfer_cft_3.7.tar.gz
+docker image load -i Transfer_CFT_3.8_DockerImage_linux-x86-64_BN13377000.tar.gz
 ```
 
 4) Check that the image is successfully loaded.
@@ -93,7 +91,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft             3.7                 d9d764b02cc8        18 hours ago        522MB
+cft/cft             3.8                 c6cb57d34461        18 hours ago        506MB
 ```
 
 ### How to manage the Transfer CFT service from your docker-compose.yml file
@@ -104,7 +102,7 @@ You can use Docker Compose to automate building container images, as well as app
 
 Before you start, customize the parameters in the docker-compose.yml.
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
 
 If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN variable to reflect the actual host machine’s address.  
 **ATTENTION:** You cannot connect to an interface if this parameter is incorrect.
@@ -194,7 +192,7 @@ Upgrade as follows:
    
 ##### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
 
 ##### 2. Export the Transfer data (optional)
 
@@ -294,7 +292,7 @@ Upgrade as follows:
    
 ###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
 
 ###### 2. Export the Transfer data (optional)
 
@@ -422,7 +420,7 @@ Upgrade as follows:
    
 ###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.7".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
 
 ###### 2. Export the Transfer data (optional)
 
