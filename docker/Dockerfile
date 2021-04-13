@@ -28,7 +28,7 @@ ENV LANG=C.UTF-8
 
 # Download and install Transfer CFT package
 
-ARG PACKAGE="Transfer_CFT_3.8_Install_linux-x86-64_BN13375000.zip"
+ARG PACKAGE="Transfer_CFT_3.8_Install_linux-x86-64_BN13377000.zip"
 ARG URL_BASE="https://delivery.server.com/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
 
@@ -69,7 +69,7 @@ ENV LANG=C.UTF-8
 
 ARG BUILD_DATE
 ARG BUILD_VERSION="3.8"
-ARG BUILD_REVISION="13375000"
+ARG BUILD_REVISION="13377000"
 
 LABEL created="${BUILD_DATE}"
 LABEL url="https://www.axway.com"
