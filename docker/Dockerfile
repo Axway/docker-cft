@@ -29,7 +29,7 @@ ENV LANG=C.UTF-8
 # Download and install Transfer CFT package
 
 ARG PACKAGE="Transfer_CFT_3.8_Install_linux-x86-64_BN13377000.zip"
-ARG URL_BASE="https://delivery.server.com/"
+ARG URL_BASE="https://delivery.server.int/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
 
 ADD --chown=axway:axway $INSTALL_KIT installkit.zip

@@ -4,7 +4,9 @@
 #
 default:
   before_script:
-  - eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+  - if [ -z "$DOCKER_TAG" ]; then
+  -   eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+  - fi
   - echo Using DOCKER_TAG=$DOCKER_TAG
 
 stages:
@@ -16,8 +18,24 @@ stages:
 build:
   stage: build
   script:
-  - docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ') --build-arg URL_BASE=https://delivery.axway.int/download_true_name.php?static= docker
-
+  - if [ -n "$INSTALL_KIT" ]; then
+  -   echo Build using version=$BUILD_VERSION, revision=$BUILD_REVISION, and kit=$INSTALL_KIT
+  -   docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        --build-arg BUILD_VERSION=$BUILD_VERSION
+        --build-arg BUILD_REVISION=$BUILD_REVISION
+        --build-arg INSTALL_KIT=$INSTALL_KIT
+        docker
+  - elif [ -n "$URL_BASE" ]; then
+  -   echo Build using version=$BUILD_VERSION, revision=$BUILD_REVISION, and url=$URL_BASE
+  -   docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+        --build-arg BUILD_VERSION=$BUILD_VERSION
+        --build-arg BUILD_REVISION=$BUILD_REVISION
+        --build-arg URL_BASE=$URL_BASE
+        docker
+  - else
+  -     echo INSTALL_KIT or URL_BASE must be defined, aborting...
+  -     exit 1
+  - fi
 test:
   stage: test
   script:
@@ -34,8 +52,8 @@ test:
 security:
   stage: security
   script:
-  # Scan the image and store the URL of the scan results
-  # Scan the image. The image name scanned is not deterministic; retrieve it from the output...
+  # Scan the image and store the URL of the scan results.
+  # The image name scanned is not deterministic; retrieve it from the output...
   - out=`twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --address $TWISTLOCK_URL $IMAGE_CFT:$DOCKER_TAG`
   - echo $out
   - eval export SEARCHING=`echo $out | cut -d ' ' -f 5 | cut -d '/' -f 2`
@@ -55,6 +73,11 @@ push:
   script:
   - docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
   - docker push $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
+  # Additional tag with DOCKER_ADD_TAG
+  - if [ -n "$DOCKER_ADD_TAG" ]; then
+  -   docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:$DOCKER_ADD_TAG
+  -   docker push $REGISTRY_URL/$IMAGE_CFT:$DOCKER_ADD_TAG
+  - fi
 
 push-latest:
   stage: push
