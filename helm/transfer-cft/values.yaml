@@ -249,6 +249,9 @@ persistence:
   ## persistence.keep Keep persistent volume after helm delete
   keep: false
   
+  ## Transfer CFT is always in active/active cluster mode. The multi-node,
+  ## multi-host architecture prerequisites apply.
+  ## (Ex. Supported shared file systems are GPFS, GFS2, NFSv4, AWS EFS)
   cftData:
     ## CFT Runtime Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>

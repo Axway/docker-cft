@@ -162,6 +162,8 @@ $ helm install --name transfer-cft ./transfer-cft -f my-values.yaml
 
 > **ATTENTION**: You need a license for the linux-x86-64 platform without hostname.
 
+> **ATTENTION**: Transfer CFT is always in active/active cluster mode. The multi-node, multi-host architecture prerequisites apply. (Ex. Supported shared file systems are GPFS, GFS2, NFSv4, AWS EFS)
+
 ## Resources
 The resources needed for Transfer CFT to run correctly depends on how Transfer CFT is used.
 
