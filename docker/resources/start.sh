@@ -250,6 +250,11 @@ healthz()
     return 0
 }
 
+# Boolean Variables to MAJ
+CFT_MULTINODE_ENABLE=`echo $CFT_MULTINODE_ENABLE | tr '[a-z]' '[A-Z]'`
+CFT_CG_ENABLE=`echo $CFT_CG_ENABLE | tr '[a-z]' '[A-Z]'`
+CFT_SENTINEL_ENABLE=`echo $CFT_SENTINEL_ENABLE | tr '[a-z]' '[A-Z]'`
+
 check_fqdn
 
 parent_dir="$(dirname -- "$(realpath -- "$CFT_CFTDIRRUNTIME")")"
