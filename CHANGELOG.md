@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
  
+## [3.6 SP2] - 2021-05-31
+
+### Changed
+- Helm README updated on resources calculation.
+- Helm README updated disks prerequisites.
+
 ## [3.7] - 2020-09-30
 
 ### Added

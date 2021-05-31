@@ -167,11 +167,9 @@ $ helm install --name transfer-cft ./transfer-cft -f my-values.yaml
 ## Resources
 The resources needed for Transfer CFT to run correctly depends on how Transfer CFT is used.
 
-The resources needed to run Transfer CFT properly are based on the catalog size and in the number of transfers per hour.
+The resources needed to run Transfer CFT properly are based on the catalog size, the number of parallel transfers and the Transfer CFT's configuration.
 
-For memory use, you should add the value related to the catalog size to the value from the transfers per hour.
-
-> **Example**: For a catalog with 10000 records and 1000 transfers/h, you should have 550Mi of memory = 500Mi (for the catalog) + 50Mi (for the transfer load).
+For memory use, you should add the value related to the catalog size and the result of the equations about transfers.
 
 #### Catalog size
 Catalog Size | Disk space (MB) | Memory (Mi)
@@ -180,10 +178,25 @@ Catalog Size | Disk space (MB) | Memory (Mi)
  10000 | 1000 * cft.multinode.nodesNumber | 500
  100000 | 3000 * cft.multinode.nodesNumber | 2500
 
-#### Transfers per hour
-transfers/h | CPU (m) | Memory (Mi)
---- | --- | ---
- 1000 | 100 | 50
- 10000 | 250 | 50
- 100000 | 650 | 200
+#### Transfers
+##### Sender's equation
+Add the following for each partener:
+```console
+SCHKW (from protocol) * 1M * CNXOUT (from partner)
+```
 
+##### Receiver's equation
+Add the following for each partener:
+```console
+RCHKW (from protocol) * RPACING (from protocol) * CNXIN (from partner)
+```
+
+##### Transfers per hour
+transfers/h | CPU (m)
+--- | --- 
+ 1000 | 100
+ 10000 | 250
+ 100000 | 650
+
+### Example
+For a catalog with 10000 records, if I do transfers with only 1 partner having CNXIN = CNXOUT = 8, using protocol with SCHKW = RCHKW = 2, it would give me 500Mi (for the catalog) + 16Mi (sender 2 * 1 * 8) + 512Mi (receiver 2 * 32Mi * 8) = 1028Mi of memory needed.
