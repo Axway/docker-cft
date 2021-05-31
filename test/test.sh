@@ -4,9 +4,24 @@
 #
 # Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
 #
-set -euo pipefail
 
-sleep 5
+# wait startup
+started=0
+timeout=15
+i=0
+echo "Waiting for cft startup $i/$timeout..."
+while [ $i -lt $timeout ] && [ $started = 0 ]; do
+  nc -z cft $CFT_COPILOT_PORT
+  if [ "$?" = "0" ]; then
+    started=1
+  else
+    i=$(($i+1))
+    echo "Waiting for cft startup $i/$timeout..."
+    sleep 1
+  fi
+done
+
+echo "Start testing..."
 
 # Test Copilot port
 nc -z cft $CFT_COPILOT_PORT
