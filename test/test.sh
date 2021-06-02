@@ -12,7 +12,10 @@ i=0
 echo "Waiting for cft startup $i/$timeout..."
 while [ $i -lt $timeout ] && [ $started = 0 ]; do
   nc -z cft $CFT_COPILOT_PORT
-  if [ "$?" = "0" ]; then
+  cop_rc=$?
+  nc -z cft $CFT_RESTAPI_PORT
+  rest_rc=$?
+  if [ "$cop_rc" = "0" ] && [ "$rest_rc" = "0" ]; then
     started=1
   else
     i=$(($i+1))
