@@ -14,8 +14,8 @@ If needed, see [Get started with Docker](https://docs.docker.com/get-started/) f
 
 ## How to use the Transfer CFT docker-compose.yml files
 
-The docker-compose.yml describes and allows the management of the Transfer CFT service.
-The docker-compose-multinode.yml describes the Transfer CFT service in a multinode environment, and allows management of a scalable Transfer CFT service.
+The docker-compose.yml describes and allows you to manage the Transfer CFT service.
+The docker-compose-multinode.yml describes the Transfer CFT service in a multinode environment, and allows the management of a scalable Transfer CFT service.
 
 You can use the ../docker/Dockerfile to build your own Transfer CFT image or use the official Axway Transfer CFT Docker image.
 
@@ -141,7 +141,7 @@ You can use the -d option to run containers in the background.
 docker-compose up -d  
 ```
 
-You can use the -V option to recreate anonymous volumes instead of retrieving data from the previous containers.
+To create an anonymous volume, instead of retrieving data from previous containers, use the  -V option. Doing so forcefully creates a runtime. It could be useful for debugging purpose.
 
 ```console
 docker-compose up -V
@@ -180,23 +180,46 @@ From the folder where the docker-compose.yml file is located, you can stop the c
 docker-compose stop
 ```
 
-#### 8. Upgrade Transfer CFT
+#### 8. Access Transfer CFT directories in the container
+For debugging purpose, you could required to access the Transfer CFT container.
 
-It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
+List the running containers using the command:
+
+```console
+docker container ls -a
+```
+Locate the container ID, for example 0cdg611581c9.
+Using the container ID, run the following command:
+
+```console
+docker exec -it 0cdg611581c9 /bin/bash
+```
+From within the container you can then run Transfer CFT commands:
+
+```console
+axway@fm-demo:~$ pwd
+/opt/axway
+axway@fm-demo:~$ cd data/runtime/
+axway@fm-demo:~/data/runtime$ . ./profile
+
+axway@fm-demo:~/data/runtime$ CFTUTIL ...
+```
+
+#### 9. Upgrade Transfer CFT
+
+You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime). This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
 
 You must first load the new Transfer CFT image in your repository. You can either:
-- Use an official Transfer CFT image, as describe in the section "How to use the official Transfer CFT Docker image"
+- Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
-   
-Upgrade as follows:
-   
+
 ##### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
 
-##### 2. Export the Transfer data (optional)
+##### 2. Export the Transfer data (not necessary for SPs)
 
-This step is only mandatory if you upgrade to a new major release of Transfer CFT.
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
@@ -282,21 +305,19 @@ docker-compose -f docker-compose-multinode.yml stop
 
 ##### 5. Upgrade Transfer CFT
 
-It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
+You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime). This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
 
 You must first load the new Transfer CFT image in your repository. You can either:
-- Use an official Transfer CFT image, as describe in the section "How to use the official Transfer CFT Docker image"
+- Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
-   
-Upgrade as follows:
-   
-###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
+##### 1. Update the image parameter
 
-###### 2. Export the Transfer data (optional)
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
 
-This step is only mandatory if you upgrade to a new major release of Transfer CFT.
+##### 2. Export the Transfer data (not necessary for SPs)
+
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
@@ -410,21 +431,19 @@ docker-compose -f docker-compose-multinode.yml stop
 
 ##### 5. Upgrade Transfer CFT
 
-It is possible to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime) using the upgrade option. This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
+You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime). This could be useful, for example, if you want to work with a newly released SP2 instead of the current SP1, or you want to add some security options to the Linux kernel.
 
 You must first load the new Transfer CFT image in your repository. You can either:
-- Use an official Transfer CFT image, as describe in the section "How to use the official Transfer CFT Docker image"
+- Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
-   
-Upgrade as follows:
-   
-###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
+##### 1. Update the image parameter
 
-###### 2. Export the Transfer data (optional)
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
 
-This step is only mandatory if you upgrade to a new major release of Transfer CFT, and should be executed only once.
+##### 2. Export the Transfer data (not necessary for SPs)
+
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
