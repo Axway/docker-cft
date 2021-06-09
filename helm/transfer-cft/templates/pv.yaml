@@ -32,7 +32,7 @@ spec:
 {{- if .Values.persistence.cftData.mountOptions }}
   {{- with .Values.persistence.cftData.mountOptions }}
   mountOptions:
-    {{ toYaml . }}
+    {{- toYaml . | nindent 4 }}
   {{- end }}
 {{- end }}
 {{- end }}
