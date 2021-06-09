@@ -10,7 +10,7 @@ metadata:
   labels:
     {{- include "transfer-cft.labels" . | nindent 4 }}
     {{- if .Values.podLabels }}
-    {{ toYaml .Values.podLabels }}
+    {{- toYaml .Values.podLabels | nindent 4 }}
     {{- end }}
 spec:
   privileged: false
@@ -57,7 +57,7 @@ metadata:
   labels:
     {{- include "transfer-cft.labels" . | nindent 4 }}
     {{- if .Values.podLabels }}
-    {{ toYaml .Values.podLabels }}
+    {{- toYaml .Values.podLabels | nindent 4 }}
     {{- end }}
   name: {{ template "transfer-cft.fullname" . }}
   namespace: {{ .Release.Namespace }}
@@ -77,7 +77,7 @@ metadata:
   labels:
     {{- include "transfer-cft.labels" . | nindent 4 }}
     {{- if .Values.podLabels }}
-    {{ toYaml .Values.podLabels }}
+    {{- toYaml .Values.podLabels | nindent 4 }}
     {{- end }}
   name: {{ template "transfer-cft.fullname" . }}
   namespace: {{ .Release.Namespace }}
