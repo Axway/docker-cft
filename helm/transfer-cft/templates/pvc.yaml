@@ -7,7 +7,7 @@ metadata:
   labels:
     {{- include "transfer-cft.labels" . | nindent 4 }}
     {{- if .Values.podLabels }}
-    {{ toYaml .Values.podLabels }}
+    {{- toYaml .Values.podLabels | nindent 4 }}
     {{- end }}
     {{- if .Values.persistence.keep }}
     helm.sh/resource-policy: keep

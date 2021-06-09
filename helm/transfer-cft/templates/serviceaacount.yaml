@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "transfer-cft.labels" . | nindent 4 }}
     {{- if .Values.podLabels }}
-    {{ toYaml .Values.podLabels }}
+    {{- toYaml .Values.podLabels | nindent 4 }}
     {{- end }}
   name: {{ template "transfer-cft.serviceAccountName" . }}
   namespace: {{ .Release.Namespace | quote }}
