@@ -4,7 +4,6 @@
 #
 # Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
 #
-set -Eeo pipefail
 
 get_value()
 {
@@ -132,12 +131,14 @@ CFTUTIL /m=2 uconfset id='sentinel.trkmsgencoding', value='UTF-8'
 if [ -n "$CFT_RESTAPI_PORT" ]; then
     CFTUTIL /m=2 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
     CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='YES'
-    # CREATE CERTIFICATES FOR REST API
-    openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj \/CN\=$CFT_FQDN
-    openssl pkcs12 -inkey conf/pki/rest_api_key.pem -in conf/pki/rest_api_cert.pem -export -out conf/pki/rest_api_cert.p12 -passout pass:restapi
-    # SET UCONF VALUE FOR CERTIFICATES
-    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
-    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+    if [[ "$CFT_CG_ENABLE" = "NO" ]]; then
+        # CREATE CERTIFICATES FOR REST API
+        openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj \/CN\=$CFT_FQDN
+        openssl pkcs12 -inkey conf/pki/rest_api_key.pem -in conf/pki/rest_api_cert.pem -export -out conf/pki/rest_api_cert.p12 -passout pass:restapi
+        # SET UCONF VALUE FOR CERTIFICATES
+        CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
+        CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+    fi
 fi
 
 # OTHERS
