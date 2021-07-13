@@ -4,6 +4,7 @@
 #
 # Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
 #
+set -Eeo pipefail
 trap 'rm $lockfile' SIGTERM SIGHUP SIGINT EXIT
 trap 'finish' SIGTERM SIGHUP SIGINT EXIT
 
