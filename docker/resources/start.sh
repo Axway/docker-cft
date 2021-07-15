@@ -205,6 +205,31 @@ customize_runtime()
         fi
     fi
 
+
+    # REST API CONFIGURATION
+    if [ -n "$CFT_RESTAPI_PORT" ]; then
+        CFTUTIL /m=2 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
+        CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='YES'
+        
+        has_copilot_cert=$(CFTUTIL /m=2 uconfget id=copilot.ssl.SslCertFile | sed -n 's/^copilot.ssl.sslcertfile=//p' | wc -w)
+        if [[ $has_copilot_cert = 0 ]]; then
+            echo "INFO: Creating certificates for REST API"
+            # CREATE CERTIFICATES FOR REST API
+            openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj \/CN\=$CFT_FQDN
+            openssl pkcs12 -inkey conf/pki/rest_api_key.pem -in conf/pki/rest_api_cert.pem -export -out conf/pki/rest_api_cert.p12 -passout pass:restapi
+            # SET UCONF VALUE FOR CERTIFICATES
+            CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
+            CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+            
+            if [[ "$CFT_CG_ENABLE" = "YES" ]]; then
+                echo "INFO: Certificates set as temporary, waiting for registration to be completed"
+                using_temp_cert=1
+            fi
+        fi
+    else
+        CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='NO'
+    fi
+
     echo "INF: runtime customized."
 }
 
@@ -222,7 +247,7 @@ stop()
     fi
 }
 
-kill ()
+_kill()
 {
     kill -9 -1
 }
@@ -231,7 +256,7 @@ finish()
 {
     stop
     sleep 2
-    kill
+    _kill
 }
 
 # Check if server is up
@@ -250,10 +275,28 @@ healthz()
     return 0
 }
 
+#switch Copilot certificate from temporary to the ones set by CG/FM
+switch_cert()
+{
+    if [[ "$CFT_CG_ENABLE" = "YES" ]]; then
+        registration_id=$(CFTUTIL /m=2 uconfget id=cg.registration_id | sed -n 's/^cg.registration_id=//p')
+        
+        if [[ $using_temp_cert = 1 && $registration_id != -1 ]]; then
+            echo "INFO: Registration completed, switching to certificate received during registration"
+            CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertFile'
+            CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertPassword'
+
+            CFTUTIL reconfig type=am
+            using_temp_cert=0
+        fi
+    fi
+}
+
 # Boolean Variables to MAJ
 CFT_MULTINODE_ENABLE=`echo $CFT_MULTINODE_ENABLE | tr '[a-z]' '[A-Z]'`
 CFT_CG_ENABLE=`echo $CFT_CG_ENABLE | tr '[a-z]' '[A-Z]'`
 CFT_SENTINEL_ENABLE=`echo $CFT_SENTINEL_ENABLE | tr '[a-z]' '[A-Z]'`
+using_temp_cert=0
 
 check_fqdn
 
@@ -370,4 +413,5 @@ healthz
 while [ $? -eq 0 ]; do
     sleep ${CFT_STATUS_SLEEP:-10}
     healthz
+    switch_cert
 done

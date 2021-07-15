@@ -128,18 +128,6 @@ if [ -n "$CFT_SENTINEL_TRANSFER_FILTER" ]; then
 fi
 CFTUTIL /m=2 uconfset id='sentinel.trkmsgencoding', value='UTF-8'
 
-# REST API CONFIGURATION
-if [ -n "$CFT_RESTAPI_PORT" ]; then
-    CFTUTIL /m=2 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
-    CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='YES'
-    # CREATE CERTIFICATES FOR REST API
-    openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj \/CN\=$CFT_FQDN
-    openssl pkcs12 -inkey conf/pki/rest_api_key.pem -in conf/pki/rest_api_cert.pem -export -out conf/pki/rest_api_cert.p12 -passout pass:restapi
-    # SET UCONF VALUE FOR CERTIFICATES
-    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
-    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
-fi
-
 # OTHERS
 if [ -n "$CFT_JVM" ]; then
     CFTUTIL /m=2 uconfset id='secure_relay.ma.start_options', value='-Xmx'$CFT_JVM'm'
