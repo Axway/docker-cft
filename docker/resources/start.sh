@@ -278,10 +278,10 @@ healthz()
 #switch Copilot certificate from temporary to the ones set by CG/FM
 switch_cert()
 {
-    if [[ "$CFT_CG_ENABLE" = "YES" ]]; then
+    if [[ "$CFT_CG_ENABLE" = "YES" && $using_temp_cert = 1 ]]; then
         registration_id=$(CFTUTIL /m=2 uconfget id=cg.registration_id | sed -n 's/^cg.registration_id=//p')
         
-        if [[ $using_temp_cert = 1 && $registration_id != -1 ]]; then
+        if [[ $registration_id != -1 ]]; then
             echo "INFO: Registration completed, switching to certificate received during registration"
             CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertFile'
             CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertPassword'
