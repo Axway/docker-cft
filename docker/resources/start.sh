@@ -236,14 +236,20 @@ customize_runtime()
 # Propagating signals
 stop()
 {
-    if [[ "$CFT_MULTINODE_ENABLE" = "NO" ]]; then
-        cft stop
-        cft force-stop
-    fi
-    copstop -f &
-    if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
-        echo "INF: Remove HOST $HOSTNAME"
-        cft remove_host -hostname $HOSTNAME
+    if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
+        # load profile
+        cd $CFT_CFTDIRRUNTIME
+        . ./profile
+
+        if [[ "$CFT_MULTINODE_ENABLE" = "NO" ]]; then
+            cft stop
+            cft force-stop
+        fi
+        copstop -f &
+        if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
+            echo "INF: Remove HOST $HOSTNAME"
+            cft remove_host -hostname $HOSTNAME
+        fi
     fi
 }
 
@@ -291,6 +297,15 @@ switch_cert()
         fi
     fi
 }
+
+# Testing EULA
+ACCEPT_GENERAL_CONDITIONS=`echo $ACCEPT_GENERAL_CONDITIONS | tr '[a-z]' '[A-Z]'`
+if [[ -n "$ACCEPT_GENERAL_CONDITIONS" && "$ACCEPT_GENERAL_CONDITIONS" = "YES" ]]; then
+    echo "General Terms and Conditions accepted."
+else
+    echo "General Terms and Conditions not accepted. EXIT"
+    exit 1
+fi
 
 # Boolean Variables to MAJ
 CFT_MULTINODE_ENABLE=`echo $CFT_MULTINODE_ENABLE | tr '[a-z]' '[A-Z]'`

@@ -108,6 +108,13 @@ spec:
             value: {{ $cftRestapi | quote }}
           {{- end }}
         {{- with .Values.cft }}
+          {{- if $accept_general_conditions }}
+          - name: "ACCEPT_GENERAL_CONDITIONS"
+            value: {{ .accept_general_conditions | quote }}
+          {{- else }}
+          - name: "ACCEPT_GENERAL_CONDITIONS"
+            value: "NO"
+          {{- end }}
           - name: "CFT_FQDN"
             value: {{ .fqdn | quote }}
           - name: "CFT_INSTANCE_ID"

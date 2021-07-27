@@ -16,6 +16,9 @@ services:
     hostname: docker0
 
     environment:
+      ## Set parameter to yes if you accept the applicable General Terms and Conditions,
+      ## located at https://www.axway.com/en/legal/contract-documents
+      ACCEPT_GENERAL_CONDITIONS:   "NO"
       CFT_FQDN:                    cft
       CFT_INSTANCE_ID:             docker0_cft
       CFT_INSTANCE_GROUP:          dev.docker

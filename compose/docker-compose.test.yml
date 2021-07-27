@@ -25,6 +25,7 @@ services:
         image: cft:$DOCKER_TAG
 
         environment:
+            ACCEPT_GENERAL_CONDITIONS:  "YES"
             CFT_FQDN:                   cft
             CFT_INSTANCE_ID:            docker0_cft
             CFT_INSTANCE_GROUP:         dev.docker

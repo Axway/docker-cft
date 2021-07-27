@@ -66,6 +66,7 @@ Parameter | Description | Default
 `nodeSelector` | Label used to deploy on specific node | `{}`
 `tolerations` | Toleration are applied to pods, and allow (but do not require) the pods to schedule onto nodes with matching taints | `[]`
 `affinity` | Affinity rules between each pods | `{}`
+`cft.accept_general_conditions` | Set parameter to yes if you accept the applicable General Terms and Conditions, located at https://www.axway.com/en/legal/contract-documents | `no`
 `cft.fqdn` | A fully qualified domain name (FQDN) or an  IP address used to connect to your Transfer CFT deployment | `nil`
 `cft.instanceId` | Name of the Transfer CFT instance | `docker0_cft`
 `cft.instanceGroup` | Transfer CFT instance's group | `dev.docker`

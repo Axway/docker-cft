@@ -25,6 +25,7 @@ The following parameters are available in the Dockerfile and docker-compose.yml 
   
  **Parameter**              |  **Values**  |  **Description**
  -------------------------- | :----------: | --------------- 
+ACCEPT_GENERAL_CONDITIONS   |  "YES"/"NO"  |  Set parameter to yes if you accept the applicable General Terms and Conditions, located at https://www.axway.com/en/legal/contract-documents
 CFT_FQDN                    |  \<string>   |  Host address of the local server.
 CFT_LOAD_BALANCER_HOST      |  \<string>   |  Load balancer address (FQDN or IP address) used by Central Governance to connect to Transfer CFT UI Server for multinode active/active deployment.
 CFT_LOAD_BALANCER_PORT      |  \<number>   |  Load balancer port used by Central Governance to connect to Transfer CFT UI Server CFT_COPILOT_CG_PORT port. Used for multinode active/active deployment.
