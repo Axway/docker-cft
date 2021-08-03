@@ -37,7 +37,7 @@ ADD --chown=axway:axway $INSTALL_KIT installkit.zip
 RUN unzip installkit.zip -d setup && \
     cd setup && \
     chmod +x *.run && \
-    ./Transfer_CFT_*_linux-x86-64_*.run  --mode unattended --installdir /opt/axway/cft && \
+    ./Transfer_CFT_*_linux-x86-64_*.run  --mode unattended --installdir /opt/axway/cft --accept_general_conditions YES && \
     cd && \
     rm -rf setup installkit.zip *.properties && \
     mkdir data
