@@ -118,9 +118,9 @@ affinity: {}
 ####################################
 
 cft:
-  # Set parameter to yes if you accept the applicable General Terms and Conditions,
+  # Set to true to accept the applicable General Terms and Conditions,
   # located at https://www.axway.com/en/legal/contract-documents
-  accept_general_conditions: "no"
+  accept_general_conditions: false
 
   fqdn: "" # A fully qualified domain name (FQDN) or an  IP address used to connect to your Transfer CFT deployment.
   instanceId: docker0_cft

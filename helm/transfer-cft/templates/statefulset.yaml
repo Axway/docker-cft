@@ -108,9 +108,9 @@ spec:
             value: {{ $cftRestapi | quote }}
           {{- end }}
         {{- with .Values.cft }}
-          {{- if $accept_general_conditions }}
+          {{- if .accept_general_conditions }}
           - name: "ACCEPT_GENERAL_CONDITIONS"
-            value: {{ .accept_general_conditions | quote }}
+            value: "YES"
           {{- else }}
           - name: "ACCEPT_GENERAL_CONDITIONS"
             value: "NO"
