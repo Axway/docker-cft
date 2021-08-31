@@ -41,16 +41,16 @@ case "${1:-}" in
     ;;
 
     "status")
-        DEBUG kubectl get statefulset/transfer-cft
+        DEBUG kubectl get statefulset/"$HELM_NAME"-transfer-cft
     ;;
 
     "inspect")
-        DEBUG kubectl describe statefulset/transfer-cft
-        DEBUG kubectl describe service/transfer-cft
+        DEBUG kubectl describe statefulset/"$HELM_NAME"-transfer-cft
+        DEBUG kubectl describe service/"$HELM_NAME"-transfer-cft
     ;;
 
     "logs")
-        DEBUG kubectl logs statefulset/transfer-cft
+        DEBUG kubectl logs statefulset/"$HELM_NAME"-transfer-cft
     ;;
 
     *)
