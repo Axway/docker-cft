@@ -21,14 +21,14 @@ fi
 case "${1:-}" in
     "create")
         DEBUG kubectl get secrets
-        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.7
+        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.9
     ;;
 
     "delete")
         DEBUG helm delete $HELM_NAME
     ;;
 
-    "wait-started")
+    "wait-ready")
         DEBUG kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=transfer-cft --timeout=10s
     ;;
 
@@ -57,6 +57,6 @@ case "${1:-}" in
         if [ ! -z "${1:-}" ]; then
             echo "unsupported command $1"
         fi
-        echo "$0 create | delete | replace | status | inspect | logs | wait-ready"
+        echo "$0 create | delete | replace | status | inspect | logs | wait-ready | wait-delete"
     ;;
 esac
