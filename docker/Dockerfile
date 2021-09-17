@@ -44,7 +44,7 @@ RUN unzip installkit.zip -d setup && \
 
 # Copying useful scripts
 
-COPY --chown=axway:axway resources/*.sh ./
+COPY resources/*.sh resources/uid_entrypoint ./
 
 #
 # Stage 2 : create final image
@@ -52,19 +52,22 @@ COPY --chown=axway:axway resources/*.sh ./
 
 FROM ubuntu:latest
 
+COPY --from=builder /opt/axway /opt/axway
+
 RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         curl \
         jq \
         openssl \
         vim && \
         rm -rf /var/lib/apt/lists && \
-        addgroup axway && \
-        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --ingroup axway axway
-
-COPY --from=builder --chown=axway:axway /opt/axway /opt/axway
+        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --gid 0 axway && \
+        chown -R axway:0 /opt/axway && \
+        chmod -R u+x /opt/axway && \
+        chmod -R g=u /opt/axway /etc/passwd
 
 USER axway
 WORKDIR /opt/axway
+ENV HOME=/opt/axway
 ENV LANG=C.UTF-8
 
 ARG BUILD_DATE
@@ -123,6 +126,7 @@ ENV CFT_MULTINODE_ENABLE "NO"
 
 # Entry point
 
+ENTRYPOINT [ "/opt/axway/uid_entrypoint" ]
 CMD [ "./start.sh" ]
 
 HEALTHCHECK --interval=1m \

@@ -73,7 +73,7 @@ podAnnotations: {}
 # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#podsecuritycontext-v1-core
 podSecurityContext:
   runAsUser: 1000
-  runAsGroup: 1000
+  runAsGroup: 0
   fsGroup: 1000
   # supplementalGroups: []
   
@@ -88,7 +88,7 @@ containerSecurityContext:
   #     - ALL
   runAsNonRoot: true
   runAsUser: 1000
-  runAsGroup: 1000
+  runAsGroup: 0
 
 ## Name of the priority class to be used, priority class needs to be created beforehand
 ## Ref: https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
