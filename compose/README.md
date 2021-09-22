@@ -310,11 +310,11 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 - Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
 
-##### 1. Update the image parameter
+###### 1. Update the image parameter
 
 Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
 
-##### 2. Export the Transfer data (not necessary for SPs)
+###### 2. Export the Transfer data (not necessary for SPs)
 
 This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
 
@@ -323,7 +323,7 @@ curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/cont
 ```
 Check that the REST API call returns 200.
 
-##### 3. Stop and remove the container
+###### 3. Stop and remove the container
 
 To stop and remove the container, run the command:
 
@@ -331,7 +331,7 @@ To stop and remove the container, run the command:
 docker-compose -f docker-compose-multinode.yml down
 ```
 
-##### 4. Recreate and start the Transfer CFT service
+###### 4. Recreate and start the Transfer CFT service
 
 From the folder where the docker-compose-multinode.yml is located, run the command:
 
@@ -435,11 +435,11 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 - Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
 
-##### 1. Update the image parameter
+###### 1. Update the image parameter
 
 Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
 
-##### 2. Export the Transfer data (not necessary for SPs)
+###### 2. Export the Transfer data (not necessary for SPs)
 
 This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
 
