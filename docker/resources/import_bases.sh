@@ -53,6 +53,17 @@ copy_file()
     fi
 }
 
+delete_db()
+{
+    fname=$1
+    if [ -f "$fname" ]; then
+        echo "deleting $fname..."
+        rm $fname
+        rm ${fname}*
+        echo "$fname deleted"
+    fi
+}
+
 if [ "$CFT_EXPORTDIR" = "" ]; then
     echo "FATAL: CFT_EXPORTDIR not defined. Please specify the environment variable CFT_EXPORTDIR."
     exit 1
@@ -60,11 +71,9 @@ fi
 
 cd ~
 cd $CFT_CFTDIRRUNTIME
-. ./profile
 
 echo "Working directory: $PWD"
 exportdir=$CFT_EXPORTDIR/export
-echo "Export directory: $exportdir"
 if [ -d $exportdir ]; then
     echo "$exportdir exists: importing data..."
 else
@@ -72,20 +81,31 @@ else
     exit 0
 fi
 
+# Delete previous databases
+delete_db $CFT_CFTDIRRUNTIME/data/cftparm
+delete_db $CFT_CFTDIRRUNTIME/data/cftpart
+delete_db $CFT_CFTDIRRUNTIME/data/CFTPKU
+
+# Init new databases
+$CFT_INSTALLDIR/home/bin/cftruntime --profile $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME
+$CFT_INSTALLDIR/home/bin/cftruntime --uconf $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME --mac=no
+
+. ./profile
+
 # Version comparison
 downgrade=0
 backupdir=""
 vers=$(get_cft_version_num)
+oldvers=$(cat $exportdir/version)
 if [[ $? -ne 0 || "$vers" = "" ]]; then
     echo "WARNING: failed to retrieve CFT version"
 else
-    oldvers=$(cat $exportdir/version)
     echo "New version is $vers <> old version is $oldvers"
     if [ $vers -ge $oldvers ]; then
         echo "Upgrade policy"
     else
         echo "Downgrade policy"
-        
+
         backupdir=$CFT_EXPORTDIR/$vers
         echo "Backup directory: $backupdir"
         if [ -d $backupdir ]; then
@@ -100,6 +120,23 @@ fi
 init_multinode
 fail=0
 
+## Uconf
+if [ $downgrade = 1 ]; then
+    echo "Restoring uconf of $(date -r $backupdir/cft-uconf.cfg)..." 
+    CFTUTIL @$backupdir/cft-uconf.cfg
+else
+    CFTUTIL @$exportdir/cft-uconf.cfg
+fi
+if [ $? -ne 0 ]; then
+    echo "ERROR: failed to import UCONF"
+    fail=1
+else
+    echo "UCONF imported"
+fi
+
+## Reload the profile as environment variables may have been impacted by the UCONF import.
+. ./profile
+
 ## Parm/Part
 if [ $downgrade = 1 ]; then
     echo "Restoring configuration of $(date -r $backupdir/cft-cnf.cfg)..." 
@@ -107,7 +144,21 @@ if [ $downgrade = 1 ]; then
 else
     cftinit $exportdir/cft-cnf.cfg
 fi
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
+    echo "ERROR: failed to initialize databases"
+    fail=1
+else
+    echo "Databases initialized"
+fi
+
+## Parm/Part
+if [ $downgrade = 1 ]; then
+    echo "Restoring configuration of $(date -r $backupdir/cft-cnf.cfg)..." 
+    cftinit $backupdir/cft-cnf.cfg
+else
+    cftinit $exportdir/cft-cnf.cfg
+fi
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to initialize databases"
     fail=1
 else
@@ -121,7 +172,7 @@ if [ $MULTINODE = 1 ]; then
     do
         j=$(printf "%02d" $i)
         CFTMI /m=2 MIGR type=CAT, direct=TOCAT, ofname=$cat_name$j, ifname=$exportdir/cft-cat$j.xml
-        if [ "$?" -ne "0" ]; then
+        if [ $? -ne 0 ]; then
             echo "ERROR: failed to import Catalog $j"
             fail=1
         else
@@ -130,7 +181,7 @@ if [ $MULTINODE = 1 ]; then
     done
 else
     CFTMI /m=2 MIGR type=CAT, direct=TOCAT, ofname=_CFTCATA, ifname=$exportdir/cft-cat.xml
-    if [ "$?" -ne "0" ]; then
+    if [ $? -ne 0 ]; then
         echo "ERROR: failed to import Catalog"
         fail=1
     else
@@ -140,7 +191,7 @@ fi
 
 ## Com file
 CFTMI /m=2 MIGR type=COM, direct=TOCOM, ofname=_CFTCOM, ifname=$exportdir/cft-com.xml
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to import COM"
     fail=1
 else
@@ -152,7 +203,7 @@ if [ $MULTINODE = 1 ]; then
     do
         j=$(printf "%02d" $i)
         CFTMI /m=2 MIGR type=COM, direct=TOCOM, ofname=$com_name$j, ifname=$exportdir/cft-com$j.xml
-        if [ "$?" -ne "0" ]; then
+        if [ $? -ne 0 ]; then
             echo "ERROR: failed to import COM $j"
             fail=1
         else
@@ -168,14 +219,14 @@ PKIUTIL PKIFILE fname = '%env:CFTPKU%', mode = 'DELETE'
 PKIUTIL PKIFILE fname = '%env:CFTPKU%', mode = 'CREATE'
 #### Import PKI
 PKIUTIL @$exportdir/cft-pki.cfg
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to import PKI"
     fail=1
 else
     echo "PKI imported"
 fi
 
-if [ "$fail" -ne "0" ]; then
+if [ $fail -ne 0 ]; then
     exit 1
     echo "ERROR: failed to import data"
 else
