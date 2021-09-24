@@ -75,7 +75,7 @@ if [ -d $exportdir ]; then
     echo "Directory $exportdir removed."
 fi
 mkdir -p $exportdir
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "FATAL: failed to create directory $exportdir"
     exit 1
 fi
@@ -89,7 +89,7 @@ if [[ $? -ne 0 || "$vers" = "" ]]; then
 else
     echo $vers >$exportdir/version
     echo "Version saved: $vers"
-    
+
     # Create backupdir
     backupdir=$CFT_EXPORTDIR/$vers
     echo "Backup directory: $backupdir"
@@ -115,7 +115,7 @@ if [ $MULTINODE = 1 ]; then
     do
         j=$(printf "%02d" $i)
         CFTMI /m=2 MIGR type=CAT, direct=FROMCAT, ifname=$cat_name$j, ofname=$exportdir/cft-cat$j.xml
-        if [ "$?" -ne "0" ]; then
+        if [ $? -ne 0 ]; then
             echo "ERROR: failed to export Catalog $j"
             fail=1
         else
@@ -124,7 +124,7 @@ if [ $MULTINODE = 1 ]; then
     done
 else
     CFTMI /m=2 MIGR type=CAT, direct=FROMCAT, ifname=_CFTCATA, ofname=$exportdir/cft-cat.xml
-    if [ "$?" -ne "0" ]; then
+    if [ $? -ne 0 ]; then
         echo "ERROR: failed to export Catalog"
         fail=1
     else
@@ -134,7 +134,7 @@ fi
 
 ## Com file
 CFTMI /m=2 MIGR type=COM, direct=FROMCOM, ifname=_CFTCOM, ofname=$exportdir/cft-com.xml
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to export COM"
     fail=1
 else
@@ -146,7 +146,7 @@ if [ $MULTINODE = 1 ]; then
     do
         j=$(printf "%02d" $i)
         CFTMI /m=2 MIGR type=COM, direct=FROMCOM, ifname=$com_name$j, ofname=$exportdir/cft-com$j.xml
-        if [ "$?" -ne "0" ]; then
+        if [ $? -ne 0 ]; then
             echo "ERROR: failed to export COM $j"
             fail=1
         else
@@ -155,37 +155,49 @@ if [ $MULTINODE = 1 ]; then
     done
 fi
 
+## Uconf
+CFTUTIL /m=2 CFTEXT type=uconf, fout=$exportdir/cft-uconf.cfg
+if [ $? -ne 0 ]; then
+    echo "ERROR: failed to export UCONF"
+    fail=1
+else
+    echo "UCONF exported"
+    if [ -d "$backupdir" ]; then
+        copy_file $exportdir/cft-uconf.cfg $backupdir/cft-uconf.cfg
+    fi
+fi
+
 ## Parm/Part
 saved=$(cftuconf cft.uconf.cftext)
 CFTUTIL /m=2 UCONFSET ID=cft.uconf.cftext, value=No
 CFTUTIL /m=2 CFTEXT fout=$exportdir/cft-cnf.cfg
-if [[ -n "$backupdir" && -d $backupdir ]]; then
-    copy_file $exportdir/cft-cnf.cfg $backupdir/cft-cnf.cfg
-fi
-CFTUTIL /m=2 UCONFSET ID=cft.uconf.cftext, value=$saved
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to export PARM/PART"
     fail=1
 else
     echo "PARM/PART exported"
+    if [ -d "$backupdir" ]; then
+        copy_file $exportdir/cft-cnf.cfg $backupdir/cft-cnf.cfg
+    fi
 fi
+CFTUTIL /m=2 UCONFSET ID=cft.uconf.cftext, value=$saved
 
 ## PKI
 mkdir $exportdir/pki
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to create directory $exportdir/pki"
     exit 1
 fi
 touch $exportdir/cft-pki.cfg
 PKIUTIL PKIEXT fout=$exportdir/cft-pki.cfg, pkipref=$exportdir/pki/, password=upgrade
-if [ "$?" -ne "0" ]; then
+if [ $? -ne 0 ]; then
     echo "ERROR: failed to export PKI"
     fail=1
 else
     echo "PKI exported"
 fi
 
-if [ "$fail" -ne "0" ]; then
+if [ $fail -ne 0 ]; then
     echo "ERROR: failed to export all data. $exportdir deleted."
 # Remove bases directory
     rm -rf $exportdir
