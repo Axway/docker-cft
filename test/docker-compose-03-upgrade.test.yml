@@ -1,0 +1,54 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
+#
+## AMPLIFY Transfer CFT 3.5 Docker-compose for automated test
+#
+
+version: "3.5"
+
+services:
+    sut:
+        build:
+            context: .
+            dockerfile: Dockerfile-upgrade
+        depends_on:
+        - cft
+        environment:
+            CFT_FQDN:               cft
+            CFT_COPILOT_PORT:       1766
+            CFT_RESTAPI_PORT:       1768
+            USER_XFBADM_LOGIN:      "admin"
+            USER_XFBADM_PASSWORD:   "alwaysCFT"
+        container_name:             test_sut_upgrade
+    cft:
+        image: cft:$DOCKER_TAG
+        environment:
+            ACCEPT_GENERAL_CONDITIONS:  "YES"
+            CFT_FQDN:                   cft
+            CFT_INSTANCE_ID:            docker0_cft
+            CFT_INSTANCE_GROUP:         dev.docker
+            CFT_CATALOG_SIZE:           1000
+            CFT_COM_SIZE:               1000
+            CFT_PESIT_PORT:             1761
+            CFT_PESITSSL_PORT:          1762
+            CFT_COMS_PORT:              1765
+            CFT_COPILOT_PORT:           1766
+            CFT_COPILOT_CG_PORT:        1767
+            CFT_RESTAPI_PORT:           1768
+            CFT_CG_ENABLE:              "NO"
+            CFT_CG_HOST:                cg
+            CFT_CG_PORT:                12553
+            CFT_CG_SHARED_SECRET:       Secret01
+            CFT_CG_POLICY:              ""
+            CFT_CG_PERIODICITY:         ""
+            CFT_JVM:                    1024
+            CFT_KEY:                    "$CFTKEY"
+            CFT_CFTDIRRUNTIME:          "/opt/axway/data/runtime"
+            USER_XFBADM_LOGIN:          "admin"
+            USER_XFBADM_PASSWORD:       "alwaysCFT"
+        volumes:
+        - cft_data:/opt/axway/data
+volumes:
+    cft_data:
+        driver: local

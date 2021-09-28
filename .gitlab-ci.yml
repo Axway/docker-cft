@@ -39,14 +39,18 @@ build:
 test:
   stage: test
   script:
-  - cd compose
-  - docker-compose -f docker-compose.test.yml down -v
-  - docker-compose -f docker-compose.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
-  - cd ..
-  after_script:
-  - cd compose
-  - docker-compose -f docker-compose.test.yml logs
-  - docker-compose -f docker-compose.test.yml down -v
+  - cd test
+  - docker-compose -f docker-compose-01.test.yml down -v
+  - docker-compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
+  - docker-compose -f docker-compose-01.test.yml logs
+  - docker-compose -f docker-compose-01.test.yml down -v
+  - docker-compose -f docker-compose-02-pre-upgrade.test.yml down -v
+  - docker-compose -f docker-compose-02-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
+  - docker-compose -f docker-compose-02-pre-upgrade.test.yml logs
+  - docker-compose -f docker-compose-02-pre-upgrade.test.yml down
+  - docker-compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
+  - docker-compose -f docker-compose-03-upgrade.test.yml logs
+  - docker-compose -f docker-compose-03-upgrade.test.yml down -v
   - cd ..
 
 security:
