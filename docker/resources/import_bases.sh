@@ -151,20 +151,6 @@ else
     echo "Databases initialized"
 fi
 
-## Parm/Part
-if [ $downgrade = 1 ]; then
-    echo "Restoring configuration of $(date -r $backupdir/cft-cnf.cfg)..." 
-    cftinit $backupdir/cft-cnf.cfg
-else
-    cftinit $exportdir/cft-cnf.cfg
-fi
-if [ $? -ne 0 ]; then
-    echo "ERROR: failed to initialize databases"
-    fail=1
-else
-    echo "Databases initialized"
-fi
-
 ## Catalog
 if [ $MULTINODE = 1 ]; then
      cat_name=$(cftuconf cft.cftcat.fname)
