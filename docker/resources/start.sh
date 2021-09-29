@@ -368,15 +368,23 @@ rm -f $lockfile
 CFTUTIL /m=2 about
 
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
-    echo "INF: Add HOST $HOSTNAME"
-    
-    if [ -n "$CFT_KUBERNETES_SERVICE" ]; then
-        servicename=$(echo $CFT_KUBERNETES_SERVICE | sed 's/\(.*\)/\L\1/')
+    case $(cftuconf cft.multi_node.hostnames) in
+    *${HOSTNAME}*) 
+        # hostname could be already in the list after an upgrade
+        echo "INF: Remove host $HOSTNAME"
+        cft remove_host -hostname $HOSTNAME
+        ;;
+    esac
 
-        cft add_host -hostname $HOSTNAME -host $HOSTNAME.$servicename
+    if [ -n "$CFT_KUBERNETES_SERVICE" ]; then
+        # Orchestrated container
+        address=$(hostname -f)
     else
-        cft add_host -hostname $HOSTNAME -host $CFT_FQDN
+        # Non-orchestrated, use the user's customized value.
+        address=$CFT_FQDN
     fi
+    echo "INF: Add host hostname=$HOSTNAME, address=$address"
+    cft add_host -hostname $HOSTNAME -host $address
 fi
 
 # show customize information
