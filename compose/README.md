@@ -22,6 +22,8 @@ You can use the ../docker/Dockerfile to build your own Transfer CFT image or use
 ### docker-compose parameters
 
 The following parameters are available in the Dockerfile and docker-compose.yml files. Use these parameters to customize the Transfer CFT image and service. The values can be a string, number, or null.
+
+In this README, Central Governance can represent either Central Governance or Flow Manager.
   
  **Parameter**              |  **Values**  |  **Description**
  -------------------------- | :----------: | --------------- 
@@ -304,7 +306,7 @@ docker-compose -f docker-compose-multinode.yml stop
 
 ##### 5. Upgrade Transfer CFT
 
-You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data, that is, keep the runtime. This could be useful if you want to work with a newly released SP2 instead of the current SP1 or add some security options to the Linux kernel. for example.
+You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data, that is, keep the runtime. This could be useful if you want to work with a newly released SP2 instead of the current SP1 or add some security options to the Linux kernel, for example.
 
 You must first load the new Transfer CFT image in your repository. You can either:
 - Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
