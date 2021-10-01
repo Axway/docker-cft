@@ -40,6 +40,7 @@ test:
   stage: test
   script:
   - cd test
+  - docker network prune --force  
   - docker-compose -f docker-compose-01.test.yml down -v
   - docker-compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
   - docker-compose -f docker-compose-01.test.yml logs
