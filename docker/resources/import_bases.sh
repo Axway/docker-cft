@@ -213,8 +213,8 @@ else
 fi
 
 if [ $fail -ne 0 ]; then
-    exit 1
     echo "ERROR: failed to import data"
+    exit 1
 else
 # Remove bases directory
     rm -rf $exportdir
