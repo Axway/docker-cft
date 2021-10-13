@@ -37,7 +37,7 @@ case "${1:-}" in
     ;;
 
     "replace")
-        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.7
+        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.9
     ;;
 
     "status")

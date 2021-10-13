@@ -76,10 +76,10 @@ USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM 
 
 2) Load the image.
 
-From the folder where the Transfer_CFT_3.8_DockerImage_linux-x86-64_BN13377000.tar.gz is located, run the command:
+From the folder where the Transfer_CFT_3.9_DockerImage_linux-x86-64_BN13565000.tar.gz is located, run the command:
 
 ```console
-docker image load -i Transfer_CFT_3.8_DockerImage_linux-x86-64_BN13377000.tar.gz
+docker image load -i Transfer_CFT_3.9_DockerImage_linux-x86-64_BN13565000.tar.gz
 ```
 
 4) Check that the image is successfully loaded.
@@ -94,7 +94,7 @@ You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft             3.8                 c6cb57d34461        18 hours ago        506MB
+cft/cft             3.9                 dec2892f872c        16 hours ago        736MB
 ```
 
 ### How to manage the Transfer CFT service from your docker-compose.yml file
@@ -105,7 +105,7 @@ You can use Docker Compose to automate building container images, as well as app
 
 Before you start, customize the parameters in the docker-compose.yml.
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.9".
 
 If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the actual host machine’s address.  
 **Note:** You cannot connect to any Transfer CFT interface if this parameter is incorrect.
@@ -218,11 +218,11 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 
 ##### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.9-SP1".
 
 ##### 2. Export the Transfer data (not necessary for SPs)
 
-This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.6 to version 3.9. This step is not required when upgrading, for example, from 3.9 to 3.9 SP1.
 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
@@ -314,11 +314,11 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 
 ###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.9-SP1".
 
 ###### 2. Export the Transfer data (not necessary for SPs)
 
-This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.6 to version 3.9. This step is not required when upgrading, for example, from 3.9 to 3.9 SP1.
 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
@@ -439,11 +439,11 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 
 ###### 1. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.8-SP1".
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.9-SP1".
 
 ###### 2. Export the Transfer data (not necessary for SPs)
 
-This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.7 to version 3.8. This step is not required when upgrading, for example, from 3.8 to 3.8 SP1.
+This step is only mandatory if you upgrade to a new major release of Transfer CFT, such as moving from version 3.6 to version 3.9. This step is not required when upgrading, for example, from 3.9 to 3.9 SP1.
 
 ```console
 curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"

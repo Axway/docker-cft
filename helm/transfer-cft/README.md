@@ -42,7 +42,7 @@ Parameter | Description | Default
 --- | --- | ---
 `replicaCount` | Number of replicas deployed | `1`
 `image.repository` | Image repository for docker image | `cft/cft`
-`image.tag` | Image tag used for the deployment | `3.7`
+`image.tag` | Image tag used for the deployment | `3.9`
 `image.pullPolicy` | Pull Policy Action for docker image | `IfNotPresent`
 `image.imagePullSecrets` | Secret used for Pulling image | `regcred`
 `nameOverride` | New name use for the deployment | `nil`
@@ -150,7 +150,7 @@ You can pass these parameters using the Helm `--set` option:
 ```console
 $ helm install --name transfer-cft ./transfer-cft \
   --set image.repository=cft/cft \
-  --set image.tag=3.7
+  --set image.tag=3.9
   --set resources={ "limits":{"cpu":"1000m","memory":"600Mi"},"requests":{"cpu":"200m","memory":"300Mi"}}
 ```
 
