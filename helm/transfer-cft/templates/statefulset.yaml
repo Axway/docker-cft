@@ -146,6 +146,8 @@ spec:
             value: {{ .cg.policy | quote }}
           - name: "CFT_CG_PERIODICITY"
             value: {{ .cg.periodicity | quote }}
+          - name: "CFT_CG_AGENT_NAME"
+            value: {{ .cg.agentName | quote }}
           {{- if and (.cg.caCert.secretName) (or .cg.caCert.createSecretFile .cg.caCert.existingSecretFile) }}
           - name: "USER_CG_CA_CERT"
             value: "/run/secrets/cft/{{ .cg.caCert.secretName }}/{{ .cg.caCert.secretName }}"

@@ -91,6 +91,7 @@ Parameter | Description | Default
 `cft.cg.sharedSecret.createSecretFile` | Create the Central Governance shared secret secret at installation using a local file | `false`
 `cft.cg.sharedSecret.localFile` | Relative path to the Central Governance shared secret (you can use conf directory in the helm chart) | `{} (eg. conf/shared_secret)`
 `cft.cg.sharedSecret.existingSecretFile` | Name of an existing secret to use | `{}`
+`cft.cg.agentName` | The Flow Manager Agent's name that the Flow Manager SaaS uses to connect to your Transfer CFT instance. | `nil`
 `cft.copilotCert.secretName` | Name of the secret used to store the Copilot certificate (secretname is mandatory) | `copilot-cert`
 `cft.copilotCert.createSecretFile` | Create the Copilot certificate secret at installation using a local file | `false`
 `cft.copilotCert.localFile` | Relative path to the Copilot certificate (you can use conf directory in the helm chart) | `{} (eg. conf/copilot.p12)`

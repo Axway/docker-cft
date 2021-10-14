@@ -165,7 +165,8 @@ cft:
       createSecretFile: false
       # localFile: {} # conf/shared_secret
       # existingSecretFile: {} # secret name
-      
+    agentName: ""
+
   sentinel:
     enabled: false
     host: sentinel
