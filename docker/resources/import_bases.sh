@@ -117,7 +117,6 @@ else
 fi
 
 # Import bases
-init_multinode
 fail=0
 
 ## Uconf
@@ -151,13 +150,14 @@ else
     echo "Databases initialized"
 fi
 
+init_multinode
 ## Catalog
 if [ $MULTINODE = 1 ]; then
-     cat_name=$(cftuconf cft.cftcat.fname)
+    cat_name=$(cftuconf cft.cftcat.fname)
     for ((i=0;  i<$CFT_MULTINODE_NUMBER; i++ ))
     do
         j=$(printf "%02d" $i)
-        CFTMI /m=2 MIGR type=CAT, direct=TOCAT, ofname=$cat_name$j, ifname=$exportdir/cft-cat$j.xml
+        CFTMI MIGR type=CAT, direct=TOCAT, ofname=$cat_name$j, ifname=$exportdir/cft-cat$j.xml
         if [ $? -ne 0 ]; then
             echo "ERROR: failed to import Catalog $j"
             fail=1
@@ -166,7 +166,7 @@ if [ $MULTINODE = 1 ]; then
         fi
     done
 else
-    CFTMI /m=2 MIGR type=CAT, direct=TOCAT, ofname=_CFTCATA, ifname=$exportdir/cft-cat.xml
+    CFTMI MIGR type=CAT, direct=TOCAT, ofname=_CFTCATA, ifname=$exportdir/cft-cat.xml
     if [ $? -ne 0 ]; then
         echo "ERROR: failed to import Catalog"
         fail=1
@@ -176,7 +176,7 @@ else
 fi
 
 ## Com file
-CFTMI /m=2 MIGR type=COM, direct=TOCOM, ofname=_CFTCOM, ifname=$exportdir/cft-com.xml
+CFTMI MIGR type=COM, direct=TOCOM, ofname=_CFTCOM, ifname=$exportdir/cft-com.xml
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to import COM"
     fail=1
@@ -188,7 +188,7 @@ if [ $MULTINODE = 1 ]; then
     for ((i=0;  i<$CFT_MULTINODE_NUMBER; i++ ))
     do
         j=$(printf "%02d" $i)
-        CFTMI /m=2 MIGR type=COM, direct=TOCOM, ofname=$com_name$j, ifname=$exportdir/cft-com$j.xml
+        CFTMI MIGR type=COM, direct=TOCOM, ofname=$com_name$j, ifname=$exportdir/cft-com$j.xml
         if [ $? -ne 0 ]; then
             echo "ERROR: failed to import COM $j"
             fail=1
