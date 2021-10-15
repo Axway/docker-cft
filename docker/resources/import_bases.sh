@@ -41,27 +41,65 @@ get_cft_version_num()
     return 0
 }
 
-copy_file()
+move_file()
 {
     src=$1
     dst=$2
-    cp $src $dst
-    if [ $? -ne 0 ]; then
-        echo "ERROR: faield to copy $src to $dst"
-    else
-        echo "$src copied to $dst"
+    if [ -f "$src" ]; then
+        mv -f $src $dst
+        if [ $? -ne 0 ]; then
+            echo "ERROR: failed to move $src to $dst"
+        else
+            echo "$src moved to $dst"
+        fi
     fi
 }
 
-delete_db()
+delete_file()
 {
     fname=$1
-    if [ -f "$fname" ]; then
-        echo "deleting $fname..."
-        rm $fname
-        rm ${fname}*
-        echo "$fname deleted"
-    fi
+    echo "deleting $fname..."
+    rm -f ${fname}
+    echo "$fname deleted"
+}
+
+pre_upgrade()
+{
+    # Delete previous databases
+    delete_file "$CFT_CFTDIRRUNTIME/data/cftparm*"
+    delete_file "$CFT_CFTDIRRUNTIME/data/cftpart*"
+    delete_file "$CFT_CFTDIRRUNTIME/data/CFTPKU*"
+
+    # Save profile and former uconf
+    fname=$CFT_CFTDIRRUNTIME/profile
+    move_file $fname ${fname}.bak
+    fname=$CFT_CFTDIRRUNTIME/data/cftuconf.dat
+    move_file $fname ${fname}.bak
+
+    # Initialize profile and uconf
+    $CFT_INSTALLDIR/home/bin/cftruntime --profile $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME
+    $CFT_INSTALLDIR/home/bin/cftruntime --uconf $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME --mac=no
+}
+
+# Handle properly failure allowing former image to restore their data
+# and to start correctly.
+post_upgrade_failure()
+{
+    # Restore profile and former uconf
+    fname=$CFT_CFTDIRRUNTIME/profile
+    move_file ${fname}.bak $fname
+    fname=$CFT_CFTDIRRUNTIME/data/cftuconf.dat
+    move_file ${fname}.bak $fname
+}
+
+post_upgrade_success()
+{
+    # Delete backups
+    delete_file $CFT_CFTDIRRUNTIME/profile.bak
+    delete_file $CFT_CFTDIRRUNTIME/data/cftuconf.dat.bak
+
+    # Remove bases directory
+    rm -rf $exportdir
 }
 
 if [ "$CFT_EXPORTDIR" = "" ]; then
@@ -81,14 +119,7 @@ else
     exit 0
 fi
 
-# Delete previous databases
-delete_db $CFT_CFTDIRRUNTIME/data/cftparm
-delete_db $CFT_CFTDIRRUNTIME/data/cftpart
-delete_db $CFT_CFTDIRRUNTIME/data/CFTPKU
-
-# Init new databases
-$CFT_INSTALLDIR/home/bin/cftruntime --profile $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME
-$CFT_INSTALLDIR/home/bin/cftruntime --uconf $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME --mac=no
+pre_upgrade
 
 . ./profile
 
@@ -214,11 +245,10 @@ fi
 
 if [ $fail -ne 0 ]; then
     echo "ERROR: failed to import data"
+    post_upgrade_failure
     exit 1
-else
-# Remove bases directory
-    rm -rf $exportdir
 fi
 
+post_upgrade_success
 echo "Data successfully imported"
 exit 0
