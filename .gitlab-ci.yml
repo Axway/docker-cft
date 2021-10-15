@@ -26,12 +26,22 @@ build:
         --build-arg INSTALL_KIT=$INSTALL_KIT
         docker
   - elif [ -n "$URL_BASE" ]; then
-  -   echo Build using version=$BUILD_VERSION, revision=$BUILD_REVISION, and url=$URL_BASE
-  -   docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-        --build-arg BUILD_VERSION=$BUILD_VERSION
-        --build-arg BUILD_REVISION=$BUILD_REVISION
-        --build-arg URL_BASE=$URL_BASE
-        docker
+  -   if [ -n "$PACKAGE" ]; then
+  -     echo Build using version=$BUILD_VERSION, revision=$BUILD_REVISION, url=$URL_BASE and package=$PACKAGE
+  -     docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          --build-arg BUILD_VERSION=$BUILD_VERSION
+          --build-arg BUILD_REVISION=$BUILD_REVISION
+          --build-arg URL_BASE=$URL_BASE
+          --build-arg PACKAGE=$PACKAGE
+          docker
+  -   else
+  -     echo Build using version=$BUILD_VERSION, revision=$BUILD_REVISION, and url=$URL_BASE
+  -     docker build -t $IMAGE_CFT:$DOCKER_TAG --build-arg BUILD_DATE=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          --build-arg BUILD_VERSION=$BUILD_VERSION
+          --build-arg BUILD_REVISION=$BUILD_REVISION
+          --build-arg URL_BASE=$URL_BASE
+          docker
+  -   fi
   - else
   -     echo INSTALL_KIT or URL_BASE must be defined, aborting...
   -     exit 1
