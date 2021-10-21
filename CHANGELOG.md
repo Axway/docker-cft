@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
  
+## [3.9] - 2021-10-21
+
+### Added
+- Added support for OpenShift. Any user can run the Transfer CFT container.
+
+### Changed
+- You must accept the general conditions prior to creating a container (ACCEPT_GENERAL_CONDITIONS=YES in docker-compose, cft.accept_general_conditions=true for Helm).
+- To upgrade your Transfer CFT deployment to v3.9, you require Transfer CFT v3.6 SP4 or higher.
+- When Flow Manager or Central Governance is enabled and if no custom certificate is specified, the REST API server uses the certificate generated during registration.
+- Helm: Added the cft.cg.agentName parameter to values.yaml which allows you to register your Transfer CFT instance to Flow Manager SaaS.
+
 ## [3.6 SP2] - 2021-05-31
 
 ### Changed
