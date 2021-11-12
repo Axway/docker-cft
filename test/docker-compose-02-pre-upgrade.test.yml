@@ -22,7 +22,7 @@ services:
             USER_XFBADM_PASSWORD:   "alwaysCFT"
         container_name:             test_sut_pre-upgrade
     cft:
-        image: $REGISTRY_URL/cft:3.6-dev
+        image: $RELEASE_REGISTRY_URL/cft:3.6-dev
         environment:
             ACCEPT_GENERAL_CONDITIONS:  "YES"
             CFT_FQDN:                   cft
