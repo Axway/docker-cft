@@ -29,6 +29,10 @@ $CFT_INSTALLDIR/home/bin/cftruntime $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME
 cd $CFT_CFTDIRRUNTIME
 . ./profile
 
+if [ -n "$(cftuconf cft.audit.output)" ]; then
+    CFTUTIL /m=2 uconfset id='cft.audit.output', value='STDOUT'
+fi
+
 # CFT IDENTITY
 if [ -n "$CFT_INSTANCE_ID" ]; then
     CFTUTIL /m=2 uconfset id='cft.instance_id', value=$CFT_INSTANCE_ID
