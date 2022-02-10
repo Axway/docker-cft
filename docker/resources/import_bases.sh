@@ -81,6 +81,21 @@ pre_upgrade()
     $CFT_INSTALLDIR/home/bin/cftruntime --uconf $CFT_INSTALLDIR/home $CFT_CFTDIRRUNTIME --mac=no
 }
 
+# Create the audit file if does not exist.
+# Redirect audit log to STDOUT
+pre_upgrade_audit()
+{
+    if [ -n "$(cftuconf cft.audit.output)" ]; then
+        dir=$(cftuconf cft.runtime.audit_dir)
+        if [ ! -d dir ]; then
+            mkdir $dir
+            touch $dir/audit.tsv
+        fi
+        CFTUTIL /m=2 uconfset id='cft.audit.output', value='STDOUT'
+        truncate -s 0 $dir/audit.tsv
+    fi
+}
+
 # Handle properly failure allowing former image to restore their data
 # and to start correctly.
 post_upgrade_failure()
@@ -146,6 +161,8 @@ else
         fi
     fi
 fi
+
+pre_upgrade_audit
 
 # Import bases
 fail=0
