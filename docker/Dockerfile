@@ -15,12 +15,12 @@ FROM ubuntu:latest AS builder
 
 RUN apt-get -y update && apt-get install -y \
         curl \
-        unzip && \
+        unzip \
+        binutils && \
         rm -rf /var/lib/apt/lists && \
         mkdir -p /opt/axway && \
-        addgroup axway && \
-        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --ingroup axway axway && \
-        chown -R axway:axway /opt/axway
+        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --gid 0 axway && \
+        chown -R axway:0 /opt/axway
 
 USER axway
 WORKDIR /opt/axway
@@ -32,15 +32,18 @@ ARG PACKAGE="Transfer_CFT_3.9_Install_linux-x86-64_BN13565000.zip"
 ARG URL_BASE="https://delivery.server.int/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
 
-ADD --chown=axway:axway $INSTALL_KIT installkit.zip
+ADD --chown=axway:0 $INSTALL_KIT installkit.zip
 
 RUN unzip installkit.zip -d setup && \
     cd setup && \
     chmod +x *.run && \
     ./Transfer_CFT_*_linux-x86-64*.run  --mode unattended --installdir /opt/axway/cft --accept_general_conditions yes && \
+    strip -d /opt/axway/cft/home/lib/* && \
     cd && \
     rm -rf setup installkit.zip *.properties && \
-    mkdir data
+    chown -R axway:0 /opt/axway && \
+    chmod -R u+x /opt/axway && \
+    chmod -R g=u /opt/axway
 
 # Copying useful scripts
 
@@ -52,8 +55,6 @@ COPY resources/*.sh resources/uid_entrypoint ./
 
 FROM ubuntu:latest
 
-COPY --from=builder /opt/axway /opt/axway
-
 RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         curl \
         jq \
@@ -61,9 +62,12 @@ RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         vim && \
         rm -rf /var/lib/apt/lists && \
         adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --gid 0 axway && \
+        mkdir -p /opt/axway/data && \
         chown -R axway:0 /opt/axway && \
         chmod -R u+x /opt/axway && \
         chmod -R g=u /opt/axway /etc/passwd
+
+COPY --chown=axway:0 --from=builder /opt/axway /opt/axway
 
 USER axway
 WORKDIR /opt/axway
