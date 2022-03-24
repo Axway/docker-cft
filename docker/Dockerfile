@@ -16,8 +16,6 @@ FROM ubuntu:latest AS builder
 RUN apt-get -y update && apt-get install -y \
         curl \
         unzip \
-        openssl \
-        libssl*.* \
         binutils && \
         rm -rf /var/lib/apt/lists && \
         mkdir -p /opt/axway && \
