@@ -89,6 +89,39 @@ check_fqdn()
     esac
 }
 
+generate_certificate()
+{
+    cn=$CFT_INSTANCE_ID
+    altname=$CFT_FQDN
+    echo "INFO: Generating default certificate with CN=$cn, subjectAltName=$altname"
+    if [ $(expr length $cn) -gt 64 ]; then
+        echo "ERR: CN is too long, cannot generate certificate."
+        exit 1
+    fi
+
+    # CREATE CERTIFICATES FOR REST API
+    openssl req \
+        -x509 \
+        -nodes \
+        -newkey rsa:4096 \
+        -sha256 \
+        -days 365 \
+        -subj \/CN\=$cn \
+        -addext "keyUsage = digitalSignature, keyEncipherment, dataEncipherment" \
+        -addext "subjectAltName = DNS:$altname" \
+        -keyout conf/pki/rest_api_key.pem \
+        -out conf/pki/rest_api_cert.pem
+    openssl pkcs12 \
+        -inkey conf/pki/rest_api_key.pem \
+        -in conf/pki/rest_api_cert.pem \
+        -export \
+        -out conf/pki/rest_api_cert.p12 \
+        -passout pass:restapi
+
+    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
+    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+}
+
 customize_runtime()
 {
     echo "INF: Customizing the runtime..."
@@ -213,13 +246,8 @@ customize_runtime()
 
         copilot_cert=$(cftuconf copilot.ssl.SslCertFile)
         if [ -z "$copilot_cert" ]; then
-            echo "INFO: Creating certificates for REST API"
             # CREATE CERTIFICATES FOR REST API
-            openssl req -newkey rsa:2048 -nodes -keyout conf/pki/rest_api_key.pem -x509 -days 365 -out conf/pki/rest_api_cert.pem -subj \/CN\=$CFT_FQDN
-            openssl pkcs12 -inkey conf/pki/rest_api_key.pem -in conf/pki/rest_api_cert.pem -export -out conf/pki/rest_api_cert.p12 -passout pass:restapi
-            # SET UCONF VALUE FOR CERTIFICATES
-            CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
-            CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+            generate_certificate
 
             if [ "$CFT_CG_ENABLE" = "YES" ]; then
                 echo "INF: Certificates set as temporary, waiting for registration to be completed"
