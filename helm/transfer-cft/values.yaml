@@ -134,10 +134,11 @@ cft:
     secretName: license-key
     ## Should the secret file for the key be automatically created?
     createSecretFile: false
-    ## Where is located the local file to use on creating the secret? - use relative path 
+    ## Where is located the local file to use on creating the secret? - use relative path
     # localFile: {} # conf/cft.key
-    ## If not creating, which secret should be used?
-    # existingSecretFile: {} # secret name
+    ## If not creating, what is the key name inside the existing secret
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
 
   multinode:
     nodesNumber: 1
@@ -153,18 +154,20 @@ cft:
     ## For the next 2 parameters:
     # - createSecretFile ==>> create secret file or not
     # - secretName ==>> name of the file inside the secret
-    # - localFile ==>> where is located the local file - use relative path  
-    # - existingSecretFile ==>> used only if the secret already exist 
+    # - localFile ==>> where is located the local file - use relative path
+    # - existingSecretFile ==>> used only if the secret already exist
     caCert:
       secretName: cg-ca-cert
       createSecretFile: false
       # localFile: {} # conf/cg_ca.pem
-      # existingSecretFile: {} # secret name
+      # existingSecretFile:
+      #   keyRef: {} # key inside the secret
     sharedSecret:
       secretName: cg-shared-secret
       createSecretFile: false
       # localFile: {} # conf/shared_secret
-      # existingSecretFile: {} # secret name
+      # existingSecretFile:
+      #   keyRef: {} # key inside the secret
     agentName: ""
 
   sentinel:
@@ -179,27 +182,30 @@ cft:
       secretName: sentinel-ca-cert
       createSecretFile: false
       # localFile: {} # conf/sentinel_ca_cert.pem
-      # existingSecretFile: {} # secret name
- 
+      # existingSecretFile:
+      #   keyRef: {} # key inside the secret
+
   ## CUSTOMIZATION
 
   ## For the next 2 parameters:
   # - createConfigMap ==>> create the config map file or not
   # - fileName ==>> name of the file inside the config map
-  # - localFile ==>> where is located the local file - use relative path  
-  # - existingConfigMap ==>> used only if the secret already exist 
+  # - localFile ==>> where is located the local file - use relative path
+  # - existingConfigMap ==>> used only if the secret already exist
   ## Script executed at container initialization
   initScript:
     fileName: init-sh
     createConfigMap: false
     # localFile: {} # conf/init.sh
-    # existingConfigMap: {} # configMap name 
+    # existingConfigMap:
+    #   keyRef: {} # key inside the configMap
   ## Script executed at each container start-up
   startScript:
     fileName: startup-sh
     createConfigMap: false
     # localFile: {} # conf/startup.sh
-    # existingConfigMap: {} # configMap name 
+    # existingConfigMap:
+    #   keyRef: {} # key inside the configMap
 
   ## Interval in seconds between two checks of Passport access management updates.
   # passportPersistencyCheckInterval: 60
@@ -207,37 +213,45 @@ cft:
   ## For the next parameters:
   # - createSecretFile ==>> create secret file or not
   # - secretName ==>> name of the file inside the secret
-  # - localFile ==>> where is located the local file - use relative path  
+  # - localFile ==>> where is located the local file - use relative path
   # - existingSecretFile ==>> used only if the secret already exist
-  
+
   ## The next two values are used to  customize the Copilot server certificate
   ## The certificate must refer to a PKCS12 certificate.
   copilotCert:
     secretName: copilot-cert
     createSecretFile: false
     # localFile: {} # conf/copilot.p12
-    # existingSecretFile: {} # secret name
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
   copilotCertPassword:
     secretName: copilot-cert-password
     createSecretFile: false
     # localFile: {} # conf/copilot.p12.pwd
-    # existingSecretFile: {} # secret name
-  
-  ## The next two values are used to customize the default XFBADM user.
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
+
+  ## The next two values are used to customize the default user.
+  ## XFBADM base is used when no other identity provider is used.
   xfbadmLogin: "admin"
   xfbadmPassword:
     secretName: xfbadm-password
     createSecretFile: false
     # localFile: {} # conf/xfbadm.pwd
-    # existingSecretFile: {} # secret name
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
 
-  ## The next two values are used to specify the REST API credentials required when upgrading the Transfer CFT service.
+  ## The next two values are used to specify the REST API credentials
+  ## required when upgrading the Transfer CFT service.
+  ## When using an identity provider, this should be a valid user for the
+  ## identity provider.
   apiLogin: "admin"
   apiPassword:
     secretName: api-password
     createSecretFile: false
-    # localFile: {} # conf/xfbadm.pwd
-    # existingSecretFile: {} # secret name
+    # localFile: {} # conf/password.pwd
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
 
 ####################################
 # STORAGE
@@ -250,10 +264,10 @@ cft:
 ##
 persistence:
   enabled: true
-  
+
   ## persistence.keep Keep persistent volume after helm delete
   keep: false
-  
+
   ## Transfer CFT is always in active/active cluster mode. The multi-node,
   ## multi-host architecture prerequisites apply.
   ## (Ex. Supported shared file systems are GPFS, GFS2, NFSv4, AWS EFS)
@@ -266,10 +280,10 @@ persistence:
     ##   GKE, AWS & OpenStack)
     ##
     # storageClass:
-    
+
     ## CFT Runtime Persistent Volume AccessMode
     ## When replicaCount > 1, this should be ReadWriteMany (the volume can be mounted
-    ## as read-write by many nodes). This mode is not supported by some of the 
+    ## as read-write by many nodes). This mode is not supported by some of the
     ## default provisioners.
     ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
     accessMode: ReadWriteOnce
@@ -279,7 +293,7 @@ persistence:
     ## Requires persistence.enabled: true
     ## If defined, PVC must be created manually before volume will be bound
     ##
-    # existingClaim: 
+    # existingClaim:
 
     ## NFS-specific information if NFS is to be used
     # nfsPath:
@@ -288,13 +302,13 @@ persistence:
     ## Retain, Recycle or Delete.
     ## Only NFS support recycling
     ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#reclaim-policy
-    # reclaimPolicy: 
-    
+    # reclaimPolicy:
+
     ## When using NFS, additional mount options can be set.
     ## https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options
     # mountOptions: []
     ## If using NFS the recommended options are:
-    # mountOptions: 
+    # mountOptions:
     #   - vers=4
     #   - hard
     #   - nointr

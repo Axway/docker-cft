@@ -1,6 +1,17 @@
 # Changelog
 All notable changes to this project will be documented in this file.
  
+## [3.10] - 2022-04-15
+
+### Added
+- Audit logs added to upgrade.
+
+### Changed
+- Copilot certificate generated uses CFT_INSTANCE_ID as CN.
+
+### Fixed
+- The usage of existingSecretFile or existingConfigMap was not correct.
+
 ## [3.9] - 2021-10-21
 
 ### Added
