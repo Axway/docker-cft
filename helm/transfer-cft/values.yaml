@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: cft/cft
-  tag: 3.9
+  tag: 3.10.2203
     
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -268,9 +268,9 @@ persistence:
   ## persistence.keep Keep persistent volume after helm delete
   keep: false
 
-  ## Transfer CFT is always in active/active cluster mode. The multi-node,
-  ## multi-host architecture prerequisites apply.
-  ## (Ex. Supported shared file systems are GPFS, GFS2, NFSv4, AWS EFS)
+  ## If replicaCount > 1 (active/active), the multi-host multi-node prerequisites apply:
+  ## - accessMode: ReadWriteMany
+  ## - supported shared file systems are NFSv4, AWS EFS.
   cftData:
     ## CFT Runtime Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
@@ -282,8 +282,8 @@ persistence:
     # storageClass:
 
     ## CFT Runtime Persistent Volume AccessMode
-    ## When replicaCount > 1, this should be ReadWriteMany (the volume can be mounted
-    ## as read-write by many nodes). This mode is not supported by some of the
+    ## When replicaCount > 1 (active/active), this should be ReadWriteMany (the volume can be
+    ## mounted as read-write by many nodes). This mode is not supported by some of the
     ## default provisioners.
     ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes
     accessMode: ReadWriteOnce

@@ -21,7 +21,7 @@ fi
 case "${1:-}" in
     "create")
         DEBUG kubectl get secrets
-        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.9
+        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.10.2203
     ;;
 
     "delete")
@@ -37,7 +37,7 @@ case "${1:-}" in
     ;;
 
     "replace")
-        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.9
+        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.10.2203
     ;;
 
     "status")
