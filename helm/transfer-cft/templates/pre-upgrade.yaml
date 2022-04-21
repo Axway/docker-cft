@@ -41,7 +41,11 @@ spec:
         - name: "CFT_API_LOGIN"
           value: {{ .Values.cft.apiLogin | quote }}
         - name: "CFT_API_PASSWORD"
+        {{- if .Values.cft.apiPassword.createSecretFile }}
           value: "/run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}/{{ .Values.cft.apiPassword.secretName }}"
+        {{- else }}
+          value: "/run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}/{{ .Values.cft.apiPassword.existingSecretFile.keyRef }}"
+        {{- end }}
         command: ["sh", "-c", "$HOME/export_bases_job.sh"]
         volumeMounts:
         ## Secrets created by helm
@@ -57,7 +61,7 @@ spec:
           {{- if .Values.cft.apiPassword.createSecretFile }}
           secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.apiPassword.secretName }}
           {{- else }}
-          secretName: {{ .Values.cft.apiPassword.existingSecretFile }}
+          secretName: {{ .Values.cft.apiPassword.secretName }}
           {{- end }}
           defaultMode: 0777
       {{- end }}

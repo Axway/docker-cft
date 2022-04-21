@@ -300,12 +300,12 @@ spec:
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.licenseKey.secretName }}"
       {{- end }}
-      {{- if and (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
+      {{- if and (.Values.cft.cg.enabled) (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
         - name: {{ .Values.cft.cg.caCert.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.cg.caCert.secretName }}"
       {{- end }}
-      {{- if and (.Values.cft.cg.sharedSecret.secretName) (or .Values.cft.cg.sharedSecret.createSecretFile .Values.cft.cg.sharedSecret.existingSecretFile) }}
+      {{- if and (.Values.cft.cg.enabled) (.Values.cft.cg.sharedSecret.secretName) (or .Values.cft.cg.sharedSecret.createSecretFile .Values.cft.cg.sharedSecret.existingSecretFile) }}
         - name: {{ .Values.cft.cg.sharedSecret.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.cg.sharedSecret.secretName }}"
@@ -325,7 +325,7 @@ spec:
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.xfbadmPassword.secretName }}"
       {{- end }}
-      {{- if and (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
+      {{- if and (.Values.cft.sentinel.enabled) (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
         - name: {{ .Values.cft.sentinel.caCert.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.sentinel.caCert.secretName }}"
@@ -373,7 +373,7 @@ spec:
           {{ end }}
           defaultMode: 0777 
       {{- end }}
-      {{- if and (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
+      {{- if and (.Values.cft.cg.enabled) (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
       - name: {{ .Values.cft.cg.caCert.secretName }}
         secret:
           {{ if .Values.cft.cg.caCert.createSecretFile }}
@@ -383,7 +383,7 @@ spec:
           {{ end }}
           defaultMode: 0777 
       {{- end }}
-      {{- if and (.Values.cft.cg.sharedSecret.secretName) (or .Values.cft.cg.sharedSecret.createSecretFile .Values.cft.cg.sharedSecret.existingSecretFile) }}
+      {{- if and (.Values.cft.cg.enabled) (.Values.cft.cg.sharedSecret.secretName) (or .Values.cft.cg.sharedSecret.createSecretFile .Values.cft.cg.sharedSecret.existingSecretFile) }}
       - name: {{ .Values.cft.cg.sharedSecret.secretName }}
         secret:
           {{ if .Values.cft.cg.sharedSecret.createSecretFile }}
@@ -423,7 +423,7 @@ spec:
           {{ end }}
           defaultMode: 0777 
       {{- end }}
-      {{- if and (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
+      {{- if and (.Values.cft.sentinel.enabled) (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
       - name: {{ .Values.cft.sentinel.caCert.secretName }}
         secret:
           {{ if .Values.cft.sentinel.caCert.createSecretFile }}
