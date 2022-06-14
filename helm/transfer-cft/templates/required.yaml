@@ -1,0 +1,29 @@
+###
+### Required values test
+###
+{{- required "A valid .Values.cft.licenseKey entry required!" .Values.cft.licenseKey }}
+{{- required "A valid .Values.cft.licenseKey.secretName entry required!" .Values.cft.licenseKey.secretName }}
+{{- if .Values.cft.licenseKey.createSecretFile }}
+  {{- required "A valid .Values.cft.licenseKey.localFile entry required!" .Values.cft.licenseKey.localFile }}
+{{- else }}
+  {{- if .Values.cft.licenseKey.existingSecretFile }}
+    {{- required "A valid .Values.cft.licenseKey.existingSecretFile.keyRef entry required!" .Values.cft.licenseKey.existingSecretFile.keyRef }}
+  {{- else }}
+    {{- required "A valid .Values.cft.licenseKey.existingSecretFile entry required! (createSecretFile=false)" .Values.cft.licenseKey.existingSecretFile }}
+  {{- end }}
+{{- end }}
+{{- required "A valid .Values.cft.apiLogin entry required!" .Values.cft.apiLogin }}
+{{- required "A valid .Values.cft.apiPassword entry required!" .Values.cft.apiPassword }}
+{{- required "A valid .Values.cft.apiPassword.secretName entry required!" .Values.cft.apiPassword.secretName }}
+{{- if .Values.cft.apiPassword.createSecretFile }}
+  {{- required "A valid .Values.cft.apiPassword.localFile entry required!" .Values.cft.apiPassword.localFile }}
+{{- else }}
+  {{- if .Values.cft.apiPassword.existingSecretFile }}
+    {{- required "A valid .Values.cft.apiPassword.existingSecretFile.keyRef entry required!" .Values.cft.apiPassword.existingSecretFile.keyRef }}
+  {{- else }}
+    {{- required "A valid .Values.cft.apiPassword.existingSecretFile entry required! (createSecretFile=false)" .Values.cft.apiPassword.existingSecretFile }}
+  {{- end }}
+{{- end }}
+{{- if not .Values.cft.accept_general_conditions }}
+  {{- required "General Terms and Conditions not accepted. (.Values.cft.accept_general_conditions)" .Values.dummy }}
+{{- end }}

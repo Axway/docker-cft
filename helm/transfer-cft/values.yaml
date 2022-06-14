@@ -5,7 +5,7 @@ replicaCount: 1
 image:
   repository: cft/cft
   tag: 3.10.2203
-    
+
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
   ## ref: http://kubernetes.io/docs/user-guide/images/#pre-pulling-images
@@ -33,7 +33,7 @@ podLabels: {}
 ##
 resources:
   ## If you do want to specify resources, uncomment the following
-  ## lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  ## lines, adjust them as necessary.
   # limits:
   #   cpu: 100m
   #   memory: 128Mi
@@ -76,10 +76,10 @@ podSecurityContext:
   runAsGroup: 0
   fsGroup: 1000
   # supplementalGroups: []
-  
+
 # Security Context for the Transfer CFT container specifically
 # https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.18/#securitycontext-v1-core
-containerSecurityContext: 
+containerSecurityContext:
   # privileged: false
   # allowPrivilegeEscalation: false
   # readOnlyRootFilesystem: false

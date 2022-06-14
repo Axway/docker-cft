@@ -1,6 +1,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
 # AMPLIFY Transfer CFT Docker image
 #
@@ -19,10 +19,10 @@ RUN apt-get -y update && apt-get install -y \
         binutils && \
         rm -rf /var/lib/apt/lists && \
         mkdir -p /opt/axway && \
-        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --gid 0 axway && \
+        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
         chown -R axway:0 /opt/axway
 
-USER axway
+USER 1000
 WORKDIR /opt/axway
 ENV LANG=C.UTF-8
 
@@ -47,7 +47,7 @@ RUN unzip installkit.zip -d setup && \
 
 # Copying useful scripts
 
-COPY resources/*.sh resources/uid_entrypoint ./
+COPY --chown=axway:0 resources/*.sh resources/uid_entrypoint ./
 
 #
 # Stage 2 : create final image
@@ -61,7 +61,7 @@ RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         openssl \
         vim && \
         rm -rf /var/lib/apt/lists && \
-        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --gid 0 axway && \
+        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
         mkdir -p /opt/axway/data && \
         chown -R axway:0 /opt/axway && \
         chmod -R u+x /opt/axway && \
@@ -69,7 +69,7 @@ RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
 
 COPY --chown=axway:0 --from=builder /opt/axway /opt/axway
 
-USER axway
+USER 1000
 WORKDIR /opt/axway
 ENV HOME=/opt/axway
 ENV LANG=C.UTF-8

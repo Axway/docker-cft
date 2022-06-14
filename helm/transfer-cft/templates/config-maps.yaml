@@ -1,3 +1,4 @@
+{{- if .Values.cft.initScript }}
 {{ if .Values.cft.initScript.createConfigMap }}
 ---
 apiVersion: v1
@@ -14,7 +15,9 @@ data:
   {{ .Values.cft.initScript.fileName | quote }} : |-
 {{ .Files.Get .Values.cft.initScript.localFile | indent 4}}
 {{ end -}}
+{{- end }}
 
+{{- if .Values.cft.startScript }}
 {{ if .Values.cft.startScript.createConfigMap }}
 ---
 apiVersion: v1
@@ -31,5 +34,4 @@ data:
   {{ .Values.cft.startScript.fileName | quote }} : |-
 {{ .Files.Get .Values.cft.startScript.localFile | indent 4}}
 {{ end -}}
-
-
+{{- end }}

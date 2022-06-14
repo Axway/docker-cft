@@ -97,8 +97,9 @@ cft/cft             3.10.2203           7004adf5aa92        4 days ago          
 
 ## Copyright
 
-Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 
 ## License
 
 All files in this repository are licensed by Axway Software SA and its affiliates under the Apache License, Version 2.0, available at http://www.apache.org/licenses/.
+

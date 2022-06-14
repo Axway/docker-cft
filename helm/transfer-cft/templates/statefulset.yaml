@@ -136,9 +136,14 @@ spec:
           - name: "CFT_MULTINODE_ENABLE"
             value: "YES"
           - name: "CFT_MULTINODE_NUMBER"
+          {{- if .multinode.nodesNumber }}
             value: {{ .multinode.nodesNumber | quote }}
+          {{- else }}
+            value: "1"
+          {{- end }}
           - name: "CFT_MULTINODE_NODE_PER_HOST"
             value: "1"
+          {{- if .cg }}
           {{- if .cg.enabled }}
           - name: "CFT_CG_ENABLE"
             value: "YES"
@@ -172,6 +177,8 @@ spec:
           - name: "CFT_CG_ENABLE"
             value: "NO"
           {{- end }}
+          {{- end }}
+          {{- if .sentinel }}
           {{- if .sentinel.enabled }}
           - name: "CFT_SENTINEL_ENABLE"
             value: "YES"
@@ -202,6 +209,7 @@ spec:
           - name: "CFT_SENTINEL_ENABLE"
             value: "NO"
           {{- end }}
+          {{- end }}
           {{- if and (.copilotCert.secretName) (or .copilotCert.createSecretFile .copilotCert.existingSecretFile) }}
           - name: "USER_COPILOT_CERT"
           {{- if .copilotCert.createSecretFile }}
@@ -226,6 +234,7 @@ spec:
           - name: "USER_XFBADM_LOGIN"
             value: {{ .xfbadmLogin | quote }}
           {{- end }}
+          {{- if .xfbadmPassword }}
           {{- if and (.xfbadmPassword.secretName) (or .xfbadmPassword.createSecretFile .xfbadmPassword.existingSecretFile) }}
           - name: "USER_XFBADM_PASSWORD"
           {{- if .xfbadmPassword.createSecretFile }}
@@ -234,10 +243,12 @@ spec:
             value: "/run/secrets/cft/{{ .xfbadmPassword.secretName }}/{{ .xfbadmPassword.existingSecretFile.keyRef }}"
           {{- end }}
           {{- end }}
+          {{- end }}
           {{- if .jvm }}
           - name: "CFT_JVM"
             value: {{ .jvm | quote }}
           {{- end }}
+          {{- if .initScript }}
           {{- if and (.initScript.fileName) (or .initScript.createConfigMap .initScript.existingConfigMap) }}
           - name: "USER_SCRIPT_INIT"
           {{- if .initScript.createConfigMap }}
@@ -246,12 +257,15 @@ spec:
             value: "/mnt/custom/{{ .initScript.fileName }}/{{ .initScript.existingConfigMap.keyRef }}"
           {{- end }}
           {{- end }}
+          {{- end }}
+          {{- if .startScript }}
           {{- if and (.startScript.fileName) (or .startScript.createConfigMap .startScript.existingConfigMap) }}
           - name: "USER_SCRIPT_START"
            {{- if .startScript.createConfigMap }}
             value: "/mnt/custom/{{ .startScript.fileName }}/{{ .startScript.fileName }}"
           {{- else }}
             value: "/mnt/custom/{{ .startScript.fileName }}/{{ .startScript.existingConfigMap.keyRef }}"
+          {{- end }}
           {{- end }}
           {{- end }}
         {{- end }}
@@ -300,6 +314,7 @@ spec:
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.licenseKey.secretName }}"
       {{- end }}
+      {{- if .Values.cft.cg }}
       {{- if and (.Values.cft.cg.enabled) (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
         - name: {{ .Values.cft.cg.caCert.secretName }}
           readOnly: true
@@ -309,6 +324,7 @@ spec:
         - name: {{ .Values.cft.cg.sharedSecret.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.cg.sharedSecret.secretName }}"
+      {{- end }}
       {{- end }}
       {{- if and (.Values.cft.copilotCert.secretName) (or .Values.cft.copilotCert.createSecretFile .Values.cft.copilotCert.existingSecretFile) }}
         - name: {{ .Values.cft.copilotCert.secretName }}
@@ -320,38 +336,50 @@ spec:
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.copilotCertPassword.secretName }}"
       {{- end }}
+      {{- if .Values.cft.xfbadmPassword }}
       {{- if and (.Values.cft.xfbadmPassword.secretName) (or .Values.cft.xfbadmPassword.createSecretFile .Values.cft.xfbadmPassword.existingSecretFile) }}
         - name: {{ .Values.cft.xfbadmPassword.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.xfbadmPassword.secretName }}"
       {{- end }}
+      {{- end }}
+      {{- if .Values.cft.sentinel }}
       {{- if and (.Values.cft.sentinel.enabled) (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
         - name: {{ .Values.cft.sentinel.caCert.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.sentinel.caCert.secretName }}"
       {{- end }}
+      {{- end }}
         ## ConfigMaps
+      {{- if .Values.cft.initScript }}
       {{- if and (.Values.cft.initScript.fileName) (or .Values.cft.initScript.createConfigMap .Values.cft.initScript.existingConfigMap) }}
         - name: {{ .Values.cft.initScript.fileName }}
           mountPath: "/mnt/custom/{{ .Values.cft.initScript.fileName }}"
       {{- end }}
+      {{- end }}
+      {{- if .Values.cft.startScript }}
       {{- if and (.Values.cft.startScript.fileName) (or .Values.cft.startScript.createConfigMap .Values.cft.startScript.existingConfigMap) }}
         - name: {{ .Values.cft.startScript.fileName }}
           mountPath: "/mnt/custom/{{ .Values.cft.startScript.fileName }}"
       {{- end }}
+      {{- end }}
         ## Other secrets created by user
+      {{- if .Values.extraSecretMounts }}
       {{- range .Values.extraSecretMounts }}
         - name: {{ .name }}
           mountPath: {{ .mountPath }}
           readOnly: {{ .readOnly }}
           subPath: {{ .subPath | default "" }}
       {{- end }}
+      {{- end }}
         ## Other volumes
+      {{- if .Values.extraVolumeMounts }}
       {{- range .Values.extraVolumeMounts }}
         - name: {{ .name }}
           mountPath: {{ .mountPath }}
           subPath: {{ .subPath | default "" }}
           readOnly: {{ .readOnly }}
+      {{- end }}
       {{- end }}
 
       volumes:
@@ -363,7 +391,7 @@ spec:
       - name: {{ include "transfer-cft.fullname" . }}-volume
         emptyDir: {}
     {{- end -}}
-      {{- if and (.Values.cft.licenseKey.secretName) (or .Values.cft.licenseKey.createSecretFile .Values.cft.licenseKey.existingSecretFile) }}
+    {{- if and (.Values.cft.licenseKey.secretName) (or .Values.cft.licenseKey.createSecretFile .Values.cft.licenseKey.existingSecretFile) }}
       - name: {{ .Values.cft.licenseKey.secretName }}
         secret:
           {{ if .Values.cft.licenseKey.createSecretFile }}
@@ -372,7 +400,8 @@ spec:
           secretName: {{ .Values.cft.licenseKey.secretName }}
           {{ end }}
           defaultMode: 0777 
-      {{- end }}
+    {{- end }}
+    {{- if .Values.cft.cg }}
       {{- if and (.Values.cft.cg.enabled) (.Values.cft.cg.caCert.secretName) (or .Values.cft.cg.caCert.createSecretFile .Values.cft.cg.caCert.existingSecretFile) }}
       - name: {{ .Values.cft.cg.caCert.secretName }}
         secret:
@@ -393,7 +422,8 @@ spec:
           {{ end }}
           defaultMode: 0777 
       {{- end }}
-      {{- if and (.Values.cft.copilotCert.secretName) (or .Values.cft.copilotCert.createSecretFile .Values.cft.copilotCert.existingSecretFile) }}
+    {{- end }}
+    {{- if and (.Values.cft.copilotCert.secretName) (or .Values.cft.copilotCert.createSecretFile .Values.cft.copilotCert.existingSecretFile) }}
       - name: {{ .Values.cft.copilotCert.secretName }}
         secret:
           {{ if .Values.cft.copilotCert.createSecretFile }}
@@ -402,8 +432,8 @@ spec:
           secretName: {{ .Values.cft.copilotCert.secretName }}
           {{ end }}
           defaultMode: 0777 
-      {{- end }}
-     {{- if and (.Values.cft.copilotCertPassword.secretName) (or .Values.cft.copilotCertPassword.createSecretFile .Values.cft.copilotCertPassword.existingSecretFile) }}
+    {{- end }}
+    {{- if and (.Values.cft.copilotCertPassword.secretName) (or .Values.cft.copilotCertPassword.createSecretFile .Values.cft.copilotCertPassword.existingSecretFile) }}
       - name: {{ .Values.cft.copilotCertPassword.secretName }}
         secret:
           {{ if .Values.cft.copilotCertPassword.createSecretFile }}
@@ -412,8 +442,9 @@ spec:
           secretName: {{ .Values.cft.copilotCertPassword.secretName }}
           {{ end }}
           defaultMode: 0777 
-      {{- end }}
-      {{- if and (.Values.cft.xfbadmPassword.secretName) (or .Values.cft.xfbadmPassword.createSecretFile .Values.cft.xfbadmPassword.existingSecretFile) }}
+    {{- end }}
+    {{- if .Values.cft.xfbadmPassword }}
+    {{- if and (.Values.cft.xfbadmPassword.secretName) (or .Values.cft.xfbadmPassword.createSecretFile .Values.cft.xfbadmPassword.existingSecretFile) }}
       - name: {{ .Values.cft.xfbadmPassword.secretName }}
         secret:
           {{ if .Values.cft.xfbadmPassword.createSecretFile }}
@@ -422,7 +453,9 @@ spec:
           secretName: {{ .Values.cft.xfbadmPassword.secretName }}
           {{ end }}
           defaultMode: 0777 
-      {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- if .Values.cft.sentinel }}
       {{- if and (.Values.cft.sentinel.enabled) (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
       - name: {{ .Values.cft.sentinel.caCert.secretName }}
         secret:
@@ -433,6 +466,8 @@ spec:
           {{ end }}
           defaultMode: 0777 
       {{- end }}
+    {{- end }}
+    {{- if .Values.cft.initScript }}
       {{- if and (.Values.cft.initScript.fileName) (or .Values.cft.initScript.createConfigMap .Values.cft.initScript.existingConfigMap) }}
       - name: {{ .Values.cft.initScript.fileName }}
         configMap:
@@ -443,6 +478,8 @@ spec:
           {{ end }}
           defaultMode: 0777
       {{- end }}
+    {{- end }}
+    {{- if .Values.cft.startScript }}
       {{- if and (.Values.cft.startScript.fileName) (or .Values.cft.startScript.createConfigMap .Values.cft.startScript.existingConfigMap) }}
       - name: {{ .Values.cft.startScript.fileName }}
         configMap:
@@ -453,13 +490,17 @@ spec:
           {{ end }}
           defaultMode: 0777
       {{- end }}
-    {{- range .Values.extraSecretMounts }}
+    {{- end }}
+    {{- if .Values.extraSecretMounts }}
+      {{- range .Values.extraSecretMounts }}
       - name: {{ .name }}
         secret:
           secretName: {{ .secretName }}
           defaultMode: {{ .defaultMode }}
+      {{- end }}
     {{- end }}
-    {{- range .Values.extraVolumeMounts }}
+    {{- if .Values.extraVolumeMounts }}
+      {{- range .Values.extraVolumeMounts }}
       - name: {{ .name }}
         {{- if .hostPath }}
         hostPath:
@@ -468,11 +509,12 @@ spec:
         persistentVolumeClaim:
           claimName: {{ .existingClaim }}
         {{- end }}
+      {{- end }}
     {{- end }}
-      {{- with .Values.nodeSelector }}
+    {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+    {{- end }}
     {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}

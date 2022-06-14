@@ -82,7 +82,7 @@ From the folder where the Transfer_CFT_3.10.2203_DockerImage_linux-x86-64_b9dcb5
 docker image load -i Transfer_CFT_3.10.2203_DockerImage_linux-x86-64_b9dcb51484.tar.gz
 ```
 
-4) Check that the image is successfully loaded.
+3) Check that the image is successfully loaded.
 
 Run the command:
 
@@ -131,17 +131,17 @@ You can change the volume configuration to use a previously created volume, as d
 
 From the folder where the docker-compose.yml file is located, run the command:
 
-```console  
-docker-compose up  
+```console
+docker-compose up
 ```
 
-The `up` command builds (if needed), recreates, starts, and attaches to a container for services.  
+The `up` command builds (if needed), recreates, starts, and attaches to a container for services.
 Unless they are already running, this command also starts any linked services.
 
 You can use the -d option to run containers in the background.
 
-```console  
-docker-compose up -d  
+```console
+docker-compose up -d
 ```
 
 To create an anonymous volume, instead of retrieving data from previous containers, use the  -V option. Doing so forcefully creates a runtime. It could be useful for debugging purpose.
@@ -164,7 +164,7 @@ From the folder where the docker-compose.yml file is located, you can stop the c
 docker-compose down
 ```
 
-The `down` command stops containers, and removes containers, networks, anonymous volumes, and images created by `up`.  
+The `down` command stops containers, and removes containers, networks, anonymous volumes, and images created by `up`.
 You can use the -v option to remove named volumes declared in the `volumes` section of the Compose file, and anonymous volumes attached to containers.
 
 #### 6. Start the Transfer CFT service
@@ -568,7 +568,7 @@ service:
 
 ## Copyright
 
-Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 
 ## License
 

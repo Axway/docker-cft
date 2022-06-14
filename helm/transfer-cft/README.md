@@ -1,14 +1,13 @@
-# Helm templates for Transfer CFT on Kubernetes
+# Helm templates for Transfer CFT on Kubernetes or Red Hat OpenShift
 
 ## Introduction
 
-The delivered chart bootstraps a Transfer CFT deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
+The delivered chart bootstraps a Transfer CFT deployment on a [Kubernetes](http://kubernetes.io) or [Red Hat OpenShift](https://www.openshift.com) cluster using the [Helm](https://helm.sh) package manager.
 
 ## Prerequisites
 
-  - Kubernetes 1.14+
-  - Helm 2.16+
-  - Helm 3+ 
+  - Kubernetes 1.14+ or Red Hat Openshift 3+
+  - Helm 3+
 
 ## Installing the chart
 
@@ -18,7 +17,7 @@ To install the chart with the release name `transfer-cft`:
 $ helm install --name transfer-cft ./transfer-cft
 ```
 
-The command deploys Transfer CFT on the Kubernetes cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
+The command deploys Transfer CFT on the Kubernetes or Red Hat OpenShift cluster in the default configuration. The [configuration](#configuration) section lists the parameters that can be configured during installation.
 
 > **Tip**: List all releases using `helm list`
 
@@ -30,7 +29,7 @@ To uninstall/delete the `transfer-cft` deployment:
 $ helm delete transfer-cft
 ```
 
-The command removes all the Kubernetes components associated with the chart and deletes the release.
+The command removes all the Kubernetes or Red Hat OpenShift components associated with the chart and deletes the release.
 
 ## Configuration
 
@@ -49,12 +48,12 @@ Parameter | Description | Default
 `fullnameOverride` | Name use for the release | `nil`
 `podLabels` | Additional labels | `nil`
 `resources` | CPU/memory resource requests/limits | `{"requests":{"cpu":"100m","memory":"280Mi"}}`
-`livenessProbe.periodSeconds`        | How often to perform the probe                                                               | 10
-`livenessProbe.successThreshold`     | Minimum consecutive successes for the probe to be considered successful after having failed. | 1 
-`livenessProbe.failureThreshold`     | Minimum consecutive failures for the probe to be considered failed after having succeeded.   | 3 
-`readinessProbe.periodSeconds`       | How often to perform the probe                                                               | 10
-`readinessProbe.successThreshold`    | Minimum consecutive successes for the probe to be considered successful after having failed. | 1 
-`readinessProbe.failureThreshold`    | Minimum consecutive failures for the probe to be considered failed after having succeeded.   | 3 
+`livenessProbe.periodSeconds`     | How often to perform the probe                                                               | 10
+`livenessProbe.successThreshold`  | Minimum consecutive successes for the probe to be considered successful after having failed. | 1
+`livenessProbe.failureThreshold`  | Minimum consecutive failures for the probe to be considered failed after having succeeded.   | 3
+`readinessProbe.periodSeconds`    | How often to perform the probe                                                               | 10
+`readinessProbe.successThreshold` | Minimum consecutive successes for the probe to be considered successful after having failed. | 1
+`readinessProbe.failureThreshold` | Minimum consecutive failures for the probe to be considered failed after having succeeded.   | 3
 `serviceAccount.create` | Create custom service account for the deployment | `false`
 `serviceAccount.name` | Service Account name used for the deployment | `nil`
 `rbac.create` | Create custom role base access control (RBAC) for the deployment | `false`
@@ -146,7 +145,7 @@ Parameter | Description | Default
 `service.ports` | Ports definitions for CFT services | `[{"name": "restapi","port": 1768},{"name": "pesit","port": 1761},{"name": "pesitssl","port": 1762},{"name": "sftp","port": 1763},{"name": "copilot","port": 1766},{"name": "copilotcg","port": 1767}]`
 `service.annotations` | Custom annotations for service | `{}`
 
-You can pass these parameters using the Helm `--set` option:
+These parameters can be passed via Helm's `--set` option
 ```console
 $ helm install --name transfer-cft ./transfer-cft \
   --set image.repository=cft/cft \
@@ -236,3 +235,12 @@ transfers/h | CPU (m)
 
 ### Example
 For a catalog with 10000 records, if I do transfers with only 1 partner having CNXIN = CNXOUT = 8, using protocol with SCHKW = RCHKW = 2, it would give me 500Mi (for the catalog) + 16Mi (sender 2 * 1 * 8) + 512Mi (receiver 2 * 32Mi * 8) = 1028Mi of memory needed.
+
+## Copyright
+
+Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+
+## License
+
+All files in this repository are licensed by Axway Software SA and its affiliates under the Apache License, Version 2.0, available at http://www.apache.org/licenses/.
+

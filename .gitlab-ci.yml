@@ -1,6 +1,6 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2021 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
 default:
   before_script:
@@ -85,6 +85,12 @@ security:
 
 push:
   stage: push
+  before_script:
+  - if [ -z "$DOCKER_TAG" ]; then
+  -   eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+  - fi
+  - echo Using DOCKER_TAG=$DOCKER_TAG
+  - docker login $REGISTRY_URL -u $ARTIFACTORY_CI_USER -p $ARTIFACTORY_CI_API_KEY
   script:
   - docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
   - docker push $REGISTRY_URL/$IMAGE_CFT:$DOCKER_TAG
@@ -100,6 +106,12 @@ push-latest:
     refs:
     # Push the "latest" mutable Docker version only when tagging
     - /^\d+.\d+.\d+\-?/
+  before_script:
+  - if [ -z "$DOCKER_TAG" ]; then
+  -   eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+  - fi
+  - echo Using DOCKER_TAG=$DOCKER_TAG
+  - docker login $REGISTRY_URL -u $ARTIFACTORY_CI_USER -p $ARTIFACTORY_CI_API_KEY
   script:
   - docker tag $IMAGE_CFT:$DOCKER_TAG $REGISTRY_URL/$IMAGE_CFT:latest
   - docker push $REGISTRY_URL/$IMAGE_CFT:latest
