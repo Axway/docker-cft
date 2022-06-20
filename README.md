@@ -5,6 +5,7 @@ The folders in this repository contain templates for the various ways to deploy 
 - Docker:  Contains the Dockerfile template and all other resources needed to create a Docker image for Transfer CFT.
 - Compose: Contains docker-compose file templates needed to deploy Transfer CFT using Docker Compose.
 - Helm:    Contains the Helm template files used to deploy Transfer CFT on Kubernetes or Red Hat OpenShift.
+- Podman:  Contains podman templates needed to deploy Transfer CFT in podman.
 
 Please refer to the README located in each folder for more information about the deployment method.
 

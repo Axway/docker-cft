@@ -1,0 +1,214 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: cft
+  name: cft-pod
+spec:
+  containers:
+    - name: cft
+      network-alias: cft-pod
+      image: localhost/cft/cft:3.10.2203
+      args:
+        - ./start.sh
+      restart: unless-stopped
+      livenessProbe:
+        exec:
+            command:
+            - ". /opt/axway/data/runtime/profile && copstatus"
+        periodSeconds: 10
+        failureThreshold: 3
+        initialDelaySeconds: 10
+      ports:
+        - name: restapi
+          hostPort: 1768
+          containerPort: 1768
+          protocol: tcp
+        - name: pesit
+          hostPort: 1761
+          containerPort: 1761
+          protocol: tcp
+        - name: pesitssl
+          hostPort: 1762
+          containerPort: 1762
+          protocol: tcp
+        - name: sftp
+          hostPort: 1763
+          containerPort: 1763
+          protocol: tcp
+        - name: copilot
+          hostPort: 1766
+          containerPort: 1766
+          protocol: tcp
+        - name: copilotcg
+          hostPort: 1767
+          containerPort: 1767
+          protocol: tcp
+      env:
+        ## Set parameter to yes if you accept the applicable General Terms and Conditions,
+        ## located at https://www.axway.com/en/legal/contract-documents
+        - name: ACCEPT_GENERAL_CONDITIONS
+          value: "NO"
+        - name: CFT_FQDN
+          value: cft-pod
+        - name: CFT_INSTANCE_ID
+          value: docker0_cft
+        - name: CFT_INSTANCE_GROUP
+          value: dev.docker
+        - name: CFT_CATALOG_SIZE
+          value: 1000
+        - name: CFT_COM_SIZE
+          value: 1000
+        - name: CFT_KEY
+          value: "cat /run/secrets/cft.key"
+        - name: CFT_CFTDIRRUNTIME
+          value: "/opt/axway/data/runtime"
+        - name: CFT_PESIT_PORT
+          value: 1761
+        - name: CFT_PESITSSL_PORT
+          value: 1762
+        - name: CFT_SFTP_PORT
+          value: 1763
+        - name: CFT_COMS_PORT
+          value: 1765
+        - name: CFT_COPILOT_PORT
+          value: 1766
+        - name: CFT_COPILOT_CG_PORT
+          value: 1767
+        - name: CFT_RESTAPI_PORT
+          value: 1768
+        - name: CFT_CG_ENABLE
+          value: "NO"
+        - name: CFT_CG_HOST
+          value: cg
+        - name: CFT_CG_PORT
+          value: 12553
+        - name: CFT_CG_POLICY
+          value: ""
+        - name: CFT_CG_PERIODICITY
+          value: ""
+        - name: CFT_CG_AGENT_NAME
+          value: ""
+        ## Uncomment the next two lines to customize the CG CA certificate. See also secrets sections.
+        #- name: USER_CG_CA_CERT
+        #  value: "/run/secrets/cg_ca_cert.pem"
+        ## Uncomment the next two lines to customize the CG shared secret. See also secrets sections.
+        #- name: CFT_CG_SHARED_SECRET
+        #  value: "cat /run/secrets/shared_secret"
+        - name: CFT_SENTINEL_ENABLE
+          value: "NO"
+        - name: CFT_SENTINEL_HOST
+          value: sentinel
+        - name: CFT_SENTINEL_PORT
+          value: 1305
+        - name: CFT_SENTINEL_SSL
+          value: "NO"
+        - name: CFT_SENTINEL_LOG_FILTER
+          value: EF
+        - name: CFT_SENTINEL_TRANSFER_FILTER
+          value: ALL
+        ## Uncomment the next two lines to customize the Sentinel CA certificate. See also secrets sections.
+        #- name: USER_SENTINEL_CA_CERT
+        #  value: "/run/secrets/sentinel_ca_cert.pem"
+        - name: CFT_MULTINODE_ENABLE
+          value: "NO"
+        - name: CFT_MULTINODE_NUMBER
+          value: 1
+        - name: CFT_MULTINODE_NODE_PER_HOST
+          value: 1
+        - name: CFT_JVM
+          value: 1024
+        ## Uncomment the next four lines to customize the Copilot server certificate. See also secrets sections.
+        ## The certificate must refer to a PKCS12 certificate.
+        #- name: USER_COPILOT_CERT
+        #  value: "/run/secrets/copilot.p12"
+        #- name: USER_COPILOT_CERT_PASSWORD
+        #  value: "cat /run/secrets/copilot_p12.pwd"
+        ## Uncomment the next four lines to create a XFBADM user. See also secrets sections.
+        #- name: USER_XFBADM_LOGIN
+        #  value: "admin"
+        #- name: USER_XFBADM_PASSWORD
+        #  value: "cat /run/secrets/xfbadm.pwd"
+        ## Interval in seconds between two checks of Passport access management updates.
+        - name: CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL
+          value: 60
+        ## Script executed at container initialization
+        #- name: USER_SCRIPT_INIT
+        #  value: "/opt/app/custom/init.sh"
+        ## Script executed at each container start-up
+        #- name: USER_SCRIPT_START
+        #  value: "/opt/app/custom/startup.sh"
+      volumeMounts:
+        - name: cft_data-pvc
+          mountPath: /opt/axway/data
+        - name: cft.key
+          readOnly: true
+          mountPath: /run/secrets/cft.key
+        ## Uncomment the next three lines to customize the CG CA certificate.
+        #- name: cg_ca_cert.pem
+        #  readOnly: true
+        #  mountPath: /run/secrets/cg_ca_cert.pem
+        ## Uncomment the next three lines to customize the CG shared secret.
+        #- name: shared_secret
+        #  readOnly: true
+        #  mountPath: /run/secrets/shared_secret
+        ## Uncomment the next three lines to customize the Sentinel CA certificate.
+        #- name: sentinel_ca_cert.pem
+        #  readOnly: true
+        #  mountPath: /run/secrets/sentinel_ca_cert.pem
+        ## Uncomment the next six lines to customize the Copilot server certificate.
+        #- name: copilot.p12
+        #  readOnly: true
+        #  mountPath: /run/secrets/copilot.p12
+        #- name: copilot_p12.pwd
+        #  readOnly: true
+        #  mountPath: /run/secrets/copilot_p12.pwd
+        ## Uncomment the next three lines to create a XFBADM user. See also secrets sections.
+        #- name: xfbadm.pwd
+        #  readOnly: true
+        #  mountPath: /run/secrets/xfbadm.pwd
+        ## Uncomment the next two lines to use a script for initialization or start-up.
+        #- name: custom
+        #  mountPath: /opt/app/custom/
+  volumes:
+    - name: cft_data-pvc
+      persistentVolumeClaim:
+        claimName: cft_data
+    - name: cft.key
+      hostPath:
+        path: ./conf/cft.key
+        type: File
+    ## Uncomment the next four lines to customize the CG CA certificate.
+    #- name: cg_ca_cert.pem
+    #  hostPath:
+    #    path: ./conf/cg_ca_cert.pem
+    #    type: File
+    ## Uncomment the next four lines to customize the CG shared secret.
+    #- name: shared_secret
+    #  hostPath:
+    #    path: ./conf/shared_secret
+    #    type: File
+    ## Uncomment the next four lines to customize the Sentinel CA certificate.
+    #- name: sentinel_ca_cert.pem
+    #  hostPath:
+    #    path: ./conf/sentinel_ca_cert.pem
+    #    type: File
+    ## Uncomment the next eight lines to customize the Copilot server certificate.
+    #- name: copilot.p12
+    #  hostPath:
+    #    path: ./conf/copilot.p12
+    #    type: File
+    #- name: copilot_p12.pwd
+    #  hostPath:
+    #    path: ./conf/copilot_p12.pwd
+    #    type: File
+    ## Uncomment the next four lines to create a XFBADM user. See also secrets sections.
+    #- name: xfbadm.pwd
+    #  hostPath:
+    #    path: ./conf/xfbadm.pwd
+    #    type: File
+    ## Uncomment the next four lines to use a script for initialization of start-up.
+    #- name: custom
+    #  hostPath:
+    #    path: ./custom
+    #    type: Directory
