@@ -2,7 +2,7 @@
 #
 # Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
-# AMPLIFY Transfer CFT Docker image
+# Axway Transfer CFT Docker image
 #
 # Building with:
 # docker build -f Dockerfile -t axway/cft:3.8 .

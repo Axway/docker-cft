@@ -107,8 +107,8 @@ Before you start, customize the parameters in the docker-compose.yml.
 
 Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.10".
 
-If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the actual host machine’s address.  
-**Note:** You cannot connect to any Transfer CFT interface if this parameter is incorrect.
+If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the host machine’s name in the network (IP address can also be used).  
+**Note:** You cannot connect to some Transfer CFT interfaces if this parameter is not properly set.
 
 To register Transfer CFT with Central Governance, set CFT_CG_ENABLE to "YES", and configure the CFT_CG_HOST, CFT_CG_PORT, and CFT_CG_SHARED_SECRET parameters.
 
@@ -216,18 +216,18 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 - Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
 
-##### 1. Update the image parameter
-
-Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.10.2206".
-
-##### 2. Export the Transfer data (not necessary for patches)
+##### 1. Export the Transfer CFT data (not necessary for patches)
 
 This step is only mandatory if you upgrade to a new update, such as moving from version 3.10.2203 to version 3.10.2206. This step is not required when applying a patch, for example, from 3.10.2203 to 3.10.2203 P1. Invoke the REST API cft/container/export. user:password refers to the credentials that you use to connect to the UI or the REST API.
 
 ```console
-curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
+curl -k -u user:password -X PUT "https://${CFT_FQDN}:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
 ```
 Check that the REST API call returns 200.
+
+##### 2. Update the image parameter
+
+Set the image parameter to match the image you want to use. For example: "image: cft/cft:3.10.2206".
 
 ##### 3. Stop and remove the container
 
@@ -321,7 +321,7 @@ Set the image parameter to match the image you want to use. For example: "image:
 This step is only mandatory if you upgrade to a new update, such as moving from version 3.10.2203 to version 3.10.2206. This step is not required when applying a patch, for example, from 3.10.2203 to 3.10.2203 P1. Invoke the REST API cft/container/export. user:password refers to the credentials that you use to connect to the UI or the REST API.
 
 ```console
-curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
+curl -k -u user:password -X PUT "https://${CFT_FQDN}:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
 ```
 Check that the REST API call returns 200.
 
@@ -360,12 +360,12 @@ Prerequisites:
 The modifications are:
 
 * NGINX is not used, so the block for service nginx should be removed from file docker-compose-multinode.yml.
-* CFT_LOAD_BALANCER_HOST and CFT_LOAD_BALANCER_PORT should be set to refflect the load balancer information.
+* CFT_LOAD_BALANCER_HOST and CFT_LOAD_BALANCER_PORT should be set to reflect the load balancer information.
 * CFT_FQDN should be set using the host machine information, which should change for each of the host machines.
 * You must add `- "33000-33100"` to the exposed section of file docker-compose-multinode.yml.
 * Define the Transfer CFT's listening port range, according to the port range set in the previous step. For that, you must set up a custom initialization script using the parameter USER_SCRIPT_INIT. The script must contain the following lines:
 ```console
-. $CFT_CFTDIRRUNTIME/profile
+. ${CFT_CFTDIRRUNTIME}/profile
 CFTUTIL uconfset id=cft.multi_node.listen_port_range, value="33000-33100"
 ```
 
@@ -446,7 +446,7 @@ Set the image parameter to match the image you want to use. For example: "image:
 This step is only mandatory if you upgrade to a new update, such as moving from version 3.10.2203 to version 3.10.2206. This step is not required when applying a patch, for example, from 3.10.2203 to 3.10.2203 P1. Invoke the REST API cft/container/export. user:password refers to the credentials that you use to connect to the UI or the REST API.
 
 ```console
-curl -k -u user:password -X PUT "https://10.110.173.125:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
+curl -k -u user:password -X PUT "https://${CFT_FQDN}:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
 ```
 Check that the REST API call returns 200.
 
@@ -486,19 +486,13 @@ WARNING: Password required to create an user. Not creating one!
 Access the Transfer CFT REST API documentation by connecting to: 
 
 ```
-https://CFT_FQDN:1768/cft/api/v1/ui/index.html
+https://${CFT_FQDN}:1768/cft/api/v1/ui/index.html
 ```
 
 Access the Transfer CFT UI by connecting to:
 
 ```
-https://CFT_FQDN:1768/cft/ui
-```
-
-Access the former Transfer CFT UI (Copilot UI) by connecting to:
-
-```
-http://CFT_FQDN:1766/index.html
+https://${CFT_FQDN}:1768/cft/ui
 ```
 
 **Note:** When using multinode, use the load balancer address instead of CFT_FQDN.

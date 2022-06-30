@@ -1,4 +1,4 @@
-# AMPLIFY Transfer CFT Podman
+# Axway Transfer CFT Podman
 
 ### Prerequisites
 
@@ -11,6 +11,8 @@ This README refers to managing single-node installations of Transfer CFT using p
 The podman.yml describes and allows you to configure the Transfer CFT deployment.
 
 The script podman-helper.sh can be used to help managing Transfer CFT.
+
+**Note:** If you change yaml parameter values, adequate values in podman-helper.sh before using the script. 
 
 > **Tip**: There is also a [Podman Compose](https://github.com/containers/podman-compose) that can be used with the yaml files present in the ../compose folder.
 
@@ -52,9 +54,9 @@ Set the image parameter to match the image you want to use. For example: "image:
 
 You must accept the applicable General Terms and Conditions to be able to continue. These are located at [https://www.axway.com/en/legal/contract-documents](https://www.axway.com/en/legal/contract-documents).
 
-If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the actual host machine’s address.
+If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the host machine’s name in the network (IP address can also be used).
 
-**Note:** You cannot connect to any Transfer CFT interface if this parameter is incorrect.
+**Note:** You cannot connect to some Transfer CFT interfaces if this parameter is not properly set.
 
 To register Transfer CFT with Flow Manager or Central Governance, set CFT_CG_ENABLE to "YES", and configure the CFT_CG_HOST, CFT_CG_PORT, and CFT_CG_SHARED_SECRET parameters.
 
@@ -62,7 +64,7 @@ Customizing other parameters is optional.
 
 ##### 1.1 podman.yml parameters
 
-The following parameters are available in the podman.yml file. Use these parameters to customize the Transfer CFT container and pod. The values can be a string, number, or null.
+The following parameters are available in the podman.yml file. Use these parameters to customize the Transfer CFT container and pod. All values are transmitted to Transfer CFT using environment variables.
 
 In this README, Central Governance can represent either Central Governance or Flow Manager.
 
@@ -113,13 +115,13 @@ USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM 
 
 #### 2. Transfer CFT license key
 
-Enter your Transfer CFT license key in the conf/cft.key file. You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the podman.yml file.
+Enter your Transfer CFT license key in the conf/cft.key file. You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the podman.yml file. Podman defines hostname based on the key metadata:name in yaml.
 
 **Note**: The default value for hostname in podman.yml is cft-pod, if you do not change this, this is the value you should use for your key.
 
 #### 3. Data persistence
 
-The Transfer CFT podman.yml file makes reference to a volume named cft_data. This volume is created automatically while running `podman play kube ./podman.yml`.
+The Transfer CFT podman.yml file makes reference to a volume named cft_data. This volume is created automatically when the container is created using `podman play kube ./podman.yml` or `podman-helper.sh create`
 
 The Transfer CFT runtime is placed in this volume so it can be reused when creating and starting a new Transfer CFT container. See the Upgrade section for details.
 
@@ -223,18 +225,20 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 - Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
 - Build a new Transfer CFT image, using the instructions in ../docker/README.md
 
-##### 1. Update the image parameter
-
-Set the image parameter to match the image you want to use. For example: "image: localhost/cft/cft:3.10.2206".
-
-##### 2. Export the Transfer data
+##### 1. Export Transfer CFT data
 
 This step is currently mandatory.
 
 ```console
-curl -k -u user:password -X PUT "https://CFT_FQDN:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
+curl -k -u user:password -X PUT "https://${CFT_FQDN}:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
 ```
+where user:password refers to the credentials that you use to connect to the UI or the REST API.
+
 Check that the REST API call returns 200.
+
+##### 2. Update the image parameter
+
+Set the image parameter to match the image you want to use. For example: "image: localhost/cft/cft:3.10.2206".
 
 ##### 3. Stop, remove, recreate and start the pod
 
@@ -274,13 +278,13 @@ WARNING: Password required to create an user. Not creating one!
 Access the Transfer CFT REST API documentation by connecting to:
 
 ```
-https://CFT_FQDN:1768/cft/api/v1/ui/index.html
+https://S{CFT_FQDN}:1768/cft/api/v1/ui/index.html
 ```
 
 Access the Transfer CFT UI by connecting to:
 
 ```
-https://CFT_FQDN:1768/cft/ui
+https://S{CFT_FQDN}:1768/cft/ui
 ```
 
 ### Customization
@@ -351,7 +355,7 @@ spec:
         type: File
 ```
 
-If one of the specified certificates has changed, when the container starts it is automatically updated so that the container always uses the certificate located in the local directory.
+If one of the specified certificates has changed, when the container starts it is automatically updated so that the container always uses last certificate mapped in the container from the host directory.
 
 #### Custom scripts
 

@@ -2,7 +2,7 @@
 #
 # Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
-# AMPLIFY Transfer CFT Docker-compose example
+# Axway Transfer CFT Docker-compose example
 #
 # Building with:
 # docker-compose up -d

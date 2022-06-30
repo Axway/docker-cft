@@ -51,10 +51,15 @@ spec:
           value: "NO"
         - name: CFT_FQDN
           value: cft-pod
+        ## Uncomment the next four lines if necessary when using load balancer in multinode environment
+        #- name: CFT_LOAD_BALANCER_HOST
+        #  value: cft-pod
+        #- name: CFT_LOAD_BALANCER_PORT
+        #  value: 1767
         - name: CFT_INSTANCE_ID
-          value: docker0_cft
+          value: container0_cft
         - name: CFT_INSTANCE_GROUP
-          value: dev.docker
+          value: dev.container
         - name: CFT_CATALOG_SIZE
           value: 1000
         - name: CFT_COM_SIZE
