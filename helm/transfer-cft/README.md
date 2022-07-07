@@ -161,7 +161,7 @@ $ helm install --name transfer-cft ./transfer-cft -f my-values.yaml
 
 > **Tip**: You can modify and use the default [values.yaml](values.yaml).
 
-> **ATTENTION**: You need a license for the linux-x86-64 platform without hostname.
+> **ATTENTION**: You require a linux-x86-64 platform key that does not have a specified hostname.
 
 > **ATTENTION**: Transfer CFT is always in active/active cluster mode. The multi-node, multi-host architecture prerequisites apply. (Ex. Supported shared file systems are NFSv4 and AWS EFS)
 

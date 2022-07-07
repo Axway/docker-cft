@@ -116,9 +116,7 @@ Customizing other parameters is optional.
 
 #### 2. Transfer CFT license key
 
-Enter your Transfer CFT license key in the conf/license-key file. You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the docker-compose.yml file.
-
-**Note**: The default value for hostname in docker-compose.yml is docker0, if you do not change this, this is the value you should use for your key.
+You require a linux-x86-64 platform key that does not have a specified hostname. Enter this Transfer CFT license key in the conf/license-key file.
 
 #### 3. Data persistence
 

@@ -115,9 +115,7 @@ USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM 
 
 #### 2. Transfer CFT license key
 
-Enter your Transfer CFT license key in the conf/cft.key file. You need a license for the linux-x86-64 platform. The hostname defined for the key must match the hostname value set in the podman.yml file. Podman defines hostname based on the key metadata:name in yaml.
-
-**Note**: The default value for hostname in podman.yml is cft-pod, if you do not change this, this is the value you should use for your key.
+You require a linux-x86-64 platform key that does not have a specified hostname. Enter this Transfer CFT license key in the conf/cft.key file.
 
 #### 3. Data persistence
 
