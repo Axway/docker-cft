@@ -1,5 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
+
+## [3.10.2206] - 2022-07-12
+
+### Added
+- Podman templates.
+
+### Changed
+- Verification of required parameters before deployment in helm.
+- Improved protection of undefined parameters in helm.
  
 ## [3.10] - 2022-04-15
 
