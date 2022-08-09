@@ -11,7 +11,7 @@
 # Stage 1 : build
 #
 
-FROM ubuntu:20.04 AS builder
+FROM ubuntu:22.04 AS builder
 
 RUN apt-get -y update && apt-get install -y \
         curl \
@@ -53,7 +53,7 @@ COPY --chown=axway:0 resources/*.sh resources/uid_entrypoint ./
 # Stage 2 : create final image
 #
 
-FROM ubuntu:20.04
+FROM ubuntu:22.04
 
 RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         curl \
