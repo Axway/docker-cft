@@ -58,8 +58,7 @@ FROM ubuntu:22.04
 RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         curl \
         jq \
-        openssl \
-        vim && \
+        openssl && \
         rm -rf /var/lib/apt/lists && \
         adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
         mkdir -p /opt/axway/data && \
