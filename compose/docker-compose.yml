@@ -12,7 +12,7 @@ version: "3.5"
 services:
   cft:
     # build: ../docker
-    image: cft/cft:3.8
+    image: docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.2206
     hostname: docker0
 
     environment:

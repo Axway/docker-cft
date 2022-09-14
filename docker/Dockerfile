@@ -5,7 +5,7 @@
 # Axway Transfer CFT Docker image
 #
 # Building with:
-# docker build -f Dockerfile -t axway/cft:3.8 .
+# docker build -f Dockerfile -t axway/cft:3.10.2206 .
 
 #
 # Stage 1 : build
@@ -28,8 +28,8 @@ ENV LANG=C.UTF-8
 
 # Download and install Transfer CFT package
 
-ARG PACKAGE="Transfer_CFT_3.10.2203_Install_b9dcb51484_linux-x86-64.zip"
-ARG URL_BASE="https://delivery.server.int/"
+ARG PACKAGE="Transfer_CFT_3.10.2206_Update_d2269df442_linux-x86-64.zip"
+ARG URL_BASE="https://network.package.location/"
 ARG INSTALL_KIT="${URL_BASE}${PACKAGE}"
 
 ADD --chown=axway:0 $INSTALL_KIT installkit.zip
@@ -74,8 +74,8 @@ ENV HOME=/opt/axway
 ENV LANG=C.UTF-8
 
 ARG BUILD_DATE
-ARG BUILD_VERSION="3.10.2203"
-ARG BUILD_REVISION="b9dcb51484"
+ARG BUILD_VERSION="3.10.2206"
+ARG BUILD_REVISION="d2269df442"
 
 LABEL created="${BUILD_DATE}"
 LABEL url="https://www.axway.com"
@@ -112,7 +112,7 @@ ENV CFT_COMS_PORT        1765
 ENV CFT_COPILOT_PORT     1766
 ENV CFT_COPILOT_CG_PORT  1767
 ENV CFT_RESTAPI_PORT     1768
-ENV CFT_CG_ENABLE        "YES"
+ENV CFT_CG_ENABLE        "NO"
 ENV CFT_CG_HOST          127.0.0.1
 ENV CFT_CG_PORT          12553
 ENV CFT_CG_SHARED_SECRET ""

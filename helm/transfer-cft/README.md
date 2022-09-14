@@ -33,15 +33,15 @@ The command removes all the Kubernetes or Red Hat OpenShift components associate
 
 ## Configuration
 
-**If you want to use local files for the certicates or license files, you can put all in the path transfer-cft/conf, or use a custom path (e.g. ../../config/certs/myfile.p12)**
+**If you want to use local files for the certicates or license files, you can put all in the path `transfer-cft/conf`, or use a custom path (e.g. `../../config/certs/myfile.p12`)**
 
 The following table lists the configurable Transfer CFT chart parameters and their default values.
 
 Parameter | Description | Default
 --- | --- | ---
 `replicaCount` | Number of replicas deployed | `1`
-`image.repository` | Image repository for docker image | `cft/cft`
-`image.tag` | Image tag used for the deployment | `3.9`
+`image.repository` | Image repository for docker image | `docker.repository.axway.com/transfercft-docker-prod/3.10/cft`
+`image.tag` | Image tag used for the deployment | `3.10.2206`
 `image.pullPolicy` | Pull Policy Action for docker image | `IfNotPresent`
 `image.imagePullSecrets` | Secret used for Pulling image | `regcred`
 `nameOverride` | New name use for the deployment | `nil`
@@ -73,7 +73,7 @@ Parameter | Description | Default
 `cft.comSize` | Number of records for the communication file | `1000`
 `cft.licenseKey.secretName` | Name of the secret used to store the license key (secretname is mandatory) | `license-key`
 `cft.licenseKey.createSecretFile` | Create the license key using a local file | `false`
-`cft.licenseKey.localFile` | Relative path to the license key file (you can use conf directory in the helm chart) | `{} (eg. conf/cft.key)`
+`cft.licenseKey.localFile` | Relative path to the license key file (you can use conf directory in the helm chart) | `{}` (eg. `conf/cft.key`)
 `cft.licenseKey.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.multinode.nodesNumber` | Number of cft nodes to use (if this number is greater than replicaCount, only replicaCount nodes are started) | `1`
 `cft.jvm` | Amount of memory that the Secure Relay JVM can use | `1024`
@@ -84,20 +84,20 @@ Parameter | Description | Default
 `cft.cg.periodicity` | Central Governance interval between notifications | `nil`
 `cft.cg.caCert.secretName` | Name of the secret used to store the Central Governance root Certificate Authority (secretname is mandatory) | `cg-ca-cert`
 `cft.cg.caCert.createSecretFile` | Create the Central Governance root Certificate Authority secret at installation using a local file | `false`
-`cft.cg.caCert.localFile` | Relative path to the Central Governance root Certificate Authority (you can use conf directory in the helm chart) | `{} (eg. conf/cg_ca.pem)`
+`cft.cg.caCert.localFile` | Relative path to the Central Governance root Certificate Authority (you can use conf directory in the helm chart) | `{}` (eg. `conf/cg_ca.pem`)
 `cft.cg.caCert.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.cg.sharedSecret.secretName` | Name of the secret used to store the Central Governance shared secret (secretname is mandatory) | `cg-shared-secret`
 `cft.cg.sharedSecret.createSecretFile` | Create the Central Governance shared secret secret at installation using a local file | `false`
-`cft.cg.sharedSecret.localFile` | Relative path to the Central Governance shared secret (you can use conf directory in the helm chart) | `{} (eg. conf/shared_secret)`
+`cft.cg.sharedSecret.localFile` | Relative path to the Central Governance shared secret (you can use conf directory in the helm chart) | `{}` (eg. `conf/shared_secret`)
 `cft.cg.sharedSecret.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.cg.agentName` | The Flow Manager Agent's name that the Flow Manager SaaS uses to connect to your Transfer CFT instance. | `nil`
 `cft.copilotCert.secretName` | Name of the secret used to store the Copilot certificate (secretname is mandatory) | `copilot-cert`
 `cft.copilotCert.createSecretFile` | Create the Copilot certificate secret at installation using a local file | `false`
-`cft.copilotCert.localFile` | Relative path to the Copilot certificate (you can use conf directory in the helm chart) | `{} (eg. conf/copilot.p12)`
+`cft.copilotCert.localFile` | Relative path to the Copilot certificate (you can use conf directory in the helm chart) | `{}` (eg. `conf/copilot.p12`)
 `cft.copilotCert.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.copilotCertPassword.secretName` | Name of the secret used to store the Copilot certificate password (secretname is mandatory) | `copilot-cert-password`
 `cft.copilotCertPassword.createSecretFile` | Create the Copilot certificate password secret at installation using a local file | `false`
-`cft.copilotCertPassword.localFile` | Relative path to the Copilot certificate password (you can use conf directory in the helm chart) | `{} (eg. conf/copilot.p12.pwd)`
+`cft.copilotCertPassword.localFile` | Relative path to the Copilot certificate password (you can use conf directory in the helm chart) | `{}` (eg. `conf/copilot.p12.pwd`)
 `cft.copilotCertPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.sentinel.enabled` | Connectivity to Sentinel. This shouldn't be used if connectivity with Central Governance activated. | `false`
 `cft.sentinel.host` | Host address of the Sentinel server. | `sentinel`
@@ -107,25 +107,25 @@ Parameter | Description | Default
 `cft.sentinel.transferFilter` | Sentinel Transfer Filter. Possible values are: ALL, SUMMARY, NO, ERROR. | `ALL`
 `cft.sentinel.caCert.secretName` | Name of the secret used to store the Sentinel root Certificate Authority (secretname is mandatory) | `sentinel-ca-cert`
 `cft.sentinel.caCert.createSecretFile` | Create the Sentinel root Certificate Authority secret at installation using a local file | `false`
-`cft.sentinel.caCert.localFile` | Relative path to the Sentinel root Certificate Authority (you can use conf directory in the helm chart) | `{} (eg. conf/sentinel_ca_cert.pem)`
+`cft.sentinel.caCert.localFile` | Relative path to the Sentinel root Certificate Authority (you can use conf directory in the helm chart) | `{}` (eg. `conf/sentinel_ca_cert.pem`)
 `cft.sentinel.caCert.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.xfbadmLogin` | Login of the xfbadm user to create at container creation. If both xfbadmLogin and xfbadmPassword.secretName are defined, the corresponding user is added to xfbadmusr database. XFBADM base is used when no other identity provider is used. | `admin`
 `cft.xfbadmPassword.secretName` | Name of the secret used to store the xfbadm user password (secretname is mandatory) | `xfbadm-password`
 `cft.xfbadmPassword.createSecretFile` | Create the xfbadm user password secret at installation using a local file | `false`
-`cft.xfbadmPassword.localFile` | Relative path to the xfbadm user password (you can use conf directory in the helm chart) | `{} (eg. conf/xfbadm.pwd)`
+`cft.xfbadmPassword.localFile` | Relative path to the xfbadm user password (you can use conf directory in the helm chart) | `{}` (eg. `conf/xfbadm.pwd`)
 `cft.xfbadmPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.apiLogin` | Login of a REST API user. This login is used to invoke a Transfer CFT REST API during the pre-upgrade step. When using an identity provider, this should be a valid user for the identity provider. | `admin`
 `cft.apiPassword.secretName` | Name of the secret used to store the API user password (secretname is mandatory) | `api-password`
 `cft.apiPassword.createSecretFile` | Create the API user password secret at installation using a local file | `false`
-`cft.apiPassword.localFile` | Relative path to the file API user password (you can use conf directory in the helm chart) | `{} (eg. conf/password.pwd)`
+`cft.apiPassword.localFile` | Relative path to the file API user password (you can use conf directory in the helm chart) | `{}` (eg. `conf/password.pwd`)
 `cft.apiPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.initScript.fileName` | Name of a script to be executed at container initialization (filename is mandatory) | `init-sh`
 `cft.initScript.createConfigMap` | Create a configmap for the initialization script | `false`
-`cft.initScript.localFile` | Relative path to the initialization script (you can use conf directory in the helm chart) | `{} (eg. conf/init.sh`
+`cft.initScript.localFile` | Relative path to the initialization script (you can use conf directory in the helm chart) | `{}` (eg. `conf/init.sh`)
 `cft.initScript.existingConfigMap.keyRef` | Name of the reference key inside an existing configmap | `{}`
 `cft.startScript.fileName` | Name of a script to be executed at each container start-up (filename is mandatory) | `startup-sh`
 `cft.startScript.createConfigMap` | Create a configmap for the start-up script | `false`
-`cft.startScript.localFile` | Relative path to the start-up script (you can use conf directory in the helm chart) | `{} (eg. conf/startup.sh)`
+`cft.startScript.localFile` | Relative path to the start-up script (you can use conf directory in the helm chart) | `{}` (eg. `conf/startup.sh`)
 `cft.startScript.existingConfigMap.keyRef` | Name of the reference key inside an existing configmap | `{}`
 `cft.passportPersistencyCheckInterval` | Interval in seconds between two checks of Passport access management updates | `60`
 `persistence.enabled` | Enable config persistence using PVC | `true`
@@ -135,7 +135,7 @@ Parameter | Description | Default
 `persistence.cftData.size` | Persistent Volume Claim Storage Request for config volume (see information on resources to chose the good value for your application) | `2Gi`
 `persistence.cftData.existingClaim` | Manually managed Persistent Volume Claim | `nil`
 `persistence.cftData.nfsPath` | Basepath of the mount point to be used | `nil`
-`persistence.cftData.nfsServer` | Hostname of the NFS server | `nil (ip or hostname)`
+`persistence.cftData.nfsServer` | Hostname of the NFS server | `nil` (IP or hostname)
 `persistence.cftData.reclaimPolicy` | Retain, recycle or delete. Only NFS support recycling | `retain`
 `persistence.cftData.mountOptions` | Mount options for NFS | `nil`
 `extraSecretMounts` | Additionnal secret mounts to be added | `[]`
@@ -148,8 +148,8 @@ Parameter | Description | Default
 These parameters can be passed via Helm's `--set` option
 ```console
 $ helm install --name transfer-cft ./transfer-cft \
-  --set image.repository=cft/cft \
-  --set image.tag=3.9
+  --set image.repository=docker.repository.axway.com/transfercft-docker-prod/3.10/cft \
+  --set image.tag=3.10.2206
   --set resources={ "limits":{"cpu":"1000m","memory":"600Mi"},"requests":{"cpu":"200m","memory":"300Mi"}}
 ```
 
@@ -159,7 +159,7 @@ Alternatively, you can provide a YAML file that specifies the parameter values d
 $ helm install --name transfer-cft ./transfer-cft -f my-values.yaml
 ```
 
-> **Tip**: You can modify and use the default [values.yaml](values.yaml).
+> **Tip**: You can modify and use the default [values.yaml](./values.yaml).
 
 > **ATTENTION**: You require a linux-x86-64 platform key that does not have a specified hostname.
 
@@ -181,7 +181,7 @@ createSecretFile: false
 existingSecretFile:
   keyRef: <key_reference>
 ```
-in the values.yaml.
+in the [`values.yaml`](./values.yaml).
 The same for the configmaps that should be created as:
 ```console
 kubectl create configmap <configmap_name> --from-file=<key_reference>=<path_to_file>
@@ -197,7 +197,7 @@ createConfigMap: false
 existingConfigMap:
   keyRef: <key_reference>
 ```
-in the values.yaml.
+in the [`values.yaml`](./values.yaml).
 
 ## Resources
 The resources needed for Transfer CFT to run correctly depends on how Transfer CFT is used.

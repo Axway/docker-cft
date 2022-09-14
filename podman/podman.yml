@@ -8,7 +8,7 @@ spec:
   containers:
     - name: cft
       network-alias: cft-pod
-      image: localhost/cft/cft:3.10.2203
+      image: docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.2206
       args:
         - ./start.sh
       restart: unless-stopped

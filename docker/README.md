@@ -11,13 +11,13 @@ If needed, see [Get started with Docker](https://docs.docker.com/get-started/) f
 
 - Docker version 17.11 or higher
 
-## How to use the Transfer CFT Dockerfile file
+## How to use the Transfer CFT Dockerfile
 
 The Dockerfile contains all commands required to assemble a Transfer CFT image.
 
 ### Dockerfile parameters
 
-The following parameters are available in the Dockerfile file. Use these parameters to customize the Transfer CFT image and service. The values can be a string, number, or null.
+The following parameters can be set in the [`Dockerfile`](./Dockerfile). Use these parameters to customize the Transfer CFT image and service. All values are transmitted to Transfer CFT using environment variables.
 
  **Parameter**             |  **Values**  |  **Description**
  ------------------------- | :----------: | ---------------
@@ -52,22 +52,22 @@ CFT_CFTDIRRUNTIME          |  \<string>   |  Location of the Transfer CFT runtim
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/).
 
-The Dockerfile is compatible with Transfer CFT 3.6-SP1 version and higher.
+The Dockerfile is compatible with Transfer CFT 3.6 SP1 version and higher.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64.
 
 2) Build the Docker image from your Dockerfile.
 
-From the folder where the Dockerfile is located, using the downloaded package as a build argument, run the command:
+From the folder where the Dockerfile is located, using the downloaded package as `INSTALL_KIT` build argument, run the command:
 ```console
-docker build --build-arg INSTALL_KIT=Transfer_CFT_3.10.2203_Install_b9dcb51484_linux-x86-64.zip -t cft/cft:3.10.2203 .
+docker build --build-arg INSTALL_KIT=Transfer_CFT_3.10.2206_Update_d2269df442_linux-x86-64.zip -t axway/cft:3.10.2206 .
 ```
 
 #### 1.2. Build using a Transfer CFT package stored on your own HTTP server
 
 1) Download the Transfer CFT product package from [Axway Support](https://support.axway.com/).
 
-The Dockerfile is compatible with Transfer CFT 3.6-SP1 version and higher.
+The Dockerfile is compatible with Transfer CFT 3.6 SP1 version and higher.
 
 From the [Axway Support](https://support.axway.com/), download the latest package for linux-x86-64 and make it available in your network.
 
@@ -76,23 +76,22 @@ From the [Axway Support](https://support.axway.com/), download the latest packag
 From the folder where the Dockerfile is located, run the command:
 
 ```console
-docker build --build-arg URL_BASE=https://network.package.location/ -t cft/cft:3.10.2203 .
+docker build --build-arg URL_BASE=https://network.package.location/ -t axway/cft:3.10.2206 .
 ```
-*Note* You can customize the VERSION_BASE, RELEASE_BASE arguments from the Dockerfile to build a Docker image based on a different Transfer CFT version/level.
 
 ### 2. Check that the Docker image is successfully created
 
 Run the command:
 
 ```console
-docker images --filter reference=cft/cft
+docker images --filter reference=axway/cft
 ```
 
 You should get an output like:
 ```console
 
 REPOSITORY          TAG                 IMAGE ID            CREATED             SIZE
-cft/cft             3.10.2203           7004adf5aa92        4 days ago          375MB
+axway/cft             3.10.2206           26fe6e1aa1fb        4 days ago          381MB
 ```
 
 ## Copyright

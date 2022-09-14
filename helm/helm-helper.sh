@@ -3,6 +3,9 @@
 
 HELM_NAME="cft"
 
+CFT_IMAGE_REPOSITORY="docker.repository.axway.com/transfercft-docker-prod/3.10/cft"
+CFT_IMAGE_TAG="3.10.2206"
+
 set -uoe pipefail
 
 COL_MSG="\033[92m"
@@ -21,7 +24,7 @@ fi
 case "${1:-}" in
     "create")
         DEBUG kubectl get secrets
-        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.10.2203
+        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=${CFT_IMAGE_REPOSITORY},image.tag=${CFT_IMAGE_TAG}
     ;;
 
     "delete")
@@ -37,7 +40,7 @@ case "${1:-}" in
     ;;
 
     "replace")
-        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=cft/cft,image.tag=3.10.2203
+        DEBUG helm upgrade --install "$HELM_NAME" ./transfer-cft --set image.repository=${CFT_IMAGE_REPOSITORY},image.tag=${CFT_IMAGE_TAG}
     ;;
 
     "status")

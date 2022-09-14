@@ -6,67 +6,71 @@
 
 ## How to use the Transfer CFT podman files
 
-This README refers to managing single-node installations of Transfer CFT using podman.
+This `README` refers to managing single-node installations of Transfer CFT using podman.
 
-The podman.yml describes and allows you to configure the Transfer CFT deployment.
+The [`podman.yml`](./podman.yml) describes and allows you to configure the Transfer CFT deployment.
 
-The script podman-helper.sh can be used to help managing Transfer CFT.
+The script [`podman-helper.sh`](./podman-helper.sh) can be used to help managing Transfer CFT.
 
-**Note:** If you change yaml parameter values, adequate values in podman-helper.sh before using the script. 
+**Note:** If you change YAML parameter values, adequate values in [`podman-helper.sh`](./podman-helper.sh) before using the script. 
 
-> **Tip**: There is also a [Podman Compose](https://github.com/containers/podman-compose) that can be used with the yaml files present in the ../compose folder.
+> **Tip**: There is also the repository [Podman Compose](https://github.com/containers/podman-compose) that can be used with the YAML files present in the [`compose`](../compose) folder.
 
-### How to use the official Transfer CFT Docker image
+### How to use the official Transfer CFT Container image
 
-1) Download the Transfer CFT DockerImage from [Axway Support](https://support.axway.com/).
+1) Login to [Axway Repository](https://repository.axway.com/)
 
-2) Load the image.
+Use same credentials used for [Axway Support](https://support.axway.com/)
 
-From the folder where the Transfer_CFT_3.10.2203_DockerImage_cc4ac9b642_linux-x86-64.tgz is located, run the command:
+2) Find Transfer CFT official container image in the catalog.
 
-```console
-podman load -i Transfer_CFT_3.10.2203_DockerImage_cc4ac9b642_linux-x86-64.tgz
-```
+Search for "Transfer CFT DockerImage" and select the appropriate version.
 
-3) Check that the image is successfully loaded.
-
-Run the command:
+Logging into the following container registry is necessary.
 
 ```console
-podman images --filter reference=cft/cft
+podman login docker.repository.axway.com --username <client_id> --password <client_secret>
 ```
 
-You should get an output like:
+**Note:** Credentials for this registry can be obtained following the instructions in [Axway Documentation](https://docs.axway.com/search?q=Installing+Transfer+CFT+in+a+container)
+
+3) Pull Transfer CFT container image:
+
 ```console
-REPOSITORY           TAG         IMAGE ID      CREATED      SIZE
-localhost/cft/cft    3.10.2203   6103e0dd02c9  7 weeks ago  381 MB
+podman pull docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.2206
 ```
 
-### How to manage the Transfer CFT pod from your podman.yml file
+**Note:** Podman tag can be used to rename/retag the official container image, for example:
+
+```console
+podman tag docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.2206 axway/cft:3.10.2206
+```
+
+### How to manage the Transfer CFT pod from your podman YAML file
 
 You can use `podman play kube` to automate application deployment and customization.
 
 #### 1. Customization
 
-Before you start, customize the parameters in the podman.yml.
+Before you start, customize the parameters in the [`podman.yml`](./podman.yml) file.
 
-Set the image parameter to match the image you want to use. For example: "image: localhost/cft/cft:3.10.2203".
+Set the image parameter to match the image you want to use. For example: "image: axway/cft:3.10.2206".
 
 You must accept the applicable General Terms and Conditions to be able to continue. These are located at [https://www.axway.com/en/legal/contract-documents](https://www.axway.com/en/legal/contract-documents).
 
-If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the host machine’s name in the network (IP address can also be used).
+If you want your Transfer CFT to be fully functional, you should change the `CFT_FQDN` parameter to reflect the host machine’s name in the network (IP address can also be used).
 
 **Note:** You cannot connect to some Transfer CFT interfaces if this parameter is not properly set.
 
-To register Transfer CFT with Flow Manager or Central Governance, set CFT_CG_ENABLE to "YES", and configure the CFT_CG_HOST, CFT_CG_PORT, and CFT_CG_SHARED_SECRET parameters.
+To register Transfer CFT with Flow Manager or Central Governance, set `CFT_CG_ENABLE` to "YES", and configure the `CFT_CG_HOST`, `CFT_CG_PORT`, and `CFT_CG_SHARED_SECRET` parameters.
 
 Customizing other parameters is optional.
 
-##### 1.1 podman.yml parameters
+##### 1.1 Podman YAML parameters
 
-The following parameters are available in the podman.yml file. Use these parameters to customize the Transfer CFT container and pod. All values are transmitted to Transfer CFT using environment variables.
+The following parameters are available in the [`podman.yml`](./podman.yml) file. Use these parameters to customize the Transfer CFT container and pod. All values are transmitted to Transfer CFT using environment variables.
 
-In this README, Central Governance can represent either Central Governance or Flow Manager.
+In this `README`, Central Governance can represent either Central Governance or Flow Manager.
 
  **Parameter**              |  **Values**  |  **Description**
  -------------------------- | :----------: | ---------------
@@ -110,16 +114,16 @@ USER_CG_CA_CERT             |  \<string>   |  Central Governance root CA certifi
 USER_SENTINEL_CA_CERT       |  \<string>   |  Sentinel CA certificate.
 USER_COPILOT_CERT           |  \<string>   |  Copilot server certificate. It must refer to a PKCS12 certificate.
 USER_COPILOT_CERT_PASSWORD  |  \<string>   |  A command that returns the Copilot server certificate password.
-USER_XFBADM_LOGIN           |  \<string>   |  Xfbadm user login to create when creating the container. If both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
+USER_XFBADM_LOGIN           |  \<string>   |  Xfbadm user login to create when creating the container. If both `USER_XFBADM_LOGIN` and `USER_XFBADM_PASSWORD` are defined, the corresponding user is added to xfbadmusr database.
 USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM user's password.
 
 #### 2. Transfer CFT license key
 
-You require a linux-x86-64 platform key that does not have a specified hostname. Enter this Transfer CFT license key in the conf/cft.key file.
+You require a linux-x86-64 platform key that does not have a specified hostname. Enter this Transfer CFT license key in the `conf/cft.key` file.
 
 #### 3. Data persistence
 
-The Transfer CFT podman.yml file makes reference to a volume named cft_data. This volume is created automatically when the container is created using `podman play kube ./podman.yml` or `podman-helper.sh create`
+The Transfer CFT [`podman.yml`](./podman.yml) file makes reference to a volume named `cft_data`. This volume is set automatically when the container is created using `podman play kube ./podman.yml` or `podman-helper.sh create`
 
 The Transfer CFT runtime is placed in this volume so it can be reused when creating and starting a new Transfer CFT container. See the Upgrade section for details.
 
@@ -131,7 +135,7 @@ From the folder where the podman.yml file is located, run the command:
 podman play kube ./podman.yml
 ```
 
-Using the podman-helper.sh, this would be:
+Using the [`podman-helper.sh`](./podman-helper.sh), this would be:
 
 ```console
 podman-helper.sh create
@@ -157,7 +161,7 @@ You can stop the containers using the command:
 podman pod stop cft-pod
 ```
 
-or, from the folder where the podman.yml file is located, run the command:
+or, from the folder where the [`podman.yml`](./podman.yml) file is located, run the command:
 
 ```console
 podman-helper.sh stop
@@ -169,7 +173,7 @@ To remove the pod, run the command:
 podman pod rm -f cft-pod
 ```
 
-or, from the folder where the podman.yml file is located, run the command:
+or, from the folder where the [`podman.yml`](./podman.yml) file is located, run the command:
 
 ```console
 podman-helper.sh delete
@@ -189,7 +193,7 @@ You can start the containers using the command:
 podman pod start cft-pod
 ```
 
-or, from the folder where the podman.yml file is located, run the command:
+or, from the folder where the [`podman.yml`](./podman.yml) file is located, run the command:
 
 ```console
 podman-helper.sh start
@@ -217,11 +221,11 @@ axway@cft-pod:~/data/runtime$ CFTUTIL ...
 
 #### 8. Upgrade Transfer CFT
 
-You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime). This could be useful, for example, if you want to work with a newly released 3.10.2206 instead of the current 3.10.2203, or you want to add some security options to the Linux kernel.
+You can use the upgrade option to change the image used for Transfer CFT without losing Transfer CFT's data (i.e. keep the runtime). This could be useful, for example, if you want to work with a newly released 3.10.2209 instead of the current 3.10.2206, or you want to add some security options to the Linux kernel.
 
 You must first load the new Transfer CFT image in your repository. You can either:
-- Use an official Transfer CFT image, as described in the section "How to use the official Transfer CFT Docker image"
-- Build a new Transfer CFT image, using the instructions in ../docker/README.md
+- Use an official Transfer CFT image, as described in the section [How to use the official Transfer CFT Container image](#how-to-use-the-official-transfer-cft-container-image)
+- Build a new Transfer CFT image, using the instructions in [`docker/README.md`](../docker/README.md)
 
 ##### 1. Export Transfer CFT data
 
@@ -236,7 +240,7 @@ Check that the REST API call returns 200.
 
 ##### 2. Update the image parameter
 
-Set the image parameter to match the image you want to use. For example: "image: localhost/cft/cft:3.10.2206".
+Set the image parameter to match the image you want to use. For example: "image: axway/cft:3.10.2206".
 
 ##### 3. Stop, remove, recreate and start the pod
 
@@ -247,7 +251,7 @@ podman pod stop cft-pod
 podman pod rm -f cft-pod
 ```
 
-To recreate and start the pod, from the folder where the podman.yml file is located, run the command:
+To recreate and start the pod, from the folder where the [`podman.yml`](./podman.yml) file is located, run the command:
 
 ```console
 podman play kube ./podman.yml
@@ -261,7 +265,7 @@ podman-helper.sh update
 
 ### Connecting to interfaces
 
-When you start the Transfer CFT container for the first time, if both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to the xfbadmusr database.
+When you start the Transfer CFT container for the first time, if both `USER_XFBADM_LOGIN` and `USER_XFBADM_PASSWORD` are defined, the corresponding user is added to the xfbadmusr database.
 
 When a user is created, the container logs display:
 ```
@@ -276,13 +280,13 @@ WARNING: Password required to create an user. Not creating one!
 Access the Transfer CFT REST API documentation by connecting to:
 
 ```
-https://S{CFT_FQDN}:1768/cft/api/v1/ui/index.html
+https://${CFT_FQDN}:1768/cft/api/v1/ui/index.html
 ```
 
 Access the Transfer CFT UI by connecting to:
 
 ```
-https://S{CFT_FQDN}:1768/cft/ui
+https://${CFT_FQDN}:1768/cft/ui
 ```
 
 ### Customization
@@ -293,19 +297,19 @@ For each of the parameters listed in this section, uncoment the corresponding li
 
 #### Default XFBADM user
 
-To create an XFBADM user during the container creation, set variables USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD as follow:
-- USER_XFBADM_LOGIN: A string that refers to the login.
-- USER_XFBADM_PASSWORD: A file that contains the password.
+To create an XFBADM user during the container creation, set variables `USER_XFBADM_LOGIN` and `USER_XFBADM_PASSWORD` as follow:
+- `USER_XFBADM_LOGIN`: A string that refers to the login.
+- `USER_XFBADM_PASSWORD`: A file that contains the password.
 
-For details, see USER_XFBADM_PASSWORD in the podman.yml.
+For details, see `USER_XFBADM_PASSWORD` in the [`podman.yml`](./podman.yml).
 
 #### SSL Certificates
 
 To specify your SSL certificates as a Central Governance CA certificate, a Sentinel CA certificate, and a Copilot server certificate, use the following parameters:
-- USER_CG_CA_CERT: The path to the Central Governance CA certificate.
-- USER_SENTINEL_CA_CERT: The path to the Sentinel CA certificate.
-- USER_COPILOT_CERT: The path to the Copilot server certificate. It must refer to a PKCS12 certificate.
-- USER_COPILOT_CERT_PASSWORD: A file that contains the Copilot server certificate password.
+- `USER_CG_CA_CERT`: The path to the Central Governance CA certificate.
+- `USER_SENTINEL_CA_CERT`: The path to the Sentinel CA certificate.
+- `USER_COPILOT_CERT`: The path to the Copilot server certificate. It must refer to a PKCS12 certificate.
+- `USER_COPILOT_CERT_PASSWORD`: A file that contains the Copilot server certificate password.
 
 For example:
 ```
@@ -357,7 +361,7 @@ If one of the specified certificates has changed, when the container starts it i
 
 #### Custom scripts
 
-The USER_SCRIPT_INIT and USER_SCRIPT_START parameters let you specify, respectively, a script that executes when the container is created, and another that executes each time the container starts.
+The `USER_SCRIPT_INIT` and `USER_SCRIPT_START` parameters let you specify, respectively, a script that executes when the container is created, and another that executes each time the container starts.
 
 For example:
 
