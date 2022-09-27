@@ -18,23 +18,25 @@ The script [`podman-helper.sh`](./podman-helper.sh) can be used to help managing
 
 ### How to use the official Transfer CFT Container image
 
-1) Login to [Axway Repository](https://repository.axway.com/)
+1) Log in to the Axway Docker registry.
+
+You only need to perform this step for the initial login. If you do not have your Axway service account credentials, you can follow the instructions in [Axway Documentation](https://docs.axway.com/search?q=Installing+Transfer+CFT+in+a+container) to obtain them.
+
+```console
+podman login docker.repository.axway.com --username <service_account_client_id>
+```
+
+Enter as password, your service_account_client_secret.
+
+2) Log in to [Axway Repository](https://repository.axway.com/).
 
 Use same credentials used for [Axway Support](https://support.axway.com/)
 
-2) Find Transfer CFT official container image in the catalog.
+3) Find Transfer CFT official container image in the catalog.
 
 Search for "Transfer CFT DockerImage" and select the appropriate version.
 
-Logging into the following container registry is necessary.
-
-```console
-podman login docker.repository.axway.com --username <client_id> --password <client_secret>
-```
-
-**Note:** Credentials for this registry can be obtained following the instructions in [Axway Documentation](https://docs.axway.com/search?q=Installing+Transfer+CFT+in+a+container)
-
-3) Pull Transfer CFT container image:
+4) Pull Transfer CFT container image:
 
 ```console
 podman pull docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.2206
