@@ -7,7 +7,7 @@
 
 service="cft"
 
-./test.sh $service wait-startup 20
+./test.sh $service wait-startup 30
 if [ $? -ne 0 ]; then
   exit 1;
 fi

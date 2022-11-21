@@ -5,7 +5,7 @@
 # Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
 
-./test.sh cft wait-startup 15
+./test.sh cft wait-startup 30
 if [ $? -ne 0 ]; then
   exit 1;
 fi
