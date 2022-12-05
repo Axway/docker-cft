@@ -245,7 +245,8 @@ customize_runtime()
         CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='YES'
 
         copilot_cert=$(cftuconf copilot.ssl.SslCertFile)
-        if [ -z "$copilot_cert" ]; then
+        registration_id=$(cftuconf cg.registration_id)
+        if [ -z "$copilot_cert" ] && [ "$registration_id" = "-1" ]; then
             # CREATE CERTIFICATES FOR REST API
             generate_certificate
 
