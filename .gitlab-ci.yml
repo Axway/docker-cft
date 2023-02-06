@@ -48,6 +48,12 @@ build:
   - fi
 test:
   stage: test
+  before_script:
+  - if [ -z "$DOCKER_TAG" ]; then
+  -   eval export DOCKER_TAG=$CI_COMMIT_REF_NAME
+  - fi
+  - echo Using DOCKER_TAG=$DOCKER_TAG
+  - docker login $RELEASE_REGISTRY_URL -u $ARTIFACTORY_CI_USER -p $ARTIFACTORY_CI_API_KEY
   script:
   - cd test
   - docker network prune --force  
