@@ -2,19 +2,20 @@
 
 ### Prerequisites
 
-- [podman](https://podman.io/getting-started/installation) version 3.1.0 or higher
+- [podman](https://podman.io/getting-started/installation) version 4.3.0 or higher
 
 ## How to use the Transfer CFT podman files
 
 This `README` refers to managing single-node installations of Transfer CFT using podman.
 
 The [`podman.yml`](./podman.yml) describes and allows you to configure the Transfer CFT deployment.
+The [`secrets.yml`](./secrets.yml) can be used to create the secrets for the Transfer CFT deployment, this file requires modification before being used.
 
 The script [`podman-helper.sh`](./podman-helper.sh) can be used to help managing Transfer CFT.
 
-**Note:** If you change YAML parameter values, adequate values in [`podman-helper.sh`](./podman-helper.sh) before using the script. 
+**Note:** If you change YAML parameter values, adequate values in [`podman-helper.sh`](./podman-helper.sh) before using the script.
 
-> **Tip**: There is also the repository [Podman Compose](https://github.com/containers/podman-compose) that can be used with the YAML files present in the [`compose`](../compose) folder.
+> **Tip**: There is also the executable [Podman Compose](https://github.com/containers/podman-compose) that can be used with the YAML files present in the [`compose`](../compose) folder.
 
 ### How to use the official Transfer CFT Container image
 
@@ -54,11 +55,13 @@ You can use `podman play kube` to automate application deployment and customizat
 
 #### 1. Customization
 
-Before you start, customize the parameters in the [`podman.yml`](./podman.yml) file.
+Before you start, customize the parameters in the [`podman.yml`](./podman.yml) and [`secrets.yml`](./secrets.yml) files.
 
 Set the image parameter to match the image you want to use. For example: "image: axway/cft:3.10.2206".
 
-You must accept the applicable General Terms and Conditions to be able to continue. These are located at [https://www.axway.com/en/legal/contract-documents](https://www.axway.com/en/legal/contract-documents).
+You must accept the applicable General Terms and Conditions in the [`podman.yml`](./podman.yml) to be able to continue. These are located at [https://www.axway.com/en/legal/contract-documents](https://www.axway.com/en/legal/contract-documents).
+
+You need to add a key for Transfer CFT to start correctly. You can find more information about the key in the section [Transfer CFT license key](#2-transfer-cft-license-key)
 
 If you want your Transfer CFT to be fully functional, you should change the `CFT_FQDN` parameter to reflect the host machine’s name in the network (IP address can also be used).
 
@@ -68,7 +71,23 @@ To register Transfer CFT with Flow Manager or Central Governance, set `CFT_CG_EN
 
 Customizing other parameters is optional.
 
-##### 1.1 Podman YAML parameters
+##### 1.1 Secrets YAML parameters
+
+The following values can be set using the [`secrets.yml`](./secrets.yml) file. The values after the colon, should be the base64 conversion of the value.
+In linux systems, the base64 conversion can be performed as:
+
+```console
+echo "value" | base64
+```
+
+ **Parameter**              |  **Description**
+ -------------------------- | ---------------
+cft.key                     | base64 conversion of the key value.
+xfbadm.pwd                  | base64 conversion of the XFBADM user's password.
+shared_secret               | base64 conversion of the shared secret needed to register with the Central Governance server.
+copilot_p12.pwd             | base64 conversion of the Copilot server certificate password.
+
+##### 1.2 Podman YAML parameters
 
 The following parameters are available in the [`podman.yml`](./podman.yml) file. Use these parameters to customize the Transfer CFT container and pod. All values are transmitted to Transfer CFT using environment variables.
 
@@ -121,7 +140,9 @@ USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM 
 
 #### 2. Transfer CFT license key
 
-You require a linux-x86-64 platform key that does not have a specified hostname. Enter this Transfer CFT license key in the `conf/cft.key` file.
+You require a linux-x86-64 platform key that does not have a specified hostname.
+
+There are 3 ways of setting the key, to use secrets, add the base64 conversion of the key in the [`secrets.yml`](./secrets.yml) file. You can also include a command to access a remote key in CFT_KEY parameter in the [`podman.yml`](./podman.yml) file, you could also put the key value directly in the CFT_KEY parameter in the [`podman.yml`](./podman.yml) file, but this is not recommended.
 
 #### 3. Data persistence
 
@@ -134,6 +155,7 @@ The Transfer CFT runtime is placed in this volume so it can be reused when creat
 From the folder where the podman.yml file is located, run the command:
 
 ```console
+podman play kube ./secrets.yml
 podman play kube ./podman.yml
 ```
 
@@ -181,7 +203,7 @@ or, from the folder where the [`podman.yml`](./podman.yml) file is located, run 
 podman-helper.sh delete
 ```
 
-To remove the volume while deleting the pod, run the command:
+To remove the volume and secrets while deleting the pod, run the command:
 
 ```console
 podman-helper.sh purge
@@ -301,9 +323,9 @@ For each of the parameters listed in this section, uncoment the corresponding li
 
 To create an XFBADM user during the container creation, set variables `USER_XFBADM_LOGIN` and `USER_XFBADM_PASSWORD` as follow:
 - `USER_XFBADM_LOGIN`: A string that refers to the login.
-- `USER_XFBADM_PASSWORD`: A file that contains the password.
+- `USER_XFBADM_PASSWORD`: A command that returns the XFBADM user's password.
 
-For details, see `USER_XFBADM_PASSWORD` in the [`podman.yml`](./podman.yml).
+For details, see `USER_XFBADM_PASSWORD` in the [`podman.yml`](./podman.yml) and xfbadm.pwd in the [`secrets.yml`](./secrets.yml).
 
 #### SSL Certificates
 
@@ -311,9 +333,10 @@ To specify your SSL certificates as a Central Governance CA certificate, a Senti
 - `USER_CG_CA_CERT`: The path to the Central Governance CA certificate.
 - `USER_SENTINEL_CA_CERT`: The path to the Sentinel CA certificate.
 - `USER_COPILOT_CERT`: The path to the Copilot server certificate. It must refer to a PKCS12 certificate.
-- `USER_COPILOT_CERT_PASSWORD`: A file that contains the Copilot server certificate password.
+- `USER_COPILOT_CERT_PASSWORD`: A command that returns the Copilot server certificate password.
 
 For example:
+- podman.yaml:
 ```
 spec:
   containers:
@@ -326,7 +349,7 @@ spec:
         - name: USER_COPILOT_CERT
           value: "/run/secrets/copilot.p12"
         - name: USER_COPILOT_CERT_PASSWORD
-          value: "/run/secrets/copilot_p12.pwd"
+          value: "base64 -d /run/cft_secrets/copilot_p12.pwd"
       volumeMounts:
         - name: cg_ca_cert.pem
           readOnly: true
@@ -337,9 +360,6 @@ spec:
         - name: copilot.p12
           readOnly: true
           mountPath: /run/secrets/copilot.p12
-        - name: copilot_p12.pwd
-          readOnly: true
-          mountPath: /run/secrets/copilot_p12.pwd
   volumes:
     - name: cg_ca_cert.pem
       hostPath:
@@ -353,11 +373,15 @@ spec:
       hostPath:
         path: ./conf/copilot.p12
         type: File
-    - name: copilot_p12.pwd
-      hostPath:
-        path: ./conf/copilot_p12.pwd
-        type: File
 ```
+
+- secrets.yaml:
+```
+data:
+  copilot_p12.pwd : XXXXXXX
+
+```
+
 
 If one of the specified certificates has changed, when the container starts it is automatically updated so that the container always uses last certificate mapped in the container from the host directory.
 

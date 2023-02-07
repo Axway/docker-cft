@@ -65,7 +65,7 @@ spec:
         - name: CFT_COM_SIZE
           value: 1000
         - name: CFT_KEY
-          value: "cat /run/secrets/cft.key"
+          value: "base64 -d /run/cft_secrets/cft.key"
         - name: CFT_CFTDIRRUNTIME
           value: "/opt/axway/data/runtime"
         - name: CFT_PESIT_PORT
@@ -99,7 +99,7 @@ spec:
         #  value: "/run/secrets/cg_ca_cert.pem"
         ## Uncomment the next two lines to customize the CG shared secret. See also secrets sections.
         #- name: CFT_CG_SHARED_SECRET
-        #  value: "cat /run/secrets/shared_secret"
+        #  value: "base64 -d /run/cft_secrets/shared_secret"
         - name: CFT_SENTINEL_ENABLE
           value: "NO"
         - name: CFT_SENTINEL_HOST
@@ -128,12 +128,12 @@ spec:
         #- name: USER_COPILOT_CERT
         #  value: "/run/secrets/copilot.p12"
         #- name: USER_COPILOT_CERT_PASSWORD
-        #  value: "cat /run/secrets/copilot_p12.pwd"
+        #  value: "base64 -d /run/cft_secrets/copilot_p12.pwd"
         ## Uncomment the next four lines to create a XFBADM user. See also secrets sections.
         #- name: USER_XFBADM_LOGIN
         #  value: "admin"
         #- name: USER_XFBADM_PASSWORD
-        #  value: "cat /run/secrets/xfbadm.pwd"
+        #  value: "base64 -d /run/cft_secrets/xfbadm.pwd"
         ## Interval in seconds between two checks of Passport access management updates.
         - name: CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL
           value: 60
@@ -146,71 +146,46 @@ spec:
       volumeMounts:
         - name: cft_data-pvc
           mountPath: /opt/axway/data
-        - name: cft.key
+        - name: cft_secrets
           readOnly: true
-          mountPath: /run/secrets/cft.key
+          mountPath: /run/cft_secrets
+        ## Uncomment the next two lines to use a script for initialization or start-up.
+        #- name: custom
+        #  mountPath: /opt/app/custom/
         ## Uncomment the next three lines to customize the CG CA certificate.
         #- name: cg_ca_cert.pem
         #  readOnly: true
         #  mountPath: /run/secrets/cg_ca_cert.pem
-        ## Uncomment the next three lines to customize the CG shared secret.
-        #- name: shared_secret
-        #  readOnly: true
-        #  mountPath: /run/secrets/shared_secret
         ## Uncomment the next three lines to customize the Sentinel CA certificate.
         #- name: sentinel_ca_cert.pem
         #  readOnly: true
         #  mountPath: /run/secrets/sentinel_ca_cert.pem
-        ## Uncomment the next six lines to customize the Copilot server certificate.
+        ## Uncomment the next three lines to customize the Copilot server certificate.
         #- name: copilot.p12
         #  readOnly: true
         #  mountPath: /run/secrets/copilot.p12
-        #- name: copilot_p12.pwd
-        #  readOnly: true
-        #  mountPath: /run/secrets/copilot_p12.pwd
-        ## Uncomment the next three lines to create a XFBADM user. See also secrets sections.
-        #- name: xfbadm.pwd
-        #  readOnly: true
-        #  mountPath: /run/secrets/xfbadm.pwd
-        ## Uncomment the next two lines to use a script for initialization or start-up.
-        #- name: custom
-        #  mountPath: /opt/app/custom/
   volumes:
     - name: cft_data-pvc
       persistentVolumeClaim:
         claimName: cft_data
-    - name: cft.key
-      hostPath:
-        path: ./conf/cft.key
-        type: File
+    - name: cft_secrets
+      secret: 
+        secretName: cft_secrets
+        optional: false
     ## Uncomment the next four lines to customize the CG CA certificate.
     #- name: cg_ca_cert.pem
     #  hostPath:
     #    path: ./conf/cg_ca_cert.pem
-    #    type: File
-    ## Uncomment the next four lines to customize the CG shared secret.
-    #- name: shared_secret
-    #  hostPath:
-    #    path: ./conf/shared_secret
     #    type: File
     ## Uncomment the next four lines to customize the Sentinel CA certificate.
     #- name: sentinel_ca_cert.pem
     #  hostPath:
     #    path: ./conf/sentinel_ca_cert.pem
     #    type: File
-    ## Uncomment the next eight lines to customize the Copilot server certificate.
+    ## Uncomment the next four lines to customize the Copilot server certificate.
     #- name: copilot.p12
     #  hostPath:
     #    path: ./conf/copilot.p12
-    #    type: File
-    #- name: copilot_p12.pwd
-    #  hostPath:
-    #    path: ./conf/copilot_p12.pwd
-    #    type: File
-    ## Uncomment the next four lines to create a XFBADM user. See also secrets sections.
-    #- name: xfbadm.pwd
-    #  hostPath:
-    #    path: ./conf/xfbadm.pwd
     #    type: File
     ## Uncomment the next four lines to use a script for initialization of start-up.
     #- name: custom

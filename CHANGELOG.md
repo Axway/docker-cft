@@ -1,6 +1,14 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.2303] - 2023-03-31
+
+### Changed
+- Podman templates support secrets.
+
+### Fixed
+- Add registration_id condition before generate new certificate
+
 ## [3.10.2206] - 2022-07-12
 
 ### Added

@@ -4,6 +4,7 @@
 POD_NAME="cft-pod"
 CONTAINER_NAME="cft"
 VOLUME_NAME="cft_data"
+SECRET_NAME="cft_secrets"
 
 set -uoe pipefail
 
@@ -22,6 +23,7 @@ fi
 
 case "${1:-}" in
     "create")
+        DEBUG podman play kube ./secrets.yml
         DEBUG podman play kube ./podman.yml
         echo "Pod '$POD_NAME' created"
     ;;
@@ -36,6 +38,7 @@ case "${1:-}" in
         DEBUG podman pod stop $POD_NAME
         DEBUG podman pod rm -f $POD_NAME
         DEBUG podman volume rm "$VOLUME_NAME"
+        DEBUG podman secret rm "$SECRET_NAME"
         echo "Pod '$POD_NAME' and respective volume ($VOLUME_NAME) were deleted"
     ;;
 
@@ -70,6 +73,7 @@ case "${1:-}" in
         DEBUG podman inspect $POD_NAME
         DEBUG podman inspect $POD_NAME-$CONTAINER_NAME
         DEBUG podman inspect "$VOLUME_NAME"
+        DEBUG podman secret inspect "$SECRET_NAME"
     ;;
 
     "logs")

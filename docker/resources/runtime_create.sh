@@ -170,7 +170,7 @@ fi
 # XFBADM
 if [ -n "$USER_XFBADM_LOGIN" ] && [ -n "$USER_XFBADM_PASSWORD" ]; then
     echo "Creating user $USER_XFBADM_LOGIN..."
-    xfbadmusr add -l $USER_XFBADM_LOGIN -p $(get_value $USER_XFBADM_PASSWORD) -u AUTO -g AUTO
+    xfbadmusr add -l $(get_value $USER_XFBADM_LOGIN) -p $(get_value $USER_XFBADM_PASSWORD) -u AUTO -g AUTO
     echo "User $USER_XFBADM_LOGIN created."
 else
     echo "------------------------"
