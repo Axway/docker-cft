@@ -107,16 +107,6 @@ post_upgrade_failure()
     move_file ${fname}.bak $fname
 }
 
-post_upgrade_success()
-{
-    # Delete backups
-    delete_file $CFT_CFTDIRRUNTIME/profile.bak
-    delete_file $CFT_CFTDIRRUNTIME/data/cftuconf.dat.bak
-
-    # Remove bases directory
-    rm -rf $exportdir
-}
-
 if [ "$CFT_EXPORTDIR" = "" ]; then
     echo "FATAL: CFT_EXPORTDIR not defined. Please specify the environment variable CFT_EXPORTDIR."
     exit 1
@@ -266,6 +256,5 @@ if [ $fail -ne 0 ]; then
     exit 1
 fi
 
-post_upgrade_success
 echo "Data successfully imported"
 exit 0

@@ -349,6 +349,24 @@ switch_cert()
     fi
 }
 
+delete_file()
+{
+    fname=$1
+    echo "deleting $fname..."
+    rm -f ${fname}
+    echo "$fname deleted"
+}
+
+post_upgrade_success()
+{
+    # Delete backups
+    delete_file $CFT_CFTDIRRUNTIME/profile.bak
+    delete_file $CFT_CFTDIRRUNTIME/data/cftuconf.dat.bak
+
+    # Remove bases directory
+    rm -rf $CFT_EXPORTDIR/export
+}
+
 # Testing EULA
 ACCEPT_GENERAL_CONDITIONS=`echo $ACCEPT_GENERAL_CONDITIONS | tr '[a-z]' '[A-Z]'`
 if [[ -n "$ACCEPT_GENERAL_CONDITIONS" && "$ACCEPT_GENERAL_CONDITIONS" = "YES" ]]; then
@@ -372,10 +390,12 @@ flock 10
 echo "INF: $HOSTNAME got lock to create runtime"
 
 if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
+    is_upgrade=true
     echo "INF: runtime exists"
     # import databases...
     ./import_bases.sh
 else
+    is_upgrade=false
     ./runtime_create.sh
     # user custom init script
     if [[ -n "$USER_SCRIPT_INIT" && ! -e "$USER_SCRIPT_INIT" ]]; then
@@ -471,6 +491,11 @@ else
         cat run/copsxpam.out
     fi
     exit 1
+fi
+
+# Perform post upgrade success only if cft and copilot start
+if $is_upgrade ; then
+    post_upgrade_success
 fi
 
 # logs on stdout
