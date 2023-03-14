@@ -99,27 +99,31 @@ generate_certificate()
         exit 1
     fi
 
-    # CREATE CERTIFICATES FOR REST API
-    openssl req \
-        -x509 \
-        -nodes \
-        -newkey rsa:4096 \
-        -sha256 \
-        -days 365 \
-        -subj \/CN\=$cn \
-        -addext "keyUsage = digitalSignature, keyEncipherment, dataEncipherment" \
-        -addext "subjectAltName = DNS:$altname" \
-        -keyout conf/pki/rest_api_key.pem \
-        -out conf/pki/rest_api_cert.pem
-    openssl pkcs12 \
-        -inkey conf/pki/rest_api_key.pem \
-        -in conf/pki/rest_api_cert.pem \
-        -export \
-        -out conf/pki/rest_api_cert.p12 \
-        -passout pass:restapi
+    if [ -f "conf/generate_copilot_cert.sh" ]; then
+        sh -c conf/generate_copilot_cert.sh
+    else
+        # CREATE CERTIFICATES FOR REST API
+        openssl req \
+            -x509 \
+            -nodes \
+            -newkey rsa:4096 \
+            -sha256 \
+            -days 365 \
+            -subj \/CN\=$cn \
+            -addext "keyUsage = digitalSignature, keyEncipherment, dataEncipherment" \
+            -addext "subjectAltName = DNS:$altname" \
+            -keyout conf/pki/rest_api_key.pem \
+            -out conf/pki/rest_api_cert.pem
+        openssl pkcs12 \
+            -inkey conf/pki/rest_api_key.pem \
+            -in conf/pki/rest_api_cert.pem \
+            -export \
+            -out conf/pki/rest_api_cert.p12 \
+            -passout pass:restapi
 
-    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
-    CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+        CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
+        CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+    fi
 }
 
 customize_runtime()

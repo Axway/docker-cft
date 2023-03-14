@@ -140,12 +140,15 @@ CFTUTIL uconfset id='cft.unix.stop_timeout', value='6'
 #JAVA
 CFTUTIL uconfset id='cft.jre.java_binary_path', value=\'$JAVA_HOME/bin/java\'
 
-
-# UPDATE CONFIGURATION SAMPLE 
-if [ $isCG = 1 ]; then
-    fname=conf/cft-cg.conf
-else
-    fname=conf/cft-tcp.conf
+# Test if file cft-cg.conf exists
+fname=conf/cft-tcp.conf
+legacy=0
+if [ -f "conf/cft-cg.conf" ]; then
+    legacy=1
+    # UPDATE CONFIGURATION SAMPLE
+    if [ $isCG = 1 ]; then
+        fname=conf/cft-cg.conf
+    fi
 fi
 # string replacement
 sed -i 's/<CFTKEY>/@$CFTKEY/g'      $fname
@@ -158,13 +161,42 @@ sed -i 's/<CFTACNT>/_CFTACNT/g'     $fname
 sed -i 's/<CFTACNTA>/_CFTACNTA/g'   $fname
 sed -i 's/<OPERMSGVALUE>/0/g'       $fname
 
+if [ $legacy = 0 ]; then
+    fname=conf/generate_certs.sh
+    if [ -f $fname ]; then
+        sed -i 's/\[DAYS\]/30/g'                      $fname
+        sed -i 's/\[INSTANCE_ID\]/$CFT_INSTANCE_ID/g' $fname
+        sed -i 's/\[FULL_HOSTNAME\]/$CFT_FQDN/g'      $fname
+    fi
+
+    fname=conf/generate_copilot_cert.sh
+    if [ -f $fname ]; then
+        sed -i 's/\[DAYS\]/365/g'                     $fname
+        sed -i 's/\[INSTANCE_ID\]/$CFT_INSTANCE_ID/g' $fname
+        sed -i 's/\[FULL_HOSTNAME\]/$CFT_FQDN/g'      $fname
+    fi
+fi
 # CREATE BASES
-if [ $isCG = 1 ]; then
-    cftinit conf/cft-cg.conf
-    PKIUTIL @conf/cft-pki.conf
-else
-    cftinit conf/cft-tcp.conf conf/cft-tcp-part.conf
-    PKIUTIL @conf/cft-pki.conf
+if [ $legacy = 1 ]; then
+    if [ $isCG = 1 ]; then
+        cftinit conf/cft-cg.conf
+        PKIUTIL @conf/cft-pki.conf
+    else
+        cftinit conf/cft-tcp.conf conf/cft-tcp-part.conf
+        PKIUTIL @conf/cft-pki.conf
+    fi
+else # New conf files version
+    cftinit conf/cft-tcp.conf
+    if [ $isCG = 1 ]; then
+        PKIUTIL pkifile fname='%env:CFTPKU%', mode='CREATE'
+        PKIUTIL pkikeygen id='srv_priv_key', keylen=2048
+    else
+        cftupdate conf/cft-tcp-additional.conf
+        if [ -f "conf/generate_certs.sh" ]; then
+            sh -c ./conf/generate_certs.sh
+        fi
+        PKIUTIL @conf/cft-pki.conf
+    fi
 fi
 
 # XFBADM

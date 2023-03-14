@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Podman templates support secrets.
+- Configuration templates have changed. Protocols Pesit, SFTP and Pesit using SSL are always activated; when not using FM/CG, partners and all needed certificates are created. 
 
 ### Fixed
 - Add registration_id condition before generate new certificate
