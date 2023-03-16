@@ -89,6 +89,8 @@ LABEL revision="${BUILD_REVISION}"
 
 # PESIT + PESITSSL
 EXPOSE 1761-1762
+# SFTP
+EXPOSE 1763
 # COMS (Needed for multinode/Multihost)
 EXPOSE 1765
 # CFT UI
