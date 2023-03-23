@@ -65,25 +65,26 @@ fi
 if [ -n "$CFT_COM_SIZE" ]; then
     CFTUTIL /m=2 uconfset id='cft.cftcom.default_size', value=$CFT_COM_SIZE
 fi
+activated_protocols=''
 if [ -n "$CFT_PESIT_PORT" ]; then
-    activated_protocols='PESIT'
+    activated_protocols="PESIT"
     CFTUTIL /m=2 uconfset id='samples.pesitany_sap.value', value=$CFT_PESIT_PORT
 else
     CFTUTIL /m=2 uconfset id='samples.pesitany_sap.value', value=1761
 fi
 if [ -n "$CFT_PESITSSL_PORT" ]; then
-    activated_protocols=$activated_protocols',PESITSSL'
+    activated_protocols="$activated_protocols,PESITSSL"
     CFTUTIL /m=2 uconfset id='samples.pesitssl_sap.value', value=$CFT_PESITSSL_PORT
 else
     CFTUTIL /m=2 uconfset id='samples.pesitssl_sap.value', value=1762
 fi
 if [ -n "$CFT_SFTP_PORT" ]; then
-    activated_protocols=$activated_protocols',SFTP'
-    CFTUTIL /m=2 uconfset id='samples.sftp_sap.value', value=$CFT_SFTP_PORT
+    activated_protocols="$activated_protocols,SFTP"
+    CFTUTIL /m=14 uconfset id=samples.sftp_sap.value, value=$CFT_SFTP_PORT
 else
-    CFTUTIL /m=2 uconfset id='samples.sftp_sap.value', value=1763
+    CFTUTIL /m=14 uconfset id=samples.sftp_sap.value, value=1763
 fi
-CFTUTIL /m=2 uconfset id='samples.enabled_protocols.value', value='$activated_protocols'
+CFTUTIL /m=14 uconfset id=samples.enabled_protocols.value, value="'$activated_protocols'"
 
 if [ -n "$CFT_COMS_PORT" ]; then
     CFTUTIL /m=2 uconfset id='samples.coms_port.value', value=$CFT_COMS_PORT

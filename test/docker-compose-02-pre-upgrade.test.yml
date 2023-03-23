@@ -32,6 +32,7 @@ services:
             CFT_COM_SIZE:               1000
             CFT_PESIT_PORT:             1761
             CFT_PESITSSL_PORT:          1762
+            CFT_SFTP_PORT:              1763
             CFT_COMS_PORT:              1765
             CFT_COPILOT_PORT:           1766
             CFT_COPILOT_CG_PORT:        1767
