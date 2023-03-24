@@ -8,7 +8,8 @@ All notable changes to this project will be documented in this file.
 - Configuration templates have changed. Protocols Pesit, SFTP and Pesit using SSL are always activated; when not using FM/CG, partners and all needed certificates are created. 
 
 ### Fixed
-- Add registration_id condition before generate new certificate
+- Add registration_id condition before generate new certificate.
+- Incomplete cft_support: "file" utility added to the image.
 
 ## [3.10.2206] - 2022-07-12
 
