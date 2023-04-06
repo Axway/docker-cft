@@ -56,10 +56,13 @@ test:
   - docker login $RELEASE_REGISTRY_URL -u $ARTIFACTORY_CI_USER -p $ARTIFACTORY_CI_API_KEY
   script:
   - cd test
-  - docker network prune --force  
+  - docker network prune --force
   - docker-compose -f docker-compose-01.test.yml down -v
   - docker-compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
   - docker-compose -f docker-compose-01.test.yml logs
+  # redo a set of smoke tests with a runtime that already exists
+  - docker-compose -f docker-compose-01.test.yml down
+  - docker-compose -f docker-compose-01.test.yml up --abort-on-container-exit --remove-orphans
   - docker-compose -f docker-compose-01.test.yml down -v
   - docker-compose -f docker-compose-02-pre-upgrade.test.yml down -v
   - docker-compose -f docker-compose-02-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut

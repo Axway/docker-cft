@@ -50,3 +50,9 @@ services:
             CFT_CFTDIRRUNTIME:          "/opt/axway/data/runtime"
             USER_XFBADM_LOGIN:          "admin"
             USER_XFBADM_PASSWORD:       "alwaysCFT"
+        volumes:
+        - cft_data:/opt/axway/data
+volumes:
+    cft_data:
+        driver: local
+
