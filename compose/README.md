@@ -219,7 +219,7 @@ You must first load the new Transfer CFT image in your repository. You can eithe
 
 ##### 1. Export the Transfer CFT data (not necessary for patches)
 
-This step is only mandatory if you upgrade to a new update, such as moving from version 3.10.2206 to version 3.10.2209. This step is not required when applying a patch, for example, from 3.10.2206 to 3.10.2209 P1. Invoke the REST API cft/container/export. user:password refers to the credentials that you use to connect to the UI or the REST API.
+This step is only mandatory if you upgrade to a new update, such as moving from version 3.10.2206 to version 3.10.2209. This step is not required when applying a patch, for example, from 3.10.2209 to 3.10.2209 P1. Invoke the REST API cft/container/export. user:password refers to the credentials that you use to connect to the UI or the REST API.
 
 ```console
 curl -k -u user:password -X PUT "https://${CFT_FQDN}:1768/cft/api/v1/cft/container/export" -H "accept: application/json"
