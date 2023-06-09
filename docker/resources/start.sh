@@ -126,6 +126,22 @@ generate_certificate()
     fi
 }
 
+unset_need_restart()
+{
+    multi=$(cftuconf cft.multi_node.enable)
+    multi=${multi,,}
+    
+    if [ "$multi" = "yes" ] || [ "$multi" = "1" ] ; then
+        nodes_number=$(cftuconf cft.multi_node.nodes)
+        for ((i=0;  i<$nodes_number; i++ ))
+        do
+            CFTUTIL /m=2 uconfunset id=cft.multi_node.nodes.$i.need_restart
+        done
+    else
+        CFTUTIL /m=2 uconfunset id=cft.server.run.need_restart
+    fi
+}
+
 customize_runtime()
 {
     echo "INF: Customizing the runtime..."
@@ -348,6 +364,8 @@ switch_cert()
 
             CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertFile'
             CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertPassword'
+            CFTUTIL /m=2 uconfunset id='copilot.ssl.cert_id'
+            unset_need_restart
             CFTUTIL reconfig type=am
             set_temporary_rest_api_cert 0
         fi

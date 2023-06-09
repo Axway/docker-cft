@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.2306] - 2023-06-30
+
+### Fixed
+- After the registration to Flow Manager, if no custom certificate is specified, the REST API server uses the certificate generated during registration.
+
 ## [3.10.2303] - 2023-03-31
 
 ### Changed
