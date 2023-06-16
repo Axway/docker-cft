@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 - After the registration to Flow Manager, if no custom certificate is specified, the REST API server uses the certificate generated during registration.
+- Docker compose templates are compatible with "docker compose" functionality.
 
 ## [3.10.2303] - 2023-03-31
 

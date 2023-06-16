@@ -5,21 +5,38 @@
 # Axway Transfer CFT Docker-compose example
 #
 # Building with:
-# docker-compose up -d
+# docker compose -f compose-multinode.yml up --scale cft=2  -d
 
 version: "3.5"
 
 services:
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - cft
+    ports:
+      # PESIT + PESITSSL:
+      - "1761-1762:1761-1762"
+      # SFTP:
+      - "1763"
+      # CFT UI:
+      - "1766:1766"
+      # CG communication port: Only expose if CG not in the same network:
+      - "1767:1767"
+      # REST API:
+      - "1768:1768"
   cft:
     # build: ../docker
     image: docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.2206
-    hostname: docker0
 
     environment:
       ## Set parameter to yes if you accept the applicable General Terms and Conditions,
       ## located at https://www.axway.com/en/legal/contract-documents
       ACCEPT_GENERAL_CONDITIONS:   "NO"
-      CFT_FQDN:                    cft
+      CFT_LOAD_BALANCER_HOST:      cft
+      CFT_LOAD_BALANCER_PORT:      1767
       CFT_INSTANCE_ID:             docker0_cft
       CFT_INSTANCE_GROUP:          dev.docker
       CFT_CATALOG_SIZE:            1000
@@ -51,9 +68,18 @@ services:
       CFT_SENTINEL_TRANSFER_FILTER: ALL
       # Uncomment the next line to customize the Sentinel CA certificate.
       #USER_SENTINEL_CA_CERT:       "/run/secrets/sentinel_ca_cert.pem"
-      CFT_MULTINODE_ENABLE:        "NO"
-      CFT_MULTINODE_NUMBER:        1
+      CFT_MULTINODE_ENABLE:        "YES"
+      CFT_MULTINODE_NUMBER:        2
+      CFT_MULTINODE_NODE_PER_HOST: 1
       CFT_JVM:                     1024
+      # Script executed at container initialization
+      #USER_SCRIPT_INIT:            "/opt/app/custom/init.sh"
+      # Script executed at each container start-up
+      #USER_SCRIPT_START:           "/opt/app/custom/startup.sh"
+      # Uncomment the next line to customize the CG CA certificate.
+      #USER_CG_CA_CERT:             "/opt/app/custom/cg_ca_cert.pem"
+      # Uncomment the next line to customize the Sentinel CA certificate.
+      #USER_SENTINEL_CA_CERT:       "/opt/app/custom/sentinel_ca_cert.pem"
       # Uncomment the next two lines to customize the Copilot server certificate. See also secrets sections.
       # The certificate must refer to a PKCS12 certificate.
       #USER_COPILOT_CERT:           "/run/secrets/copilot.p12"
@@ -68,17 +94,17 @@ services:
       # Script executed at each container start-up
       #USER_SCRIPT_START:           "/opt/app/custom/startup.sh"
 
-    ports:
-    # PESIT + PESITSSL:
-    - "1761-1762:1761-1762"
-    # SFTP:
-    - "1763:1763"
-    # CFT UI:
-    - "1766:1766"
-    # CG communication port: Only expose if CG not in the same network:
-    - "1767:1767"
-    # REST API:
-    - "1768:1768"
+    expose:
+      # PESIT + PESITSSL:
+      - "1761-1762"
+      # SFTP:
+      - "1763"
+      # CFT UI:
+      - "1766"
+      # CG communication port: Only expose if CG not in the same network:
+      - "1767"
+      # REST API:
+      - "1768"
 
     secrets:
     - cft.key
@@ -119,14 +145,14 @@ secrets:
   # Files containig the Copilot server certificate and password.
   # Uncomment the next four lines to customize the Copilot server certificate.
   #copilot.p12:
-  #    file: ./conf/copilot.p12
+  #    file: ./conf/copilot_p12
   #copilot_p12.pwd:
   #    file: ./conf/copilot_p12.pwd
   # File containing the XFBADM user's password.
   # Uncomment the next two lines to customize the default XFBADM user.
   #xfbadm.pwd:
   #    file: ./conf/xfbadm.pwd
-
+  
 volumes:
   cft_data:
     driver: local

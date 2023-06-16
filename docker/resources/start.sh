@@ -77,8 +77,9 @@ check_fqdn()
         export CFT_FQDN=$host
         echo "CFT_FQDN is $CFT_FQDN"
     else
-        echo "ERR: CFT_FQDN environment variable is not defined nor SERVICE_HOST."
-        exit 1
+        host=$(hostname)
+        export CFT_FQDN=$host
+        echo "CFT_FQDN is $CFT_FQDN"
     fi
 
     case $CFT_FQDN in

@@ -3,7 +3,7 @@
 ## Contents
 The folders in this repository contain templates for the various ways to deploy Transfer CFT in a containerized world. These templates are only compatible with Transfer CFT 3.6 SP1 version and higher.
 - [**Docker**](./docker):  Contains the Dockerfile template and all other resources needed to create a Docker image for Transfer CFT.
-- [**Compose**](./compose): Contains docker-compose file templates needed to deploy Transfer CFT using Docker Compose.
+- [**Compose**](./compose): Contains compose file templates needed to deploy Transfer CFT using Docker Compose.
 - [**Helm**](./helm):    Contains the Helm template files used to deploy Transfer CFT on Kubernetes or Red Hat OpenShift.
 - [**Podman**](./podman):  Contains podman templates needed to deploy Transfer CFT using podman.
 
@@ -18,7 +18,7 @@ You can dynamically set the user in the docker run command, by adding `--user` f
 
 ` [ user | user:group | uid | uid:gid | user:gid | uid:group ] `
 
-In a Docker Compose environment, it can be changed via `user:` entry in the `docker-compose.yaml` (See [Docker Compose reference](https://docs.docker.com/compose/) for details).
+In a Docker Compose environment, it can be changed via `user:` entry in the `compose.yaml` (See [Docker Compose reference](https://docs.docker.com/compose/) for details).
 
 In a Kubernetes environment, it can be changed via `runAsUser` and `runAsGroup` entries in `value.yml`.
 

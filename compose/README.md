@@ -12,16 +12,16 @@ If needed, see [Get started with Docker](https://docs.docker.com/get-started/) f
 - Docker version 17.11 or higher
 - Docker Compose version 1.17.0 or higher
 
-## How to use the Transfer CFT docker-compose YAML files
+## How to use the Transfer CFT compose YAML files
 
-The file [`docker-compose.yml`](./docker-compose.yml) describes and allows you to manage the Transfer CFT service.
-The file [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) describes the Transfer CFT service in a multinode environment, and allows the management of a scalable Transfer CFT service.
+The file [`compose.yml`](./compose.yml) describes and allows you to manage the Transfer CFT service.
+The file [`compose-multinode.yml`](./compose-multinode.yml) describes the Transfer CFT service in a multinode environment, and allows the management of a scalable Transfer CFT service.
 
 You can build your own Transfer CFT image using [`docker/Dockerfile`](../docker/Dockerfile) or use the official Axway Transfer CFT Docker image.
 
-### docker-compose parameters
+### compose parameters
 
-The following parameters can be set in docker-compose YAML files. Use these parameters to customize the Transfer CFT image and service. All values are transmitted to Transfer CFT using environment variables.
+The following parameters can be set in compose YAML files. Use these parameters to customize the Transfer CFT image and service. All values are transmitted to Transfer CFT using environment variables.
 
 In this README, Central Governance can represent either Central Governance or Flow Manager.
   
@@ -103,13 +103,13 @@ docker tag docker.repository.axway.com/transfercft-docker-prod/3.10/cft:3.10.220
 ```
 
 
-### How to manage the Transfer CFT service from your docker-compose YAML file
+### How to manage the Transfer CFT service from your compose YAML file
 
 You can use Docker Compose to automate building container images, as well as application deployment and customization.
 
 #### 1. Customization
 
-Before you start, customize the parameters in the [`docker-compose.yml`](./docker-compose.yml) file.
+Before you start, customize the parameters in the [`compose.yml`](./compose.yml) file.
 
 Set the image parameter to match the image you want to use. For example: "image: axway/cft:3.10.2206".
 
@@ -126,17 +126,17 @@ You require a linux-x86-64 platform key that does not have a specified hostname.
 
 #### 3. Data persistence
 
-The Transfer CFT [`docker-compose.yml`](./docker-compose.yml) file defines a volume as a mechanism for persisting data generated and used by Transfer CFT.  
+The Transfer CFT [`compose.yml`](./compose.yml) file defines a volume as a mechanism for persisting data generated and used by Transfer CFT.
 The Transfer CFT runtime is placed in this volume so it can be reused when creating and starting a new Transfer CFT container. See the Upgrade section for details.
 
 You can change the volume configuration to use a previously created volume, as described in [Volumes configuration reference](https://docs.docker.com/compose/compose-file/#volume-configuration-reference) and [Create and manage volumes](https://docs.docker.com/storage/volumes/#create-and-manage-volumes).
 
 #### 4. Create and start the Transfer CFT service
 
-From the folder where the docker-compose YAML file is located, run the command:
+From the folder where the compose YAML file is located, run the command:
 
 ```console
-docker-compose up
+docker compose up
 ```
 
 The `up` command builds (if needed), recreates, starts, and attaches to a container for services.
@@ -145,13 +145,13 @@ Unless they are already running, this command also starts any linked services.
 You can use the -d option to run containers in the background.
 
 ```console
-docker-compose up -d
+docker compose up -d
 ```
 
 To create an anonymous volume, instead of retrieving data from previous containers, use the  -V option. Doing so forcefully creates a runtime. It could be useful for debugging purpose.
 
 ```console
-docker-compose up -V
+docker compose up -V
 ```
 
 Run the `docker ps` or `docker container ls` command to see the running containers.
@@ -159,10 +159,10 @@ Run the `docker ps` or `docker container ls` command to see the running containe
 
 #### 5. Stop and remove the Transfer CFT service
 
-From the folder where the [`docker-compose.yml`](./docker-compose.yml) file is located, you can stop the containers using the command:
+From the folder where the [`compose.yml`](./compose.yml) file is located, you can stop the containers using the command:
 
 ```console
-docker-compose down
+docker compose down
 ```
 
 The `down` command stops containers, and removes containers, networks, anonymous volumes, and images created by `up`.
@@ -170,18 +170,18 @@ You can use the `-v` option to remove named volumes declared in the `volumes` se
 
 #### 6. Start the Transfer CFT service
 
-From the folder where the [`docker-compose.yml`](./docker-compose.yml) file is located, you can start the Transfer CFT service using `start` if it was stopped using `stop`.
+From the folder where the [`compose.yml`](./compose.yml) file is located, you can start the Transfer CFT service using `start` if it was stopped using `stop`.
 
 ```console
-docker-compose start
+docker compose start
 ```
 
 #### 7. Stop the Transfer CFT service
 
-From the folder where the [`docker-compose.yml`](docker-compose.yml) file is located, you can stop the containers using the command:
+From the folder where the [`compose.yml`](compose.yml) file is located, you can stop the containers using the command:
 
 ```console
-docker-compose stop
+docker compose stop
 ```
 
 #### 8. Access Transfer CFT directories in the container
@@ -235,28 +235,28 @@ Set the image parameter to match the image you want to use. For example: "image:
 To stop and remove the container, run the command:
 
 ```console
-docker-compose down
+docker compose down
 ```
 
 ##### 4. Recreate and start the Transfer CFT service
 
-From the folder where the docker-compose.yml is located, run the command:
+From the folder where the compose.yml is located, run the command:
 
 ```console
-docker-compose up
+docker compose up
 ```
 
 This command recreates and starts a Transfer CFT container based on the new image. When the container starts, it detects the exported data and imports it during startup.
 
 ### Multinode architecture
 
-There are two ways of configuring the Transfer CFT in multinode architecture using docker-compose.
+There are two ways of configuring the Transfer CFT in multinode architecture using compose.
 
 #### Multinode on a Docker cluster
 
-In this use case, all Transfer CFT nodes run in the same Docker cluster and the scale command from docker-compose defines the number of nodes to start.
+In this use case, all Transfer CFT nodes run in the same Docker cluster and the scale command from compose defines the number of nodes to start.
 
-The file [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) is written for this use case. Using the list [here](#docker-compose-parameters) you can change the parameters as needed.
+The file [`compose-multinode.yml`](./compose-multinode.yml) is written for this use case. Using the list [here](#compose-parameters) you can change the parameters as needed.
 
 The information in the topics  [Customization](#1-customization) through [Data persistence](#3-data-persistence) apply here.
 
@@ -264,26 +264,26 @@ The information in the topics  [Customization](#1-customization) through [Data p
 
 ##### 1. Create and start the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, run the command:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, run the command:
 
 ```console  
-docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER_OF_NODES>
+docker compose -f compose-multinode.yml up --scale cft=<NUMBER_OF_NODES>
 ```
-Where `NUMBER_OF_NODES` should have the same value as `CFT_MULTINODE_NUMBER` inside the docker-compose YAML file.
+Where `NUMBER_OF_NODES` should have the same value as `CFT_MULTINODE_NUMBER` inside the compose YAML file.
 
 The `up` command builds, (re)creates, starts, and attaches to a container for services. And, unless they are already running, this command also starts any linked services.
 
 You can use the -d option to run containers in the background.
 
 ```console  
-docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER_OF_NODES> -d  
+docker compose -f compose-multinode.yml up --scale cft=<NUMBER_OF_NODES> -d
 ```
 ##### 2. Stop and remove the Transfer CFT service
 
-From the folder where the `docker-compose-multinode.yml` file is located, you can stop the containers using the command:
+From the folder where the `compose-multinode.yml` file is located, you can stop the containers using the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml down
+docker compose -f compose-multinode.yml down
 ```
 
 The `down` command stops containers, and removes containers, networks, anonymous volumes, and images created by `up`.  
@@ -291,18 +291,18 @@ You can use the -v option to remove named volumes declared in the `volumes` sect
 
 ##### 3. Start the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, you can start the Transfer CFT service using `start` if it was stopped using `stop`.
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, you can start the Transfer CFT service using `start` if it was stopped using `stop`.
 
 ```console
-docker-compose -f docker-compose-multinode.yml start
+docker compose -f compose-multinode.yml start
 ```
 
 ##### 4. Stop the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, you can stop the containers using the command:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, you can stop the containers using the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml stop
+docker compose -f compose-multinode.yml stop
 ```
 
 ##### 5. Upgrade Transfer CFT
@@ -331,15 +331,15 @@ Check that the REST API call returns 200.
 To stop and remove the container, run the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml down
+docker compose -f compose-multinode.yml down
 ```
 
 ###### 4. Recreate and start the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) is located, run the command:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) is located, run the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml up --scale cft=<NUMBER OF NODES>
+docker compose -f compose-multinode.yml up --scale cft=<NUMBER OF NODES>
 ```
 
 This command recreates and starts a Transfer CFT container based on the new image. When the container starts, it detects the exported data and imports it during startup.
@@ -351,7 +351,7 @@ This command recreates and starts a Transfer CFT container based on the new imag
 
 In this set-up, different Docker servers will be used to run each of the Transfer CFT containers.
 
-The file [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) need to be changed to adapt do this case and there are a few prerequisites to make it work.
+The file [`compose-multinode.yml`](./compose-multinode.yml) need to be changed to adapt do this case and there are a few prerequisites to make it work.
 
 Prerequisites:
 
@@ -360,23 +360,23 @@ Prerequisites:
 
 The modifications are:
 
-* NGINX is not used, so the block for service nginx should be removed from file docker-compose-multinode.yml.
+* NGINX is not used, so the block for service nginx should be removed from file compose-multinode.yml.
 * `CFT_LOAD_BALANCER_HOST` and `CFT_LOAD_BALANCER_PORT` should be set to reflect the load balancer information.
 * `CFT_FQDN` should be set using the host machine information, which should change for each of the host machines.
-* You must add `- "33000-33100"` to the exposed section of file `docker-compose-multinode.yml`.
+* You must add `- "33000-33100"` to the exposed section of file `compose-multinode.yml`.
 * Define the Transfer CFT's listening port range, according to the port range set in the previous step. For that, you must set up a custom initialization script using the parameter `USER_SCRIPT_INIT`. The script must contain the following lines:
 ```console
 . ${CFT_CFTDIRRUNTIME}/profile
 CFTUTIL uconfset id=cft.multi_node.listen_port_range, value="33000-33100"
 ```
 
-Then use the list described [here](#docker-compose-parameters) to change the parameters as needed.
+Then use the list described [here](#compose-parameters) to change the parameters as needed.
 
 The information in the topics [Customization](#1-customization) and [License Key](#2-transfer-cft-license-key) apply here.
 
 ##### 1. Data persistence
 
-The Transfer CFT volume should point to an NFS disk. The volumes section of file [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) should look like this:
+The Transfer CFT volume should point to an NFS disk. The volumes section of file [`compose-multinode.yml`](./compose-multinode.yml) should look like this:
 
 ```console
 volumes:
@@ -390,10 +390,10 @@ volumes:
 
 ##### 2. Create the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, run the following command on each Docker server:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, run the following command on each Docker server:
 
 ```console  
-docker-compose -f docker-compose-multinode.yml up
+docker compose -f compose-multinode.yml up
 ```
 
 The `up` command builds, (re)creates, starts, and attaches to a container for services. And, unless they are already running, this command also starts any linked services.
@@ -401,14 +401,14 @@ The `up` command builds, (re)creates, starts, and attaches to a container for se
 You can use the -d option to run containers in the background.
 
 ```console  
-docker-compose -f docker-compose-multinode.yml up -d  
+docker compose -f compose-multinode.yml up -d
 ```
 ##### 3. Stop and remove the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, you can stop the containers on each Docker server using the command:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, you can stop the containers on each Docker server using the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml down
+docker compose -f compose-multinode.yml down
 ```
 
 The `down` command stops containers and removes containers, networks, anonymous volumes, and images created by `up`.  
@@ -416,18 +416,18 @@ You can use the -v option to remove named volumes declared in the `volumes` sect
 
 ##### 4. Start the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, on each Docker server you can start the Transfer CFT service using `start` if it was stopped using `stop`.
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, on each Docker server you can start the Transfer CFT service using `start` if it was stopped using `stop`.
 
 ```console
-docker-compose -f docker-compose-multinode.yml start
+docker compose -f compose-multinode.yml start
 ```
 
 ##### 5. Stop the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) file is located, you can stop the containers on each Docker server using the command:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) file is located, you can stop the containers on each Docker server using the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml stop
+docker compose -f compose-multinode.yml stop
 ```
 
 ##### 6. Upgrade Transfer CFT
@@ -456,15 +456,15 @@ Check that the REST API call returns 200.
 To stop and remove the container, run the following command on each Docker server:
 
 ```console
-docker-compose -f docker-compose-multinode.yml down
+docker compose -f compose-multinode.yml down
 ```
 
 ###### 4. Recreate and start the Transfer CFT service
 
-From the folder where the [`docker-compose-multinode.yml`](./docker-compose-multinode.yml) is located, on each Docker server run the command:
+From the folder where the [`compose-multinode.yml`](./compose-multinode.yml) is located, on each Docker server run the command:
 
 ```console
-docker-compose -f docker-compose-multinode.yml up
+docker compose -f compose-multinode.yml up
 ```
 
 This command recreates and starts a Transfer CFT container based on the new image. When the container starts, it detects the exported data and imports it during startup.
@@ -515,7 +515,7 @@ To create an XFBADM user during the container creation, set variables `USER_XFBA
 - `USER_XFBADM_LOGIN`: A string that refers to the login.
 - `USER_XFBADM_PASSWORD`: A command that returns the password such as 'cat userpassword.txt', where the file, for example userpassword.txt, contains the password.
 
-For details, see `USER_XFBADM_PASSWORD` in the docker-compose.yml.
+For details, see `USER_XFBADM_PASSWORD` in the compose.yml.
 
 #### SSL Certificates
 
