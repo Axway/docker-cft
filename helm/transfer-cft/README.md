@@ -114,6 +114,10 @@ Parameter | Description | Default
 `cft.xfbadmPassword.createSecretFile` | Create the xfbadm user password secret at installation using a local file | `false`
 `cft.xfbadmPassword.localFile` | Relative path to the xfbadm user password (you can use conf directory in the helm chart) | `{}` (eg. `conf/xfbadm.pwd`)
 `cft.xfbadmPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
+`cft.apiToken.secretName` | Name of the secret used to store the API token (secretname is mandatory) | | `api-token`
+`cft.apiToken.createSecretFile` | Create the API token secret at installation using a local file | `false`
+`cft.apiToken.localFile` | Relative path to the file API token (you can use conf directory in the helm chart) | `{}` (eg. `conf/token.pwd`)
+`cft.apiToken.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.apiLogin` | Login of a REST API user. This login is used to invoke a Transfer CFT REST API during the pre-upgrade step. When using an identity provider, this should be a valid user for the identity provider. | `admin`
 `cft.apiPassword.secretName` | Name of the secret used to store the API user password (secretname is mandatory) | `api-password`
 `cft.apiPassword.createSecretFile` | Create the API user password secret at installation using a local file | `false`

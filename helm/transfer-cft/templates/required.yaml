@@ -1,6 +1,11 @@
 ###
 ### Required values test
 ###
+# General conditions
+{{- if not .Values.cft.accept_general_conditions }}
+  {{- required "General Terms and Conditions not accepted. (.Values.cft.accept_general_conditions)" .Values.dummy }}
+{{- end }}
+# licenseKey
 {{- required "A valid .Values.cft.licenseKey entry required!" .Values.cft.licenseKey }}
 {{- required "A valid .Values.cft.licenseKey.secretName entry required!" .Values.cft.licenseKey.secretName }}
 {{- if .Values.cft.licenseKey.createSecretFile }}
@@ -12,18 +17,52 @@
     {{- required "A valid .Values.cft.licenseKey.existingSecretFile entry required! (createSecretFile=false)" .Values.cft.licenseKey.existingSecretFile }}
   {{- end }}
 {{- end }}
-{{- required "A valid .Values.cft.apiLogin entry required!" .Values.cft.apiLogin }}
-{{- required "A valid .Values.cft.apiPassword entry required!" .Values.cft.apiPassword }}
-{{- required "A valid .Values.cft.apiPassword.secretName entry required!" .Values.cft.apiPassword.secretName }}
-{{- if .Values.cft.apiPassword.createSecretFile }}
-  {{- required "A valid .Values.cft.apiPassword.localFile entry required!" .Values.cft.apiPassword.localFile }}
-{{- else }}
-  {{- if .Values.cft.apiPassword.existingSecretFile }}
-    {{- required "A valid .Values.cft.apiPassword.existingSecretFile.keyRef entry required!" .Values.cft.apiPassword.existingSecretFile.keyRef }}
-  {{- else }}
-    {{- required "A valid .Values.cft.apiPassword.existingSecretFile entry required! (createSecretFile=false)" .Values.cft.apiPassword.existingSecretFile }}
+
+# apiToken or apiLogin + apiPassword
+{{- $missingApiInfoError := "Valid API credentials required! (Set either apiToken or apiLogin/apiPassword)" }}
+{{- if or .Values.cft.apiToken (and .Values.cft.apiLogin .Values.cft.apiPassword) }}
+  {{- if .Values.cft.apiToken }}
+    {{- if or .Values.cft.apiToken.createSecretFile .Values.cft.apiToken.existingSecretFile }}
+      {{- required "A valid .Values.cft.apiToken.secretName entry required!" .Values.cft.apiToken.secretName }}
+      {{- if .Values.cft.apiToken.createSecretFile }}
+        {{- required "A valid .Values.cft.apiToken.localFile entry required!" .Values.cft.apiToken.localFile }}
+      {{- else }}
+        {{- required "A valid .Values.cft.apiToken.existingSecretFile.keyRef entry required!" .Values.cft.apiToken.existingSecretFile.keyRef }}
+      {{- end }}
+    {{ else }}
+      # apiToken not configured correctly: testing apiLogin + apiPassword
+      {{- if and .Values.cft.apiLogin .Values.cft.apiPassword }}
+        {{- if or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile }}
+          {{- required "A valid .Values.cft.apiPassword.secretName entry required!" .Values.cft.apiPassword.secretName }}
+          {{- if .Values.cft.apiPassword.createSecretFile }}
+            {{- required "A valid .Values.cft.apiPassword.localFile entry required!" .Values.cft.apiPassword.localFile }}
+          {{- else }}
+            {{- required "A valid .Values.cft.apiPassword.existingSecretFile.keyRef entry required!" .Values.cft.apiPassword.existingSecretFile.keyRef }}
+          {{- end }}
+        {{ else }}
+          {{- required $missingApiInfoError .out }}
+        {{- end }}
+      {{- else }}
+        {{- required $missingApiInfoError .out }}
+      {{- end }}
+    {{- end }}
+  {{ else }}
+    # apiToken not defined: testing apiLogin + apiPassword
+    {{- if and .Values.cft.apiLogin .Values.cft.apiPassword }}
+      {{- if or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile }}
+        {{- required "A valid .Values.cft.apiPassword.secretName entry required!" .Values.cft.apiPassword.secretName }}
+        {{- if .Values.cft.apiPassword.createSecretFile }}
+          {{- required "A valid .Values.cft.apiPassword.localFile entry required!" .Values.cft.apiPassword.localFile }}
+        {{- else }}
+          {{- required "A valid .Values.cft.apiPassword.existingSecretFile.keyRef entry required!" .Values.cft.apiPassword.existingSecretFile.keyRef }}
+        {{- end }}
+      {{ else }}
+        {{- required $missingApiInfoError .out }}
+      {{- end }}
+    {{- else }}
+      {{- required $missingApiInfoError .out }}
+    {{- end }}
   {{- end }}
-{{- end }}
-{{- if not .Values.cft.accept_general_conditions }}
-  {{- required "General Terms and Conditions not accepted. (.Values.cft.accept_general_conditions)" .Values.dummy }}
+{{ else }}
+  {{- required $missingApiInfoError .out }}
 {{- end }}

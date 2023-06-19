@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [3.10.2306] - 2023-06-30
 
+### Added
+- It is now possible to configure the upgrade job for helm using an API token instead of a user/password
+
 ### Fixed
 - After the registration to Flow Manager, if no custom certificate is specified, the REST API server uses the certificate generated during registration.
 - Docker compose templates are compatible with "docker compose" functionality.

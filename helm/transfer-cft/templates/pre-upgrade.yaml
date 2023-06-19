@@ -38,23 +38,42 @@ spec:
           # value: {{ include "transfer-cft.name" . }}-0
         - name: "CFT_RESTAPI_PORT"
           value: {{ include "cft.ports.restapi" . | quote }}
+        {{- if .Values.cft.apiToken }}
+        - name: "CFT_API_TOKEN"
+        {{- if .Values.cft.apiToken.createSecretFile }}
+          value: "/run/secrets/cft/{{ .Values.cft.apiToken.secretName }}/{{ .Values.cft.apiToken.secretName }}"
+        {{- else }}
+        {{- if .Values.cft.apiToken.existingSecretFile }}
+          value: "/run/secrets/cft/{{ .Values.cft.apiToken.secretName }}/{{ .Values.cft.apiToken.existingSecretFile.keyRef }}"
+        {{- end }}
+        {{- end }}
+        {{- end }}
+        {{ if and .Values.cft.apiLogin .Values.cft.apiPassword }}
         - name: "CFT_API_LOGIN"
           value: {{ .Values.cft.apiLogin | quote }}
         - name: "CFT_API_PASSWORD"
         {{- if .Values.cft.apiPassword.createSecretFile }}
           value: "/run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}/{{ .Values.cft.apiPassword.secretName }}"
         {{- else }}
+        {{- if .Values.cft.apiPassword.existingSecretFile }}
           value: "/run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}/{{ .Values.cft.apiPassword.existingSecretFile.keyRef }}"
         {{- end }}
-        command: ["sh", "-c", "$HOME/export_bases_job.sh"]
+        {{- end }}
+        {{- end }}
+        command: ["bash", "-c", "$HOME/export_bases_job.sh"]
         volumeMounts:
-        ## Secrets created by helm
+      ## Secrets created by helm
       {{- if and (.Values.cft.apiPassword.secretName) (or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile) }}
         - name: {{ .Values.cft.apiPassword.secretName }}
           readOnly: true
           mountPath: /run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}
+      {{- else if and (.Values.cft.apiToken.secretName) (or .Values.cft.apiToken.createSecretFile .Values.cft.apiToken.existingSecretFile) }}
+        - name: {{ .Values.cft.apiToken.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.apiToken.secretName }}
       {{- end }}
       volumes:
+      ## Secrets created by helm
       {{- if and (.Values.cft.apiPassword.secretName) (or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile) }}
       - name: {{ .Values.cft.apiPassword.secretName }}
         secret:
@@ -62,6 +81,16 @@ spec:
           secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.apiPassword.secretName }}
           {{- else }}
           secretName: {{ .Values.cft.apiPassword.secretName }}
+          {{- end }}
+          defaultMode: 0777
+      ## Secrets created by helm
+      {{- else if and (.Values.cft.apiToken.secretName) (or .Values.cft.apiToken.createSecretFile .Values.cft.apiToken.existingSecretFile) }}
+      - name: {{ .Values.cft.apiToken.secretName }}
+        secret:
+          {{- if .Values.cft.apiToken.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.apiToken.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.apiToken.secretName }}
           {{- end }}
           defaultMode: 0777
       {{- end }}

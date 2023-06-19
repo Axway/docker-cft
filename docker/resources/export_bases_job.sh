@@ -5,11 +5,40 @@
 # Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
 
+get_value()
+{
+    in=$*
+
+    if [ -f "$in" ]; then
+        out=$(cat $in)
+    else
+        out=$($in) >/dev/null 2>&1
+        if [ $? -ne 0 ]; then
+            out=$in
+        fi
+    fi
+    echo $out
+}
 echo "INFO: server: $CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT"
-echo "INFO: credentials: $CFT_API_LOGIN:$CFT_API_PASSWORD"
+
+if [[ -z "${CFT_API_PASSWORD}" ]]; then
+    # TOKEN mode
+    echo "INFO: credentials (token)"
+    token=$(get_value $CFT_API_TOKEN)
+    echo Authorization: Bearer $token > /tmp/auth.txt
+    auth='-H @/tmp/auth.txt'
+else
+    # LOGIN/PASSWORD mode
+    echo "INFO: credentials (login/password)"
+    pass=$(get_value $CFT_API_PASSWORD)
+    auth="-u $CFT_API_LOGIN:$pass"
+fi
+
+curl_opt="-k -s -w %{http_code}"
+base_url="https://$CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT"
 
 # is server up
-cmd="curl -k -s -w %{http_code} https://$CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT/healthz"
+cmd="curl $curl_opt $base_url/healthz"
 out=$($cmd)
 rc=$?
 if [ "$rc" -ne "0" ]; then
@@ -22,7 +51,6 @@ else
     echo "INFO: server is up"
 fi
 
-pass=$(cat $CFT_API_PASSWORD)
 if [[ -n $CFT_CHECKVERSION && "$CFT_CHECKVERSION" = "false" ]]; then
     echo "INFO: new and remote versions comparison skipped."
 else
@@ -33,7 +61,8 @@ else
         exit 1
     fi
 
-    cmd="curl -k -s -w %{http_code} -u $CFT_API_LOGIN:$pass https://$CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT/cft/api/v1/about"
+    cmd="curl $curl_opt $auth -X GET $base_url/cft/api/v1/about"
+    echo \"$cmd\"
     out=$($cmd)
     rc=$?
     if [ "$rc" -ne "0" ]; then
@@ -61,7 +90,7 @@ else
 fi
 
 # export databases
-cmd="curl -k -s -w %{http_code} -u $CFT_API_LOGIN:$pass -X PUT https://$CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT/cft/api/v1/cft/container/export"
+cmd="curl $curl_opt $auth -X PUT $base_url/cft/api/v1/cft/container/export"
 out=$($cmd)
 rc=$?
 if [ "$rc" -ne "0" ]; then
