@@ -103,7 +103,7 @@ EXPOSE 1768
 
 # Environment variables
 
-ENV CFT_FQDN             ""
+ENV CFT_FQDN             cft
 ENV CFT_INSTANCE_ID      docker0_cft
 ENV CFT_INSTANCE_GROUP   dev.docker
 ENV CFT_CATALOG_SIZE     1000
