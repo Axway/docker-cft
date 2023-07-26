@@ -87,11 +87,11 @@ pre_upgrade_audit()
 {
     if [ -n "$(cftuconf cft.audit.output)" ]; then
         dir=$(cftuconf cft.runtime.audit_dir)
-        if [ ! -d dir ]; then
+        if [ ! -d $dir ]; then
             mkdir $dir
             touch $dir/audit.tsv
         fi
-        CFTUTIL /m=2 uconfset id='cft.audit.output', value='STDOUT'
+        CFTUTIL /m=14 uconfset id='cft.audit.output', value='STDOUT'
         truncate -s 0 $dir/audit.tsv
     fi
 }
@@ -160,9 +160,9 @@ fail=0
 ## Uconf
 if [ $downgrade = 1 ]; then
     echo "Restoring uconf of $(date -r $backupdir/cft-uconf.cfg)..." 
-    CFTUTIL @$backupdir/cft-uconf.cfg
+    CFTUTIL /m=14 @$backupdir/cft-uconf.cfg
 else
-    CFTUTIL @$exportdir/cft-uconf.cfg
+    CFTUTIL /m=14 @$exportdir/cft-uconf.cfg
 fi
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to import UCONF"
@@ -195,7 +195,7 @@ if [ $MULTINODE = 1 ]; then
     for ((i=0;  i<$CFT_MULTINODE_NUMBER; i++ ))
     do
         j=$(printf "%02d" $i)
-        CFTMI MIGR type=CAT, direct=TOCAT, ofname=$cat_name$j, ifname=$exportdir/cft-cat$j.xml
+        CFTMI /m=14 MIGR type=CAT, direct=TOCAT, ofname=$cat_name$j, ifname=$exportdir/cft-cat$j.xml
         if [ $? -ne 0 ]; then
             echo "ERROR: failed to import Catalog $j"
             fail=1
@@ -204,7 +204,7 @@ if [ $MULTINODE = 1 ]; then
         fi
     done
 else
-    CFTMI MIGR type=CAT, direct=TOCAT, ofname=_CFTCATA, ifname=$exportdir/cft-cat.xml
+    CFTMI /m=14 MIGR type=CAT, direct=TOCAT, ofname=_CFTCATA, ifname=$exportdir/cft-cat.xml
     if [ $? -ne 0 ]; then
         echo "ERROR: failed to import Catalog"
         fail=1
@@ -214,7 +214,7 @@ else
 fi
 
 ## Com file
-CFTMI MIGR type=COM, direct=TOCOM, ofname=_CFTCOM, ifname=$exportdir/cft-com.xml
+CFTMI /m=14 MIGR type=COM, direct=TOCOM, ofname=_CFTCOM, ifname=$exportdir/cft-com.xml
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to import COM"
     fail=1
@@ -226,7 +226,7 @@ if [ $MULTINODE = 1 ]; then
     for ((i=0;  i<$CFT_MULTINODE_NUMBER; i++ ))
     do
         j=$(printf "%02d" $i)
-        CFTMI MIGR type=COM, direct=TOCOM, ofname=$com_name$j, ifname=$exportdir/cft-com$j.xml
+        CFTMI /m=14 MIGR type=COM, direct=TOCOM, ofname=$com_name$j, ifname=$exportdir/cft-com$j.xml
         if [ $? -ne 0 ]; then
             echo "ERROR: failed to import COM $j"
             fail=1
@@ -238,11 +238,11 @@ fi
 
 ## PKI
 #### Erase PKI database
-PKIUTIL PKIFILE fname = '%env:CFTPKU%', mode = 'DELETE'
+PKIUTIL /m=14 PKIFILE fname = '%env:CFTPKU%', mode = 'DELETE'
 #### Create new PKI
-PKIUTIL PKIFILE fname = '%env:CFTPKU%', mode = 'CREATE'
+PKIUTIL /m=14 PKIFILE fname = '%env:CFTPKU%', mode = 'CREATE'
 #### Import PKI
-PKIUTIL @$exportdir/cft-pki.cfg
+PKIUTIL /m=14 @$exportdir/cft-pki.cfg
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to import PKI"
     fail=1

@@ -1,6 +1,11 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.2309] - 2023-09-30
+
+### Changed
+- Replaced the cft utilities option /m=2 by /m=14 to display error messages in case of a problem.
+
 ## [3.10.2306] - 2023-06-30
 
 ### Added

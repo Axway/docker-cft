@@ -122,8 +122,8 @@ generate_certificate()
             -out conf/pki/rest_api_cert.p12 \
             -passout pass:restapi
 
-        CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
-        CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
+        CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertFile', value='conf/pki/rest_api_cert.p12'
+        CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertPassword', value='restapi'
     fi
 }
 
@@ -136,10 +136,10 @@ unset_need_restart()
         nodes_number=$(cftuconf cft.multi_node.nodes)
         for ((i=0;  i<$nodes_number; i++ ))
         do
-            CFTUTIL /m=2 uconfunset id=cft.multi_node.nodes.$i.need_restart
+            CFTUTIL /m=14 uconfunset id=cft.multi_node.nodes.$i.need_restart
         done
     else
-        CFTUTIL /m=2 uconfunset id=cft.server.run.need_restart
+        CFTUTIL /m=14 uconfunset id=cft.server.run.need_restart
     fi
 }
 
@@ -154,16 +154,16 @@ customize_runtime()
 
     # FQDN
     if [ -n "$CFT_LOAD_BALANCER_HOST" ]; then
-        CFTUTIL /m=2 uconfset id='cft.full_hostname', value=$CFT_LOAD_BALANCER_HOST
-        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_LOAD_BALANCER_HOST
+        CFTUTIL /m=14 uconfset id='cft.full_hostname', value=$CFT_LOAD_BALANCER_HOST
+        CFTUTIL /m=14 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_LOAD_BALANCER_HOST
     else
-        CFTUTIL /m=2 uconfset id='cft.full_hostname', value=$CFT_FQDN
-        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_FQDN
+        CFTUTIL /m=14 uconfset id='cft.full_hostname', value=$CFT_FQDN
+        CFTUTIL /m=14 uconfset id='cft.multi_node.load_balancer.host', value=$CFT_FQDN
     fi
     if [ -n "$CFT_LOAD_BALANCER_PORT" ]; then
-        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_LOAD_BALANCER_PORT
+        CFTUTIL /m=14 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_LOAD_BALANCER_PORT
     else
-        CFTUTIL /m=2 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_COPILOT_CG_PORT
+        CFTUTIL /m=14 uconfset id='cft.multi_node.load_balancer.port', value=$CFT_COPILOT_CG_PORT
     fi
 
     # User customization
@@ -175,12 +175,12 @@ customize_runtime()
     if [[ "$CFT_CG_ENABLE" = "YES" ]]; then
 
         if [ -n "$CFT_CG_SHARED_SECRET" ]; then
-            CFTUTIL /m=2 uconfset id='cg.shared_secret', value=$(get_value $CFT_CG_SHARED_SECRET)
+            CFTUTIL /m=14 uconfset id='cg.shared_secret', value=$(get_value $CFT_CG_SHARED_SECRET)
         fi
 
         if [[ -n "$CFT_CG_AGENT_NAME" ]]; then
             echo "INF: Setting the customized Agent Name $CFT_CG_AGENT_NAME..."
-            CFTUTIL /m=2 uconfset id='cg.metadata.agent.value', value=$CFT_CG_AGENT_NAME
+            CFTUTIL /m=14 uconfset id='cg.metadata.agent.value', value=$CFT_CG_AGENT_NAME
         fi
 
         # CG CA certificate
@@ -192,12 +192,12 @@ customize_runtime()
             rc=`file_diff $sha1 $USER_CG_CA_CERT`
             if [ $rc != 0 ]; then
                 echo "INF: Setting the customized CG CA certificate $USER_CG_CA_CERT..."
-                PKIUTIL pkicer id='CG_CA', rootcid='CG_CA', itype='root', iname=$USER_CG_CA_CERT, pkipassw='CFT', mode='replace'
+                PKIUTIL /m=14 pkicer id='CG_CA', rootcid='CG_CA', itype='root', iname=$USER_CG_CA_CERT, pkipassw='CFT', mode='replace'
                 if [ $? != 0 ]; then
                     echo "ERR: Failed to insert the CG CA certificate $USER_CG_CA_CERT"
                     exit 1
                 fi
-                CFTUTIL /m=2 uconfset id='cg.ca_cert_id', value='CG_CA'
+                CFTUTIL /m=14 uconfset id='cg.ca_cert_id', value='CG_CA'
                 file_checksum $USER_CG_CA_CERT >$sha1
                 echo "INF: Customized CG CA certificate $USER_CG_CA_CERT set."
             fi
@@ -213,12 +213,12 @@ customize_runtime()
         rc=`file_diff $sha1 $USER_SENTINEL_CA_CERT`
         if [ $rc != 0 ]; then
             echo "INF: Setting the customized Sentinel CA certificate $USER_SENTINEL_CA_CERT..."
-            PKIUTIL pkicer id='SENTINEL_CA', rootcid='SENTINEL_CA', itype='root', iname=$USER_SENTINEL_CA_CERT, pkipassw='CFT', mode='replace'
+            PKIUTIL /m=14 pkicer id='SENTINEL_CA', rootcid='SENTINEL_CA', itype='root', iname=$USER_SENTINEL_CA_CERT, pkipassw='CFT', mode='replace'
             if [ $? != 0 ]; then
                 echo "ERR/ Failed to insert the Sentinel CA certificate $USER_SENTINEL_CA_CERT"
                 exit 1
             fi
-            CFTUTIL /m=2 uconfset id='sentinel.xfb.ca_cert_id', value='SENTINEL_CA'
+            CFTUTIL /m=14 uconfset id='sentinel.xfb.ca_cert_id', value='SENTINEL_CA'
             file_checksum $USER_SENTINEL_CA_CERT >$sha1
             echo "INF: Customized Sentinel CA certificate $USER_SENTINEL_CA_CERT set."
         fi
@@ -233,8 +233,8 @@ customize_runtime()
         rc=`file_diff $sha1 $USER_COPILOT_CERT`
         if [ $rc != 0 ]; then
             echo "INF: Setting the customized Copilot certificate $USER_COPILOT_CERT..."
-            CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertFile', value=$USER_COPILOT_CERT
-            CFTUTIL /m=2 uconfset id='copilot.ssl.SslCertPassword', value=$(get_value $USER_COPILOT_CERT_PASSWORD)
+            CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertFile', value=$USER_COPILOT_CERT
+            CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertPassword', value=$(get_value $USER_COPILOT_CERT_PASSWORD)
             file_checksum $USER_COPILOT_CERT >$sha1
             echo "INF: Customized Copilot certificate $USER_COPILOT_CERT set."
         fi
@@ -242,7 +242,7 @@ customize_runtime()
 
     # Passport AM persistent cache
     if [ -n "$CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL" ]; then
-        CFTUTIL /m=2 uconfset id='am.passport.persistency.check_interval', value=$CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL
+        CFTUTIL /m=14 uconfset id='am.passport.persistency.check_interval', value=$CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL
     fi
 
     # User custom start-up script
@@ -262,8 +262,8 @@ customize_runtime()
 
     # REST API CONFIGURATION
     if [ -n "$CFT_RESTAPI_PORT" ]; then
-        CFTUTIL /m=2 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
-        CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='YES'
+        CFTUTIL /m=14 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
+        CFTUTIL /m=14 uconfset id='copilot.restapi.enable', value='YES'
 
         copilot_cert=$(cftuconf copilot.ssl.SslCertFile)
         copilot_cert_id=$(cftuconf copilot.ssl.cert_id)
@@ -278,7 +278,7 @@ customize_runtime()
             fi
         fi
     else
-        CFTUTIL /m=2 uconfset id='copilot.restapi.enable', value='NO'
+        CFTUTIL /m=14 uconfset id='copilot.restapi.enable', value='NO'
     fi
 
     echo "INF: runtime customized."
@@ -363,9 +363,9 @@ switch_cert()
         if [ "$registration_id" != "-1" ]; then
             echo "INF: Registration completed, switching to certificate received during registration"
 
-            CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertFile'
-            CFTUTIL /m=2 uconfunset id='copilot.ssl.SslCertPassword'
-            CFTUTIL /m=2 uconfunset id='copilot.ssl.cert_id'
+            CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertFile'
+            CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertPassword'
+            CFTUTIL /m=14 uconfunset id='copilot.ssl.cert_id'
             unset_need_restart
             CFTUTIL reconfig type=am
             set_temporary_rest_api_cert 0
@@ -459,7 +459,7 @@ fi
 rm -f $lockfile
 
 # show info about cft
-CFTUTIL /m=2 about
+CFTUTIL /m=14 about
 
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
     case $(cftuconf cft.multi_node.hostnames) in
@@ -482,7 +482,7 @@ if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
 fi
 
 # show customize information
-CFTUTIL /m=2 LISTUCONF scope=user
+CFTUTIL /m=14 LISTUCONF scope=user
 
 if cft start ; then
     echo "INF: cft start success"

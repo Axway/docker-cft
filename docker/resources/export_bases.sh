@@ -114,7 +114,7 @@ if [ $MULTINODE = 1 ]; then
     for ((i=0;  i<$MULTINODE_NUMBER; i++ ))
     do
         j=$(printf "%02d" $i)
-        CFTMI /m=2 MIGR type=CAT, direct=FROMCAT, ifname=$cat_name$j, ofname=$exportdir/cft-cat$j.xml
+        CFTMI /m=14 MIGR type=CAT, direct=FROMCAT, ifname=$cat_name$j, ofname=$exportdir/cft-cat$j.xml
         if [ $? -ne 0 ]; then
             echo "ERROR: failed to export Catalog $j"
             fail=1
@@ -123,7 +123,7 @@ if [ $MULTINODE = 1 ]; then
         fi
     done
 else
-    CFTMI /m=2 MIGR type=CAT, direct=FROMCAT, ifname=_CFTCATA, ofname=$exportdir/cft-cat.xml
+    CFTMI /m=14 MIGR type=CAT, direct=FROMCAT, ifname=_CFTCATA, ofname=$exportdir/cft-cat.xml
     if [ $? -ne 0 ]; then
         echo "ERROR: failed to export Catalog"
         fail=1
@@ -133,7 +133,7 @@ else
 fi
 
 ## Com file
-CFTMI /m=2 MIGR type=COM, direct=FROMCOM, ifname=_CFTCOM, ofname=$exportdir/cft-com.xml
+CFTMI /m=14 MIGR type=COM, direct=FROMCOM, ifname=_CFTCOM, ofname=$exportdir/cft-com.xml
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to export COM"
     fail=1
@@ -145,7 +145,7 @@ if [ $MULTINODE = 1 ]; then
     for ((i=0;  i<$MULTINODE_NUMBER; i++ ))
     do
         j=$(printf "%02d" $i)
-        CFTMI /m=2 MIGR type=COM, direct=FROMCOM, ifname=$com_name$j, ofname=$exportdir/cft-com$j.xml
+        CFTMI /m=14 MIGR type=COM, direct=FROMCOM, ifname=$com_name$j, ofname=$exportdir/cft-com$j.xml
         if [ $? -ne 0 ]; then
             echo "ERROR: failed to export COM $j"
             fail=1
@@ -156,7 +156,7 @@ if [ $MULTINODE = 1 ]; then
 fi
 
 ## Uconf
-CFTUTIL /m=2 CFTEXT type=uconf, fout=$exportdir/cft-uconf.cfg
+CFTUTIL /m=14 CFTEXT type=uconf, fout=$exportdir/cft-uconf.cfg
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to export UCONF"
     fail=1
@@ -169,8 +169,8 @@ fi
 
 ## Parm/Part
 saved=$(cftuconf cft.uconf.cftext)
-CFTUTIL /m=2 UCONFSET ID=cft.uconf.cftext, value=No
-CFTUTIL /m=2 CFTEXT fout=$exportdir/cft-cnf.cfg
+CFTUTIL /m=14 UCONFSET ID=cft.uconf.cftext, value=No
+CFTUTIL /m=14 CFTEXT fout=$exportdir/cft-cnf.cfg
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to export PARM/PART"
     fail=1
@@ -180,7 +180,7 @@ else
         copy_file $exportdir/cft-cnf.cfg $backupdir/cft-cnf.cfg
     fi
 fi
-CFTUTIL /m=2 UCONFSET ID=cft.uconf.cftext, value=$saved
+CFTUTIL /m=14 UCONFSET ID=cft.uconf.cftext, value=$saved
 
 ## PKI
 mkdir $exportdir/pki
@@ -189,7 +189,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 touch $exportdir/cft-pki.cfg
-PKIUTIL PKIEXT fout=$exportdir/cft-pki.cfg, pkipref=$exportdir/pki/, password=upgrade
+PKIUTIL /m=14 PKIEXT fout=$exportdir/cft-pki.cfg, pkipref=$exportdir/pki/, password=upgrade
 if [ $? -ne 0 ]; then
     echo "ERROR: failed to export PKI"
     fail=1
