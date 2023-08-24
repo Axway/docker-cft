@@ -68,6 +68,31 @@ get_service_copilotcg()
     get_service_value "COPILOTCG"
 }
 
+get_cft_version()
+{
+    vers=$(CFTUTIL /m=14 about type=cft|sed -nr 's/.*version\s*=\s*([0-9.]+).*/\1/p')
+    if [ $? -ne 0 ]; then
+        return -1
+    fi
+    echo $vers
+    return 0
+}
+
+get_cft_version_num()
+{
+    vers=$(get_cft_version)
+    if [[ $? -ne 0 || "$vers" = "" ]]; then
+        return -1
+    fi
+
+    x=$(echo $vers | cut -d '.' -f 1)
+    y=$(echo $vers | cut -d '.' -f 2)
+    x=$(printf "%03d" $x)
+    y=$(printf "%03d" $y)
+    echo $x$y
+    return 0
+}
+
 check_fqdn()
 {
     host=$(get_service_host)
@@ -360,13 +385,16 @@ switch_cert()
 
     if [[ "$CFT_CG_ENABLE" = "YES" && "$is_temp" = "1" ]]; then
         registration_id=$(cftuconf cg.registration_id)
+        vers=$(get_cft_version_num)
         if [ "$registration_id" != "-1" ]; then
             echo "INF: Registration completed, switching to certificate received during registration"
 
             CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertFile'
             CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertPassword'
-            CFTUTIL /m=14 uconfunset id='copilot.ssl.cert_id'
-            unset_need_restart
+            if [ $vers -ge 003010 ]; then
+                CFTUTIL /m=14 uconfunset id='copilot.ssl.cert_id'
+                unset_need_restart
+            fi
             CFTUTIL reconfig type=am
             set_temporary_rest_api_cert 0
         fi
