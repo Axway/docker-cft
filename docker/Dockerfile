@@ -118,12 +118,10 @@ ENV CFT_RESTAPI_PORT     1768
 ENV CFT_CG_ENABLE        "NO"
 ENV CFT_CG_HOST          127.0.0.1
 ENV CFT_CG_PORT          12553
-ENV CFT_CG_SHARED_SECRET ""
 ENV CFT_CG_POLICY        ""
 ENV CFT_CG_PERIODICITY   ""
 ENV CFT_CG_AGENT_NAME    ""
 ENV CFT_JVM              1024
-ENV CFT_KEY              "cat /run/secrets/cft.key"
 ENV CFT_INSTALLDIR       "/opt/axway/cft"
 ENV CFT_CFTDIRRUNTIME    "/opt/axway/data/runtime"
 ENV CFT_EXPORTDIR        ".export"
