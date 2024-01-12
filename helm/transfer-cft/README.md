@@ -78,8 +78,8 @@ Parameter | Description | Default
 `cft.multinode.nodesNumber` | Number of cft nodes to use (if this number is greater than replicaCount, only replicaCount nodes are started) | `1`
 `cft.jvm` | Amount of memory that the Secure Relay JVM can use | `1024`
 `cft.cg.enabled:` | Connectivity with Flow Manager or Central Governance | `false`
-`cft.cg.host` | Host address of the Central Governance server | `cg`
-`cft.cg.port` | Listening port of the Central Governance server | `12553`
+`cft.cg.host` | Host address of the Central Governance server | `fm`
+`cft.cg.port` | Listening port of the Central Governance server | `8081`
 `cft.cg.policy` | Central Governance configuration policy to apply at Transfer CFT registration | `nil`
 `cft.cg.periodicity` | Central Governance interval between notifications | `nil`
 `cft.cg.caCert.secretName` | Name of the secret used to store the Central Governance root Certificate Authority (secretname is mandatory) | `cg-ca-cert`

@@ -113,7 +113,7 @@ Before you start, customize the parameters in the [`compose.yml`](./compose.yml)
 
 Set the image parameter to match the image you want to use. For example: "image: axway/cft:3.10.2206".
 
-If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the host machine’s name in the network (IP address can also be used).  
+If you want your Transfer CFT to be fully functional, you should change the CFT_FQDN parameter to reflect the host machine's name in the network (IP address can also be used).  
 **Note:** You cannot connect to some Transfer CFT interfaces if this parameter is not properly set.
 
 To register Transfer CFT with Central Governance, set CFT_CG_ENABLE to "YES", and configure the CFT_CG_HOST, CFT_CG_PORT, and CFT_CG_SHARED_SECRET parameters.

@@ -85,9 +85,9 @@ spec:
         - name: CFT_CG_ENABLE
           value: "NO"
         - name: CFT_CG_HOST
-          value: cg
+          value: fm
         - name: CFT_CG_PORT
-          value: 12553
+          value: 8081
         - name: CFT_CG_POLICY
           value: ""
         - name: CFT_CG_PERIODICITY

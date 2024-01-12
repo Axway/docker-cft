@@ -147,8 +147,8 @@ cft:
 
   cg:
     enabled: false
-    host: cg
-    port: 12553
+    host: fm
+    port: 8081
     policy: ""
     periodicity: ""
     ## For the next 2 parameters:

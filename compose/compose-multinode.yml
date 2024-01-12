@@ -51,8 +51,8 @@ services:
       CFT_COPILOT_CG_PORT:         1767
       CFT_RESTAPI_PORT:            1768
       CFT_CG_ENABLE:               "NO"
-      CFT_CG_HOST:                 cg
-      CFT_CG_PORT:                 12553
+      CFT_CG_HOST:                 fm
+      CFT_CG_PORT:                 8081
       CFT_CG_POLICY:               ""
       CFT_CG_PERIODICITY:          ""
       CFT_CG_AGENT_NAME:           ""

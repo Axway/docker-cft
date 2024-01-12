@@ -63,7 +63,7 @@ You must accept the applicable General Terms and Conditions in the [`podman.yml`
 
 You need to add a key for Transfer CFT to start correctly. You can find more information about the key in the section [Transfer CFT license key](#2-transfer-cft-license-key)
 
-If you want your Transfer CFT to be fully functional, you should change the `CFT_FQDN` parameter to reflect the host machine’s name in the network (IP address can also be used).
+If you want your Transfer CFT to be fully functional, you should change the `CFT_FQDN` parameter to reflect the host machine's name in the network (IP address can also be used).
 
 **Note:** You cannot connect to some Transfer CFT interfaces if this parameter is not properly set.
 
