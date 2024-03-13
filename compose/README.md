@@ -129,7 +129,7 @@ You require a linux-x86-64 platform key that does not have a specified hostname.
 The Transfer CFT [`compose.yml`](./compose.yml) file defines a volume as a mechanism for persisting data generated and used by Transfer CFT.
 The Transfer CFT runtime is placed in this volume so it can be reused when creating and starting a new Transfer CFT container. See the Upgrade section for details.
 
-You can change the volume configuration to use a previously created volume, as described in [Volumes configuration reference](https://docs.docker.com/compose/compose-file/#volume-configuration-reference) and [Create and manage volumes](https://docs.docker.com/storage/volumes/#create-and-manage-volumes).
+You can change the volume configuration to use a previously created volume, as described in [Volumes top-level elements](https://docs.docker.com/compose/compose-file/07-volumes) and [Create and manage volumes](https://docs.docker.com/storage/volumes/#create-and-manage-volumes).
 
 #### 4. Create and start the Transfer CFT service
 
