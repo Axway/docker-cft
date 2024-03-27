@@ -5,7 +5,7 @@
 # Axway Transfer CFT Docker-compose example
 #
 # Building with:
-# docker compose -f compose-multinode.yml up --scale cft=2  -d
+# docker compose -f compose-multinode.yml up --scale cft=2 -d
 
 version: "3.5"
 
@@ -35,6 +35,7 @@ services:
       ## Set parameter to yes if you accept the applicable General Terms and Conditions,
       ## located at https://www.axway.com/en/legal/contract-documents
       ACCEPT_GENERAL_CONDITIONS:   "NO"
+      CFT_FQDN:                    ""
       CFT_LOAD_BALANCER_HOST:      cft
       CFT_LOAD_BALANCER_PORT:      1767
       CFT_INSTANCE_ID:             docker0_cft
@@ -72,14 +73,6 @@ services:
       CFT_MULTINODE_NUMBER:        2
       CFT_MULTINODE_NODE_PER_HOST: 1
       CFT_JVM:                     1024
-      # Script executed at container initialization
-      #USER_SCRIPT_INIT:            "/opt/app/custom/init.sh"
-      # Script executed at each container start-up
-      #USER_SCRIPT_START:           "/opt/app/custom/startup.sh"
-      # Uncomment the next line to customize the CG CA certificate.
-      #USER_CG_CA_CERT:             "/opt/app/custom/cg_ca_cert.pem"
-      # Uncomment the next line to customize the Sentinel CA certificate.
-      #USER_SENTINEL_CA_CERT:       "/opt/app/custom/sentinel_ca_cert.pem"
       # Uncomment the next two lines to customize the Copilot server certificate. See also secrets sections.
       # The certificate must refer to a PKCS12 certificate.
       #USER_COPILOT_CERT:           "/run/secrets/copilot.p12"
@@ -152,7 +145,7 @@ secrets:
   # Uncomment the next two lines to customize the default XFBADM user.
   #xfbadm.pwd:
   #    file: ./conf/xfbadm.pwd
-  
+
 volumes:
   cft_data:
     driver: local

@@ -321,7 +321,7 @@ stop()
             cft stop
             cft force-stop
         fi
-        copstop -f &
+        copstop -f
         if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
             echo "INF: Remove HOST $HOSTNAME"
             cft remove_host -hostname $HOSTNAME
@@ -331,13 +331,12 @@ stop()
 
 _kill()
 {
-    kill -9 -1
+    kill -15 -1
 }
 
 finish()
 {
     stop
-    sleep 2
     _kill
 }
 
