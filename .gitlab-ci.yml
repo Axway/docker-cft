@@ -75,25 +75,20 @@ test:
 
 security:
   stage: security
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "trigger"
   script:
-  - if [ -z "${THREADFIX_SCAN}" ]; then
-  -   echo "No THREADFIX_SCAN variable available, assume false"
-  - elif [ "$THREADFIX_SCAN" != "1" ]; then
-  -   echo "No Threadfix scan"
+  - if [ -n "${SKIP_SECURITY}" -a "${SKIP_SECURITY}" = "1" ]; then
+  -   echo "Skip security scan"
   - else
   #   Scan the image and store the URL of the scan results.
   #   The image name scanned is not deterministic; retrieve it from the output...
-  -   out=`twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --address $TWISTLOCK_URL $IMAGE_CFT:$DOCKER_TAG`
-  -   echo $out
-  -   eval export SEARCHING=`echo $out | cut -d ' ' -f 5 | cut -d '/' -f 2`
-  -   echo get scan result for image=$SEARCHING
-  #   Retrieve the scan result
-  -   "curl --insecure -u$TWISTLOCK_USER:$TWISTLOCK_PASSWORD -H \"Content-Type: application/json\" -X GET $TWISTLOCK_URL\"api/v1/scans?search=$SEARCHING&sort=time&reverse=true&limit=1&type=ciImage\" >analysis.json"
+  -   twistcli images scan -u $TWISTLOCK_USER -p "$TWISTLOCK_PASSWORD" --address $TWISTLOCK_URL --details --output-file analysis.json $IMAGE_CFT:$DOCKER_TAG
   -   echo ">>>> analysis.json"
   -   cat analysis.json | jq .
   -   echo "<<<< analysis.json"
-  #   Upload the scan result to ThreadFix
-  -   "curl --insecure -H \"Authorization: APIKEY $THREADFIX_APIKEY\" -H \"Accept: application/json\" -X POST --form \"file=@analysis.json\" https://vulnmgt.psg.axway.int/threadfix/rest/v2.5/applications/$THREADFIX_APPID/upload"
+  #   Upload the scan result to SRM
+  -   "curl --insecure -H \"Authorization: Bearer $SRM_APIKEY\" -H \"Accept: application/json\" -X POST --form \"file=@analysis.json\" https://asoc.ssg.axway.int/srm/api/projects/${SRM_PROJECTID}/analysis"
   #   Remove scan results.
   -   rm -f analysis.json
   - fi
