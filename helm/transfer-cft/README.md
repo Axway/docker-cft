@@ -21,6 +21,18 @@ The command deploys Transfer CFT on the Kubernetes or Red Hat OpenShift cluster 
 
 > **Tip**: List all releases using `helm list`
 
+## Upgrading the chart
+
+To upgrade the chart with the release name `transfer-cft`:
+
+```console
+$ helm upgrade --install transfer-cft ./transfer-cft
+```
+
+The parameter `image.tag` in values.yaml should reflect the target version.
+
+> **Tip**: When the chart is deployed using helm, a pre-upgrade job is created (that uses parameters `cft.apiLogin` and `cft.apiPassword.secretName`). This job is automatically called when using `helm upgrade` and will do all the needed operations before the new version of Transfer CFT is deployed.
+
 ## Uninstalling the chart
 
 To uninstall/delete the `transfer-cft` deployment:
