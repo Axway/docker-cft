@@ -88,7 +88,7 @@ security:
   -   cat analysis.json | jq .
   -   echo "<<<< analysis.json"
   #   Upload the scan result to SRM
-  -   "curl --insecure -H \"Authorization: Bearer $SRM_APIKEY\" -H \"Accept: application/json\" -X POST --form \"file=@analysis.json\" https://asoc.ssg.axway.int/srm/api/projects/${SRM_PROJECTID}/analysis"
+  -   "curl --insecure -H \"Authorization: Bearer $SRM_APIKEY\" -H \"Accept: application/json\" -X POST --form \"file=@analysis.json\" ${SRM_URL}/${SRM_PROJECTID}/analysis"
   #   Remove scan results.
   -   rm -f analysis.json
   - fi
