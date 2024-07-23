@@ -11,7 +11,7 @@
 # Stage 1 : build
 #
 
-FROM ubuntu:22.04 AS builder
+FROM ubuntu:24.04 AS builder
 
 RUN apt-get -y update && apt-get install -y \
         curl \
@@ -19,7 +19,8 @@ RUN apt-get -y update && apt-get install -y \
         binutils && \
         rm -rf /var/lib/apt/lists && \
         mkdir -p /opt/axway && \
-        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
+        userdel --remove ubuntu && \
+        useradd --home-dir /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
         chown -R axway:0 /opt/axway
 
 USER 1000
@@ -53,7 +54,7 @@ COPY --chown=axway:0 resources/*.sh resources/uid_entrypoint ./
 # Stage 2 : create final image
 #
 
-FROM ubuntu:22.04
+FROM ubuntu:24.04
 
 RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         curl \
@@ -61,7 +62,8 @@ RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
         jq \
         openssl && \
         rm -rf /var/lib/apt/lists && \
-        adduser --disabled-password --gecos '' --home /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
+        userdel --remove ubuntu && \
+        useradd --home-dir /opt/axway --no-create-home --uid 1000 --gid 0 axway && \
         mkdir -p /opt/axway/data && \
         chown -R axway:0 /opt/axway && \
         chmod -R u+x /opt/axway && \

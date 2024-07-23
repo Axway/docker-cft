@@ -58,19 +58,28 @@ test:
   - cd test
   - docker network prune --force
   - docker-compose -f docker-compose-01.test.yml down -v
-  - docker-compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
-  - docker-compose -f docker-compose-01.test.yml logs
+  - docker-compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
+  - docker-compose -f docker-compose-01.test.yml logs || true
   # redo a set of smoke tests with a runtime that already exists
   - docker-compose -f docker-compose-01.test.yml down
+  - if [ ${FAILED} ]; then
+  -   exit 1
+  - fi
   - docker-compose -f docker-compose-01.test.yml up --abort-on-container-exit --remove-orphans
   - docker-compose -f docker-compose-01.test.yml down -v
   - docker-compose -f docker-compose-02-pre-upgrade.test.yml down -v
-  - docker-compose -f docker-compose-02-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
-  - docker-compose -f docker-compose-02-pre-upgrade.test.yml logs
+  - docker-compose -f docker-compose-02-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
+  - docker-compose -f docker-compose-02-pre-upgrade.test.yml logs || true
   - docker-compose -f docker-compose-02-pre-upgrade.test.yml down
-  - docker-compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut
-  - docker-compose -f docker-compose-03-upgrade.test.yml logs
+  - if [ ${FAILED} ]; then
+  -   exit 1
+  - fi
+  - docker-compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
+  - docker-compose -f docker-compose-03-upgrade.test.yml logs || true
   - docker-compose -f docker-compose-03-upgrade.test.yml down -v
+  - if [ ${FAILED} ]; then
+  -   exit 1
+  - fi
   - cd ..
 
 security:
