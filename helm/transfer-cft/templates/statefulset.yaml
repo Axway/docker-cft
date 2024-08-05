@@ -11,7 +11,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ include "transfer-cft.fullname" . }}
+  name: {{ $fullName }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
     {{- include "transfer-cft.labels" . | nindent 4 }}
@@ -19,7 +19,7 @@ metadata:
     {{- toYaml .Values.podLabels | nindent 4 }}
     {{- end }}
 spec:
-  serviceName: {{ include "transfer-cft.fullname" . }}
+  serviceName: {{ $fullName }}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -306,7 +306,7 @@ spec:
           {{- toYaml .Values.resources | nindent 12 }}
 
         volumeMounts:
-        - name: {{ include "transfer-cft.fullname" . }}-volume
+        - name: {{ $fullName }}-volume
           mountPath: /opt/axway/data
         ## Secrets
       {{- if and (.Values.cft.licenseKey.secretName) (or .Values.cft.licenseKey.createSecretFile .Values.cft.licenseKey.existingSecretFile) }}
@@ -384,18 +384,18 @@ spec:
 
       volumes:
     {{- if and .Values.persistence.enabled }}
-      - name: {{ include "transfer-cft.fullname" . }}-volume
+      - name: {{ $fullName }}-volume
         persistentVolumeClaim:
           claimName: {{ .Values.persistence.cftData.existingClaim | default (printf "%s-claim" (include "transfer-cft.fullname" .))}}
     {{- else }}
-      - name: {{ include "transfer-cft.fullname" . }}-volume
+      - name: {{ $fullName }}-volume
         emptyDir: {}
     {{- end -}}
     {{- if and (.Values.cft.licenseKey.secretName) (or .Values.cft.licenseKey.createSecretFile .Values.cft.licenseKey.existingSecretFile) }}
       - name: {{ .Values.cft.licenseKey.secretName }}
         secret:
           {{ if .Values.cft.licenseKey.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.licenseKey.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.licenseKey.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.licenseKey.secretName }}
           {{ end }}
@@ -406,7 +406,7 @@ spec:
       - name: {{ .Values.cft.cg.caCert.secretName }}
         secret:
           {{ if .Values.cft.cg.caCert.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.cg.caCert.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.cg.caCert.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.cg.caCert.secretName }}
           {{ end }}
@@ -416,7 +416,7 @@ spec:
       - name: {{ .Values.cft.cg.sharedSecret.secretName }}
         secret:
           {{ if .Values.cft.cg.sharedSecret.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.cg.sharedSecret.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.cg.sharedSecret.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.cg.sharedSecret.secretName }}
           {{ end }}
@@ -427,7 +427,7 @@ spec:
       - name: {{ .Values.cft.copilotCert.secretName }}
         secret:
           {{ if .Values.cft.copilotCert.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.copilotCert.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.copilotCert.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.copilotCert.secretName }}
           {{ end }}
@@ -437,7 +437,7 @@ spec:
       - name: {{ .Values.cft.copilotCertPassword.secretName }}
         secret:
           {{ if .Values.cft.copilotCertPassword.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.copilotCertPassword.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.copilotCertPassword.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.copilotCertPassword.secretName }}
           {{ end }}
@@ -448,7 +448,7 @@ spec:
       - name: {{ .Values.cft.xfbadmPassword.secretName }}
         secret:
           {{ if .Values.cft.xfbadmPassword.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.xfbadmPassword.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.xfbadmPassword.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.xfbadmPassword.secretName }}
           {{ end }}
@@ -460,7 +460,7 @@ spec:
       - name: {{ .Values.cft.sentinel.caCert.secretName }}
         secret:
           {{ if .Values.cft.sentinel.caCert.createSecretFile }}
-          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.sentinel.caCert.secretName }}
+          secretName: {{ $fullName }}-{{ .Values.cft.sentinel.caCert.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.sentinel.caCert.secretName }}
           {{ end }}
@@ -472,7 +472,7 @@ spec:
       - name: {{ .Values.cft.initScript.fileName }}
         configMap:
           {{ if .Values.cft.initScript.createConfigMap }}
-          name: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.initScript.fileName }}
+          name: {{ $fullName }}-{{ .Values.cft.initScript.fileName }}
           {{ else }}
           name: {{ .Values.cft.initScript.fileName }}
           {{ end }}
@@ -484,7 +484,7 @@ spec:
       - name: {{ .Values.cft.startScript.fileName }}
         configMap:
           {{ if .Values.cft.startScript.createConfigMap }}
-          name: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.startScript.fileName }}
+          name: {{ $fullName }}-{{ .Values.cft.startScript.fileName }}
           {{ else }}
           name: {{ .Values.cft.startScript.fileName }}
           {{ end }}
