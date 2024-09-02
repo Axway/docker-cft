@@ -40,6 +40,7 @@ RUN unzip installkit.zip -d setup && \
     chmod +x *.run && \
     ./Transfer_CFT_*_linux-x86-64*.run  --mode unattended --installdir /opt/axway/cft --accept_general_conditions yes && \
     strip -d /opt/axway/cft/home/lib/* && \
+    /opt/axway/cft/home/bin/cftopensslcnf /opt/axway/cft/home && \
     cd && \
     rm -rf setup installkit.zip *.properties && \
     chown -R axway:0 /opt/axway && \
