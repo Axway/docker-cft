@@ -39,6 +39,8 @@ services:
       CFT_CG_POLICY:               ""
       CFT_CG_PERIODICITY:          ""
       CFT_CG_AGENT_NAME:           ""
+      #CFT_EXTERNAL_ADDR_HOST:      cft
+      #CFT_EXTERNAL_ADDR_PORT:      1767
       # Uncomment the next line to customize the CG CA certificate.
       #USER_CG_CA_CERT:             "/run/secrets/cg_ca_cert.pem"
       # Uncomment the next line to customize the CG shared secret.

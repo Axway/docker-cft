@@ -49,6 +49,8 @@ CFT_CG_SHARED_SECRET        |  \<string>   |  Shared secret needed to register w
 CFT_CG_POLICY               |  \<string>   |  Central Governance configuration policy to applied at Transfer CFT registration.
 CFT_CG_PERIODICITY          |  \<number>   |  Central Governance interval between notifications.
 CFT_CG_AGENT_NAME           |  \<string>   |  Central Governance agent name.
+CFT_EXTERNAL_ADDR_HOST      |  \<string>   |  External address (FQDN or IP address) used by Central Governance to connect to Transfer CFT UI server.
+CFT_EXTERNAL_ADDR_PORT      |  \<number>   |  External address port used by Central Governance to connect to Transfer CFT UI server.
 CFT_SENTINEL_ENABLE         |  "YES"/"NO"  |  Connectivity to Sentinel. This shouldn't be used if connectivity with Central Governance activated.
 CFT_SENTINEL_HOST           |  \<string>   |  Host address of the Sentinel server.
 CFT_SENTINEL_PORT           |  \<number>   |  Listening port of the Sentinel server.

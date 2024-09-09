@@ -177,6 +177,14 @@ customize_runtime()
         echo $(get_value $CFT_KEY) >$CFTKEY
     fi
 
+    # External Address
+    if [ -n "$CFT_EXTERNAL_ADDR_HOST" ]; then
+        CFTUTIL /m=14 uconfset id='cg.cft_external_address.host', value=$CFT_EXTERNAL_ADDR_HOST
+    fi
+    if [ -n "$CFT_EXTERNAL_ADDR_PORT" ]; then
+        CFTUTIL /m=14 uconfset id='cg.cft_external_address.port', value=$CFT_EXTERNAL_ADDR_PORT
+    fi
+
     # FQDN
     if [ -n "$CFT_LOAD_BALANCER_HOST" ]; then
         CFTUTIL /m=14 uconfset id='cft.full_hostname', value=$CFT_LOAD_BALANCER_HOST

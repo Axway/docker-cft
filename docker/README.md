@@ -40,6 +40,8 @@ CFT_CG_SHARED_SECRET       |  \<string>   |  Shared secret needed to register wi
 CFT_CG_POLICY              |  \<string>   |  Central Governance configuration policy to apply at Transfer CFT registration.
 CFT_CG_PERIODICITY         |  \<number>   |  Central Governance interval between notifications.
 CFT_CG_AGENT_NAME          |  \<string>   |  Central Governance agent name.
+CFT_EXTERNAL_ADDR_HOST     |  \<string>   |  External address (FQDN or IP address) used by Central Governance to connect to Transfer CFT UI server.
+CFT_EXTERNAL_ADDR_PORT     |  \<number>   |  External address port used by Central Governance to connect to Transfer CFT UI server.
 CFT_JVM                    |  \<number>   |  Amount of memory that the Secure Relay JVM can use.
 CFT_KEY                    |  \<string>   |  A command that returns the Transfer CFT license key.
 CFT_CFTDIRRUNTIME          |  \<string>   |  Location of the Transfer CFT runtime.
