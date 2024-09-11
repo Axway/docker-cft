@@ -178,11 +178,8 @@ customize_runtime()
     fi
 
     # External Address
-    if [ -n "$CFT_EXTERNAL_ADDR_HOST" ]; then
-        CFTUTIL /m=14 uconfset id='cg.cft_external_address.host', value=$CFT_EXTERNAL_ADDR_HOST
-    fi
-    if [ -n "$CFT_EXTERNAL_ADDR_PORT" ]; then
-        CFTUTIL /m=14 uconfset id='cg.cft_external_address.port', value=$CFT_EXTERNAL_ADDR_PORT
+    if [ -n "$CFT_COPILOT_CG_PORT_EXPOSED" ]; then
+        CFTUTIL /m=14 uconfset id='cg.copilot.exposed_port', value=$CFT_COPILOT_CG_PORT_EXPOSED
     fi
 
     # FQDN

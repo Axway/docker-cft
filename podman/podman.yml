@@ -80,6 +80,9 @@ spec:
           value: 1766
         - name: CFT_COPILOT_CG_PORT
           value: 1767
+        ## Uncomment the next two lines if necessary to set an external port to be used by Central Governance to connect to Transfer CFT UI server
+        #- name: CFT_COPILOT_CG_PORT_EXPOSED
+        #  value: 1767
         - name: CFT_RESTAPI_PORT
           value: 1768
         - name: CFT_CG_ENABLE
@@ -94,11 +97,6 @@ spec:
           value: ""
         - name: CFT_CG_AGENT_NAME
           value: ""
-        ## Uncomment the next four lines if necessary to set en external address to be used by Central Governance to connect to Transfer CFT UI server
-        #- name: CFT_EXTERNAL_ADDR_HOST
-        #  value: cft-pod
-        #- name: CFT_EXTERNAL_ADDR_PORT
-        #  value: 1767
         ## Uncomment the next two lines to customize the CG CA certificate. See also secrets sections.
         #- name: USER_CG_CA_CERT
         #  value: "/run/secrets/cg_ca_cert.pem"

@@ -32,6 +32,8 @@ services:
       CFT_COMS_PORT:               1765
       CFT_COPILOT_PORT:            1766
       CFT_COPILOT_CG_PORT:         1767
+      # Uncomment the next line to customize the external port used by Central Governance to connect to Transfer CFT UI server.
+      #CFT_COPILOT_CG_PORT_EXPOSED: 1767
       CFT_RESTAPI_PORT:            1768
       CFT_CG_ENABLE:               "NO"
       CFT_CG_HOST:                 fm
@@ -39,8 +41,6 @@ services:
       CFT_CG_POLICY:               ""
       CFT_CG_PERIODICITY:          ""
       CFT_CG_AGENT_NAME:           ""
-      #CFT_EXTERNAL_ADDR_HOST:      cft
-      #CFT_EXTERNAL_ADDR_PORT:      1767
       # Uncomment the next line to customize the CG CA certificate.
       #USER_CG_CA_CERT:             "/run/secrets/cg_ca_cert.pem"
       # Uncomment the next line to customize the CG shared secret.
