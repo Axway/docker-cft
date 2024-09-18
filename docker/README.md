@@ -30,10 +30,10 @@ CFT_PESIT_PORT             |  \<number>   |  Port number of the PeSIT protocol c
 CFT_PESITSSL_PORT          |  \<number>   |  Port number of the PeSIT protocol called PESITSSL.
 CFT_SFTP_PORT              |  \<number>   |  Port number of the SFTP protocol.
 CFT_COMS_PORT              |  \<number>   |  Port number of the synchronous communication media called COMS.
-CFT_COPILOT_PORT           |  \<number>   |  Port number for the Transfer CFT UI server that listens for incoming unsecured and secured (SSL) connections.
-CFT_COPILOT_CG_PORT        |  \<number>   |  Port number for the Transfer CFT UI server used to connect to Central Governance.
-CFT_COPILOT_CG_PORT_EXPOSED|  \<number>   |  External port used by Central Governance to connect to Transfer CFT UI server.
-CFT_RESTAPI_PORT           |  \<number>   |  Port number used to connect to the REST API server.
+CFT_COPILOT_PORT           |  \<number>   |  The Transfer CFT UI server port that listens for incoming SOAP web-service connections.
+CFT_COPILOT_CG_PORT        |  \<number>   |  The Transfer CFT UI server port that listens for incoming Central Governance connections.
+CFT_COPILOT_CG_PORT_EXPOSED|  \<number>   |  The Transfer CFT UI server port that listens for incoming Central Governance connections from outside the container. Set this parameter if the exposed port differs from CFT_COPILOT_CG_PORT.
+CFT_RESTAPI_PORT           |  \<number>   |  The Transfer CFT UI REST API server port.
 CFT_CG_ENABLE              |  "YES"/"NO"  |  Connectivity with Central Governance.
 CFT_CG_HOST                |  \<string>   |  Host address of the Central Governance server.
 CFT_CG_PORT                |  \<number>   |  Listening port of the Central Governance server.
