@@ -7,8 +7,6 @@
 # Building with:
 # docker compose -f compose-multinode.yml up --scale cft=2 -d
 
-version: "3.5"
-
 services:
   nginx:
     image: nginx:latest

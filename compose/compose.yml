@@ -7,8 +7,6 @@
 # Building with:
 # docker compose up -d
 
-version: "3.5"
-
 services:
   cft:
     # build: ../docker
