@@ -137,6 +137,13 @@ post_upgrade_failure()
     move_file ${fname}.bak $fname
 }
 
+clear_hosts_from_uconf()
+{
+    echo "Cleaning old hosts info from uconf files"
+    sed -i '/cft\.multi_node\.hostnames/,+1d' $backupdir/cft-uconf.cfg
+    sed -i '/cft\.multi_node\.hostnames/,+1d' $exportdir/cft-uconf.cfg
+}
+
 if [ "$CFT_EXPORTDIR" = "" ]; then
     echo "FATAL: CFT_EXPORTDIR not defined. Please specify the environment variable CFT_EXPORTDIR."
     exit 1
@@ -186,6 +193,7 @@ else
 fi
 
 pre_upgrade_audit
+clear_hosts_from_uconf
 
 # Import bases
 fail=0
