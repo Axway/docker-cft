@@ -443,9 +443,10 @@ check_fqdn
 
 parent_dir="$(dirname -- "$(realpath -- "$CFT_CFTDIRRUNTIME")")"
 lockfile=$parent_dir/runtimelock
-(
-flock 10
-echo "INF: $HOSTNAME got lock to create runtime"
+exec 7>$lockfile
+flock 7
+
+echo "INF: $HOSTNAME got lock"
 
 if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
     is_upgrade=true
@@ -453,6 +454,7 @@ if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
     # import databases...
     ./import_bases.sh
 else
+    echo "INF: creating the runtime"
     is_upgrade=false
     ./runtime_create.sh
     # user custom init script
@@ -469,28 +471,20 @@ else
         fi
     fi
 fi
-) 10<>$lockfile
-rm -f $lockfile
 
 # load profile
 cd $CFT_CFTDIRRUNTIME
 . ./profile
 
-# customize the runtime
-lockfile=$parent_dir/customlock
-(
-if flock -n 11 ; then
-    echo "INF: $HOSTNAME got the lock to customize runtime"
-    customize_runtime
+if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
+    if [ "$(cft status | grep -wc running)" = 0 ]; then
+        echo "INF: customize runtime"
+        customize_runtime
+    fi
 else
-    echo "INF: $HOSTNAME did NOT get the lock to customize runtime"
-    echo "INF: Wait for the customization to finish ($HOSTNAME)"
-    while [ -f $lockfile ]; do
-        sleep 1
-    done
+    echo "INF: customize runtime"
+    customize_runtime
 fi
-) 11<>$lockfile
-rm -f $lockfile
 
 # show info about cft
 CFTUTIL /m=14 about
@@ -555,6 +549,9 @@ fi
 if $is_upgrade ; then
     post_upgrade_success
 fi
+
+echo "INF: $HOSTNAME released lock"
+flock -u 7 # explicitly unlock
 
 # logs on stdout
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
