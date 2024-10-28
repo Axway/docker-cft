@@ -57,7 +57,13 @@ else
     # compare local and remote versions
     new_version=$(cat /opt/axway/cft/.transfer_cft.properties | grep -e CFT_Version | cut -d '=' -f 2)
     if [ "$?" -ne "0" ]; then
-        echo "ERROR: failed to retrieve version from /opt/axway/cft/.transfer_cft.properties"
+        echo "ERROR: failed to retrieve CFT_Version from /opt/axway/cft/.transfer_cft.properties"
+        exit 1
+    fi
+
+    new_update=$(cat /opt/axway/cft/.transfer_cft.properties | grep -e CFT_Update | cut -d '=' -f 2)
+    if [ "$?" -ne "0" ]; then
+        echo "ERROR: failed to retrieve CFT_Update from /opt/axway/cft/.transfer_cft.properties"
         exit 1
     fi
 
@@ -69,18 +75,28 @@ else
         echo "ERROR: curl GET /about failed, rc=$rc, output=$out"
         exit 1
     else
-        code=$(echo $out | cut -d '}' -f 2)
+        code=$(echo $out | sed s/{.*}//)
         if [ "$code" -ne "200" ]; then
             echo "ERROR: GET /about returned $code"
             exit 1
         fi
     fi
-    remote_version=$(echo $out | jq '.version' | cut -d '"' -f 2)
+
+    json=$(echo $out | grep -o '{.*}')
+    remote_version=$(echo $json | jq '.version' | cut -d '"' -f 2)
     if [ "$?" -ne "0" ]; then
-        echo "ERROR: failed to retrieve version from $out"
+        echo "ERROR: failed to retrieve version from $json"
         exit 1
     fi
 
+    remote_update=$(echo $json | jq '.level' | cut -d '"' -f 2)
+    if [ "$?" -ne "0" ]; then
+        echo "ERROR: failed to retrieve level from $json"
+        exit 1
+    fi
+
+    new_version=$new_version"."$new_update
+    remote_version=$remote_version"."$remote_update
     if [ "$new_version" = "$remote_version" ]; then
         echo "INFO: new version $new_version equals to $remote_version, skip export."
         exit 0
