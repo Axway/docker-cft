@@ -67,8 +67,10 @@ else
         exit 1
     fi
 
+    new_version=$new_version"."$new_update
+    echo "The new version is $new_version. Let's retrieve the current deployment version..."
+
     cmd="curl $curl_opt $auth -X GET $base_url/cft/api/v1/about"
-    echo \"$cmd\"
     out=$($cmd)
     rc=$?
     if [ "$rc" -ne "0" ]; then
@@ -95,13 +97,12 @@ else
         exit 1
     fi
 
-    new_version=$new_version"."$new_update
     remote_version=$remote_version"."$remote_update
     if [ "$new_version" = "$remote_version" ]; then
-        echo "INFO: new version $new_version equals to $remote_version, skip export."
+        echo "INFO: new version $new_version equals to deployment version $remote_version, skip export."
         exit 0
     else
-        echo "INFO: new version $new_version differs from $remote_version, proceed to export."
+        echo "INFO: new version $new_version differs from deployment version $remote_version, proceed to export."
     fi
 fi
 
