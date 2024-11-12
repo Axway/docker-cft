@@ -18,11 +18,21 @@ init_multinode()
 
 get_cft_version()
 {
-    vers=$(CFTUTIL about type=cft|sed -nr 's/.*version\s*=\s*([0-9]+.[0-9]+)/\1/p')
+    ret=$(CFTUTIL about type=cft|sed -nr 's/.*version\s*=\s*([0-9]+.[0-9]+)/\1/p')
     if [ $? -ne 0 ]; then
         return -1
     fi
-    echo $vers
+    echo $ret
+    return 0
+}
+
+get_cft_update()
+{
+    ret=$(CFTUTIL about type=cft|sed -nr 's/.*update\s*=\s*([0-9]+)/\1/p')
+    if [ $? -ne 0 ]; then
+        return -1
+    fi
+    echo $ret
     return 0
 }
 
@@ -33,11 +43,31 @@ get_cft_version_num()
         return -1
     fi
 
+    update=$(get_cft_update)
+    if [[ $? -ne 0 || "$update" = "" ]]; then
+        return -1
+    fi
+
     x=$(echo $vers | cut -d '.' -f 1)
     y=$(echo $vers | cut -d '.' -f 2)
     x=$(printf "%03d" $x)
     y=$(printf "%03d" $y)
-    echo $x$y
+    echo $x$y$update
+    return 0
+}
+
+get_cft_old_version_num()
+{
+    # Prior to 3.10.2412 the compute version was on 6 digit instead of 10.
+    # The update was not part of the version. For compatibilty we add 4 zero.
+    v=$1
+    n=${#v}
+    if [ $n -ne 10 ]; then
+        ret=$v"0000"
+    else
+        ret=$v
+    fi
+    echo $ret
     return 0
 }
 
@@ -133,10 +163,13 @@ downgrade=0
 backupdir=""
 vers=$(get_cft_version_num)
 oldvers=$(cat $exportdir/version)
+# Ensure oldvers is on 10 digits. Prior to 3.10.2412 oldvers was on 6 digit.
+oldvers=$(get_cft_old_version_num $oldvers)
 if [[ $? -ne 0 || "$vers" = "" ]]; then
     echo "WARNING: failed to retrieve CFT version"
 else
     echo "New version is $vers <> old version is $oldvers"
+
     if [ $vers -ge $oldvers ]; then
         echo "Upgrade policy"
     else

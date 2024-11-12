@@ -18,11 +18,21 @@ init_multinode()
 
 get_cft_version()
 {
-    vers=$(CFTUTIL about type=cft|sed -nr 's/.*version\s*=\s*([0-9]+.[0-9]+)/\1/p')
+    ret=$(CFTUTIL about type=cft|sed -nr 's/.*version\s*=\s*([0-9]+.[0-9]+)/\1/p')
     if [ $? -ne 0 ]; then
         return -1
     fi
-    echo $vers
+    echo $ret
+    return 0
+}
+
+get_cft_update()
+{
+    ret=$(CFTUTIL about type=cft|sed -nr 's/.*update\s*=\s*([0-9]+)/\1/p')
+    if [ $? -ne 0 ]; then
+        return -1
+    fi
+    echo $ret
     return 0
 }
 
@@ -33,11 +43,16 @@ get_cft_version_num()
         return -1
     fi
 
+    update=$(get_cft_update)
+    if [[ $? -ne 0 || "$update" = "" ]]; then
+        return -1
+    fi
+
     x=$(echo $vers | cut -d '.' -f 1)
     y=$(echo $vers | cut -d '.' -f 2)
     x=$(printf "%03d" $x)
     y=$(printf "%03d" $y)
-    echo $x$y
+    echo $x$y$update
     return 0
 }
 
