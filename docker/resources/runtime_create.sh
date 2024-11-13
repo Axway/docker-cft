@@ -13,8 +13,10 @@ get_value()
     if [ -f "$in" ]; then
         out=$(cat $in)
     else
-        out=$($in)
-        if [ $? -ne 0 ]; then
+        which $(echo $in | cut -d ' ' -f 1) >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            out=$($in)
+        else
             out=$in
         fi
     fi

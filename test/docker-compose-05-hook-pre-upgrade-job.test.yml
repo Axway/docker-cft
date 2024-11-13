@@ -1,0 +1,17 @@
+# DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
+#
+# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+#
+## Axway Transfer CFT 3.10 Docker-compose for automated test
+#
+
+services:
+    cft-pre-upgrade-job:
+        image: cft:$DOCKER_TAG
+        command: ["bash", "-c", "/opt/axway/export_bases_job.sh"]
+        environment:
+            ACCEPT_GENERAL_CONDITIONS:  "YES"
+            CFT_RESTAPI_HOST:           cft
+            CFT_RESTAPI_PORT:           1768
+            CFT_API_LOGIN:              "admin"
+            CFT_API_PASSWORD:           "alwaysCFT"

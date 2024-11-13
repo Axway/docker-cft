@@ -12,13 +12,16 @@ get_value()
     if [ -f "$in" ]; then
         out=$(cat $in)
     else
-        out=$($in) >/dev/null 2>&1
-        if [ $? -ne 0 ]; then
+        which $(echo $in | cut -d ' ' -f 1) >/dev/null 2>&1
+        if [ $? -eq 0 ]; then
+            out=$($in)
+        else
             out=$in
         fi
     fi
     echo $out
 }
+
 echo "INFO: server: $CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT"
 
 if [[ -z "${CFT_API_PASSWORD}" ]]; then
@@ -68,7 +71,7 @@ else
     fi
 
     new_version=$new_version"."$new_update
-    echo "The new version is $new_version. Let's retrieve the current deployment version..."
+    echo "INFO: The new version is $new_version. Let's retrieve the current deployment version..."
 
     cmd="curl $curl_opt $auth -X GET $base_url/cft/api/v1/about"
     out=$($cmd)
