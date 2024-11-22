@@ -1,6 +1,39 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## [3.10.2412] - 2024-12
+
+### Added
+- Tests for pre-upgrade job
+
+### Fixed
+- Better protection of critical operations during startup for clusters.
+- Avoid increasing number of hosts in configuration.
+- Removed obsolete version parameter from compose.
+- Version comparison during upgrade.
+
+### Changed
+- Copilot Certificate can now be in X509 format and not only PKCS12. Parameters for setting a Key with a optional password added.
+
+## [3.10.2409] - 2024-09-18
+
+### Added
+- Support FIPS
+- Parameter cg.copilot.export_port/CFT_COPILOT_CG_PORT_EXPOSED added
+
+### Changed
+- Dockerfile: Replace ubuntu 22.04 by 24.04
+
+## [3.10.2406] - 2024-06-07
+
+### Added
+- Documentation about upgrade for helm.
+
+## [3.10.2403] - 2024-03-27
+
+### Fixed
+- Make the multinode works using the compose-multinode.yml with scale option.
+
 ## [3.10.2309] - 2023-09-30
 
 ### Changed
