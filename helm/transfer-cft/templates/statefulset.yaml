@@ -226,6 +226,22 @@ spec:
             value: "/run/secrets/cft/{{ .copilotCertPassword.secretName }}/{{ .copilotCertPassword.existingSecretFile.keyRef }}"
           {{- end }}
           {{- end }}
+          {{- if and (.copilotKey.secretName) (or .copilotKey.createSecretFile .copilotKey.existingSecretFile) }}
+          - name: "USER_COPILOT_KEY"
+          {{- if .copilotKey.createSecretFile }}
+            value: "/run/secrets/cft/{{ .copilotKey.secretName }}/{{ .copilotKey.secretName }}"
+          {{- else }}
+            value: "/run/secrets/cft/{{ .copilotKey.secretName }}/{{ .copilotKey.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
+          {{- if and (.copilotKeyPassword.secretName) (or .copilotKeyPassword.createSecretFile .copilotKeyPassword.existingSecretFile) }}
+          - name: "USER_COPILOT_KEY_PASSWORD"
+          {{- if .copilotKeyPassword.createSecretFile }}
+            value: "/run/secrets/cft/{{ .copilotKeyPassword.secretName }}/{{ .copilotKeyPassword.secretName }}"
+          {{- else }}
+            value: "/run/secrets/cft/{{ .copilotKeyPassword.secretName }}/{{ .copilotKeyPassword.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
           {{- if .passportPersistencyCheckInterval }}
           - name: "CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL"
             value: {{ .passportPersistencyCheckInterval | quote }}
@@ -336,6 +352,16 @@ spec:
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.copilotCertPassword.secretName }}"
       {{- end }}
+      {{- if and (.Values.cft.copilotKey.secretName) (or .Values.cft.copilotKey.createSecretFile .Values.cft.copilotKey.existingSecretFile) }}
+        - name: {{ .Values.cft.copilotKey.secretName }}
+          readOnly: true
+          mountPath: "/run/secrets/cft/{{ .Values.cft.copilotKey.secretName }}"
+      {{- end }}
+      {{- if and (.Values.cft.copilotKeyPassword.secretName) (or .Values.cft.copilotKeyPassword.createSecretFile .Values.cft.copilotKeyPassword.existingSecretFile) }}
+        - name: {{ .Values.cft.copilotKeyPassword.secretName }}
+          readOnly: true
+          mountPath: "/run/secrets/cft/{{ .Values.cft.copilotKeyPassword.secretName }}"
+      {{- end }}
       {{- if .Values.cft.xfbadmPassword }}
       {{- if and (.Values.cft.xfbadmPassword.secretName) (or .Values.cft.xfbadmPassword.createSecretFile .Values.cft.xfbadmPassword.existingSecretFile) }}
         - name: {{ .Values.cft.xfbadmPassword.secretName }}
@@ -440,6 +466,26 @@ spec:
           secretName: {{ $fullName }}-{{ .Values.cft.copilotCertPassword.secretName }}
           {{ else }}
           secretName: {{ .Values.cft.copilotCertPassword.secretName }}
+          {{ end }}
+          defaultMode: 0777 
+    {{- end }}
+    {{- if and (.Values.cft.copilotKey.secretName) (or .Values.cft.copilotKey.createSecretFile .Values.cft.copilotKey.existingSecretFile) }}
+      - name: {{ .Values.cft.copilotKey.secretName }}
+        secret:
+          {{ if .Values.cft.copilotKey.createSecretFile }}
+          secretName: {{ $fullName }}-{{ .Values.cft.copilotKey.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.copilotKey.secretName }}
+          {{ end }}
+          defaultMode: 0777 
+    {{- end }}
+    {{- if and (.Values.cft.copilotKeyPassword.secretName) (or .Values.cft.copilotKeyPassword.createSecretFile .Values.cft.copilotKeyPassword.existingSecretFile) }}
+      - name: {{ .Values.cft.copilotKeyPassword.secretName }}
+        secret:
+          {{ if .Values.cft.copilotKeyPassword.createSecretFile }}
+          secretName: {{ $fullName }}-{{ .Values.cft.copilotKeyPassword.secretName }}
+          {{ else }}
+          secretName: {{ .Values.cft.copilotKeyPassword.secretName }}
           {{ end }}
           defaultMode: 0777 
     {{- end }}

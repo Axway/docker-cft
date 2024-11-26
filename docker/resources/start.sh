@@ -266,9 +266,26 @@ customize_runtime()
         if [ $rc != 0 ]; then
             echo "INF: Setting the customized Copilot certificate $USER_COPILOT_CERT..."
             CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertFile', value=$USER_COPILOT_CERT
-            CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertPassword', value=$(get_value $USER_COPILOT_CERT_PASSWORD)
+            if [[ -n "$USER_COPILOT_CERT_PASSWORD" ]]; then
+                CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertPassword', value=$(get_value $USER_COPILOT_CERT_PASSWORD)
+            fi
             file_checksum $USER_COPILOT_CERT >$sha1
             echo "INF: Customized Copilot certificate $USER_COPILOT_CERT set."
+        fi
+
+        # Checking for Copilot server key
+        if [[ -n "$USER_COPILOT_KEY" ]]; then
+            sha1=$customdir"/USER_COPILOT_KEY.sha1"
+            rc=`file_diff $sha1 $USER_COPILOT_KEY`
+            if [ $rc != 0 ]; then
+                echo "INF: Setting the customized Copilot Key $USER_COPILOT_KEY..."
+                CFTUTIL /m=14 uconfset id='copilot.ssl.SslKeyFile', value=$USER_COPILOT_KEY
+                if [[ -n "$USER_COPILOT_KEY_PASSWORD" ]]; then
+                    CFTUTIL /m=14 uconfset id='copilot.ssl.SslKeyPassword', value=$(get_value $USER_COPILOT_KEY_PASSWORD)
+                fi
+                file_checksum $USER_COPILOT_KEY >$sha1
+                echo "INF: Customized Copilot certificate $USER_COPILOT_KEY set."
+            fi
         fi
     fi
 

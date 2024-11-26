@@ -73,10 +73,12 @@ services:
       CFT_MULTINODE_NUMBER:        2
       CFT_MULTINODE_NODE_PER_HOST: 1
       CFT_JVM:                     1024
-      # Uncomment the next two lines to customize the Copilot server certificate. See also secrets sections.
-      # The certificate must refer to a PKCS12 certificate.
+      # Uncomment from the next four lines, the ones needed for your Copilot server certificate format.
+      # See also secrets sections.
       #USER_COPILOT_CERT:           "/run/secrets/copilot.p12"
       #USER_COPILOT_CERT_PASSWORD:  "cat /run/secrets/copilot_p12.pwd"
+      #USER_COPILOT_KEY:            "/run/secrets/copilot.key.p8"
+      #USER_COPILOT_KEY_PASSWORD:   "cat /run/secrets/copilot.key.pwd"
       # Uncomment the next two lines to create a XFBADM user. See also secrets sections.
       #USER_XFBADM_LOGIN:           "admin"
       #USER_XFBADM_PASSWORD:        "cat /run/secrets/xfbadm.pwd"
@@ -107,9 +109,11 @@ services:
     #- shared_secret
     # Uncomment this for customizing the Sentinel CA certificate.
     #- sentinel_ca_cert.pem
-    # Uncomment these 2 lines for customizing the Copilot server certificate.
+    # Uncomment from the next four lines, the ones needed for your Copilot server certificate format.
     #- copilot.p12
     #- copilot_p12.pwd
+    #- copilot.key.p8
+    #- copilot.key.pwd
     # Uncomment this for customizing the default XFBADM user.
     #- xfbadm.pwd
 
@@ -136,11 +140,15 @@ secrets:
   #sentinel_ca_cert.pem:
   #    file: ./conf/sentinel_ca_cert.pem
   # Files containig the Copilot server certificate and password.
-  # Uncomment the next four lines to customize the Copilot server certificate.
+  # Uncomment from the next eight lines, the ones needed for your Copilot server certificate format.
   #copilot.p12:
-  #    file: ./conf/copilot_p12
+  #    file: ./conf/copilot.p12
   #copilot_p12.pwd:
   #    file: ./conf/copilot_p12.pwd
+  #copilot.key.p8:
+  #    file: ./conf/copilot.key.p8
+  #copilot.key.pwd:
+  #    file: ./conf/copilot.key.pwd
   # File containing the XFBADM user's password.
   # Uncomment the next two lines to customize the default XFBADM user.
   #xfbadm.pwd:

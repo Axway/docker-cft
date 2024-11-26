@@ -66,8 +66,10 @@ USER_SCRIPT_INIT            |  \<string>   |  Path to a script executed when you
 USER_SCRIPT_START           |  \<string>   |  Path to a script that executes each time you start the container.
 USER_CG_CA_CERT             |  \<string>   |  Central Governance root CA certificate.
 USER_SENTINEL_CA_CERT       |  \<string>   |  Sentinel CA certificate.
-USER_COPILOT_CERT           |  \<string>   |  Copilot server certificate. It must refer to a PKCS12 certificate.
+USER_COPILOT_CERT           |  \<string>   |  Copilot server certificate (PKCS12 or PEM format).
 USER_COPILOT_CERT_PASSWORD  |  \<string>   |  A command that returns the Copilot server certificate password.
+USER_COPILOT_KEY            |  \<string>   |  Separate key file needed if USER_COPILOT_CERT is a PEM certificate.
+USER_COPILOT_KEY_PASSWORD   |  \<string>   |  A command that returns the password for the key in USER_COPILOT_KEY.
 USER_XFBADM_LOGIN           |  \<string>   |  Xfbadm user login to create when creating the container. If both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
 USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM user's password.
 

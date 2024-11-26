@@ -13,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - Version comparison during upgrade.
 
 ### Changed
-- Copilot Certificate can now be in X509 format and not only PKCS12. Parameters for setting a Key with a optional password added.
+- Copilot Certificate can now be in PEM format and not only PKCS12. Parameters for setting a key with an optional password were added.
 
 ## [3.10.2409] - 2024-09-18
 

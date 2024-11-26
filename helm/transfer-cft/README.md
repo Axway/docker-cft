@@ -111,6 +111,14 @@ Parameter | Description | Default
 `cft.copilotCertPassword.createSecretFile` | Create the Copilot certificate password secret at installation using a local file | `false`
 `cft.copilotCertPassword.localFile` | Relative path to the Copilot certificate password (you can use conf directory in the helm chart) | `{}` (eg. `conf/copilot.p12.pwd`)
 `cft.copilotCertPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
+`cft.copilotKey.secretName` | Name of the secret used to store the Copilot Certificate Key (secretname is mandatory) | `copilot-Key`
+`cft.copilotKey.createSecretFile` | Create the Copilot Certificate Key secret at installation using a local file | `false`
+`cft.copilotKey.localFile` | Relative path to the Copilot Certificate Key (you can use conf directory in the helm chart) | `{}` (eg. `conf/copilot.key.p8`)
+`cft.copilotKey.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
+`cft.copilotKeyPassword.secretName` | Name of the secret used to store the Copilot Certificate Key password (secretname is mandatory) | `copilot-Key-password`
+`cft.copilotKeyPassword.createSecretFile` | Create the Copilot Certificate Key password secret at installation using a local file | `false`
+`cft.copilotKeyPassword.localFile` | Relative path to the Copilot Certificate Key password (you can use conf directory in the helm chart) | `{}` (eg. `conf/copilot.key.p8.pwd`)
+`cft.copilotKeyPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.sentinel.enabled` | Connectivity to Sentinel. This shouldn't be used if connectivity with Central Governance activated. | `false`
 `cft.sentinel.host` | Host address of the Sentinel server. | `sentinel`
 `cft.sentinel.port` | Listening port of the Sentinel server. | `1305`

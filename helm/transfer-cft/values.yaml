@@ -216,8 +216,8 @@ cft:
   # - localFile ==>> where is located the local file - use relative path
   # - existingSecretFile ==>> used only if the secret already exist
 
-  ## The next two values are used to  customize the Copilot server certificate
-  ## The certificate must refer to a PKCS12 certificate.
+  ## The next four values are used to customize the Copilot server certificate
+  ## The certificate may be in PKCS12 or PEM format, use these values as needed for the format
   copilotCert:
     secretName: copilot-cert
     createSecretFile: false
@@ -228,6 +228,18 @@ cft:
     secretName: copilot-cert-password
     createSecretFile: false
     # localFile: {} # conf/copilot.p12.pwd
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
+  copilotKey:
+    secretName: copilot-key
+    createSecretFile: false
+    # localFile: {} # conf/copilot.key.p8
+    # existingSecretFile:
+    #   keyRef: {} # key inside the secret
+  copilotKeyPassword:
+    secretName: copilot-key-password
+    createSecretFile: false
+    # localFile: {} # conf/conf/copilot.key.p8.pwd
     # existingSecretFile:
     #   keyRef: {} # key inside the secret
 
