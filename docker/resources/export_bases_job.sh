@@ -5,34 +5,19 @@
 # Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
 #
 
-get_value()
-{
-    in=$*
+source ./utils.sh
 
-    if [ -f "$in" ]; then
-        out=$(cat $in)
-    else
-        which $(echo $in | cut -d ' ' -f 1) >/dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            out=$($in)
-        else
-            out=$in
-        fi
-    fi
-    echo $out
-}
-
-echo "INFO: server: $CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT"
+log_info "server: $CFT_RESTAPI_HOST:$CFT_RESTAPI_PORT"
 
 if [[ -z "${CFT_API_PASSWORD}" ]]; then
     # TOKEN mode
-    echo "INFO: credentials (token)"
+    log_info "credentials (token)"
     token=$(get_value $CFT_API_TOKEN)
     echo Authorization: Bearer $token > /tmp/auth.txt
     auth='-H @/tmp/auth.txt'
 else
     # LOGIN/PASSWORD mode
-    echo "INFO: credentials (login/password)"
+    log_info "credentials (login/password)"
     pass=$(get_value $CFT_API_PASSWORD)
     auth="-u $CFT_API_LOGIN:$pass"
 fi
@@ -45,44 +30,44 @@ cmd="curl $curl_opt $base_url/healthz"
 out=$($cmd)
 rc=$?
 if [ "$rc" -ne "0" ]; then
-    echo "ERROR: curl GET /healthz failed, rc=$rc, output=$out"
+    log_error "curl GET /healthz failed, rc=$rc, output=$out"
     exit 1
 elif [ "$out" != "200" ]; then
-    echo "ERROR: GET /healthz returned $out"
+    log_error "GET /healthz returned $out"
     exit 1
 else
-    echo "INFO: server is up"
+    log_info "server is up"
 fi
 
 if [[ -n $CFT_CHECKVERSION && "$CFT_CHECKVERSION" = "false" ]]; then
-    echo "INFO: new and remote versions comparison skipped."
+    log_info "new and remote versions comparison skipped."
 else
     # compare local and remote versions
     new_version=$(cat /opt/axway/cft/.transfer_cft.properties | grep -e CFT_Version | cut -d '=' -f 2)
     if [ "$?" -ne "0" ]; then
-        echo "ERROR: failed to retrieve CFT_Version from /opt/axway/cft/.transfer_cft.properties"
+        log_error "failed to retrieve CFT_Version from /opt/axway/cft/.transfer_cft.properties"
         exit 1
     fi
 
     new_update=$(cat /opt/axway/cft/.transfer_cft.properties | grep -e CFT_Update | cut -d '=' -f 2)
     if [ "$?" -ne "0" ]; then
-        echo "ERROR: failed to retrieve CFT_Update from /opt/axway/cft/.transfer_cft.properties"
+        log_error "failed to retrieve CFT_Update from /opt/axway/cft/.transfer_cft.properties"
         exit 1
     fi
 
     new_version=$new_version"."$new_update
-    echo "INFO: The new version is $new_version. Let's retrieve the current deployment version..."
+    log_info "The new version is $new_version. Let's retrieve the current deployment version..."
 
     cmd="curl $curl_opt $auth -X GET $base_url/cft/api/v1/about"
     out=$($cmd)
     rc=$?
     if [ "$rc" -ne "0" ]; then
-        echo "ERROR: curl GET /about failed, rc=$rc, output=$out"
+        log_error "curl GET /about failed, rc=$rc, output=$out"
         exit 1
     else
         code=$(echo $out | sed s/{.*}//)
         if [ "$code" -ne "200" ]; then
-            echo "ERROR: GET /about returned $code"
+            log_error "GET /about returned $code"
             exit 1
         fi
     fi
@@ -90,22 +75,22 @@ else
     json=$(echo $out | grep -o '{.*}')
     remote_version=$(echo $json | jq '.version' | cut -d '"' -f 2)
     if [ "$?" -ne "0" ]; then
-        echo "ERROR: failed to retrieve version from $json"
+        log_error "failed to retrieve version from $json"
         exit 1
     fi
 
     remote_update=$(echo $json | jq '.level' | cut -d '"' -f 2)
     if [ "$?" -ne "0" ]; then
-        echo "ERROR: failed to retrieve level from $json"
+        log_error "failed to retrieve level from $json"
         exit 1
     fi
 
     remote_version=$remote_version"."$remote_update
     if [ "$new_version" = "$remote_version" ]; then
-        echo "INFO: new version $new_version equals to deployment version $remote_version, skip export."
+        log_info "new version $new_version equals to deployment version $remote_version, skip export."
         exit 0
     else
-        echo "INFO: new version $new_version differs from deployment version $remote_version, proceed to export."
+        log_info "new version $new_version differs from deployment version $remote_version, proceed to export."
     fi
 fi
 
@@ -114,13 +99,13 @@ cmd="curl $curl_opt $auth -X PUT $base_url/cft/api/v1/cft/container/export"
 out=$($cmd)
 rc=$?
 if [ "$rc" -ne "0" ]; then
-    echo "ERROR: curl PUT /cft/container/export failed, rc=$rc, output=$out"
+    log_error "curl PUT /cft/container/export failed, rc=$rc, output=$out"
     exit 1
 elif [ "$out" != "200" ]; then
-    echo "ERROR: PUT /cft/container/export returned $out"
+    log_error "PUT /cft/container/export returned $out"
     exit 1
 else
-    echo "INFO: databases are successfully exported"
+    log_info "databases are successfully exported"
 fi
 
 exit 0

@@ -8,6 +8,8 @@ set -Eeo pipefail
 trap 'rm $lockfile' SIGTERM SIGHUP SIGINT EXIT
 trap 'finish' SIGTERM SIGHUP SIGINT EXIT
 
+source ./utils.sh
+
 file_diff()
 {
     sha1=$1
@@ -29,23 +31,6 @@ file_checksum()
 {
     fname=$1
     sha1sum $fname | cut -d ' ' -f 1
-}
-
-get_value()
-{
-    in=$*
-
-    if [ -f "$in" ]; then
-        out=$(cat $in)
-    else
-        which $(echo $in | cut -d ' ' -f 1) >/dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            out=$($in)
-        else
-            out=$in
-        fi
-    fi
-    echo $out
 }
 
 get_service_value()
@@ -99,19 +84,19 @@ check_fqdn()
 {
     host=$(get_service_host)
     if [ -n "$CFT_FQDN" ]; then
-        echo "CFT_FQDN is $CFT_FQDN"
+        log_info "CFT_FQDN is $CFT_FQDN"
     elif [ -n "$host" ]; then
         export CFT_FQDN=$host
-        echo "CFT_FQDN is $CFT_FQDN"
+        log_info "CFT_FQDN is $CFT_FQDN"
     else
         host=$(hostname)
         export CFT_FQDN=$host
-        echo "CFT_FQDN is $CFT_FQDN"
+        log_info "CFT_FQDN is $CFT_FQDN"
     fi
 
     case $CFT_FQDN in
          *_*)
-              echo "ERR: CFT_FQDN must not contains a '_'"
+              log_error "CFT_FQDN must not contains a '_'"
               exit 1
          ;;
     esac
@@ -121,9 +106,9 @@ generate_certificate()
 {
     cn=$CFT_INSTANCE_ID
     altname=$CFT_FQDN
-    echo "INFO: Generating default certificate with CN=$cn, subjectAltName=$altname"
+    log_info "Generating default certificate with CN=$cn, subjectAltName=$altname"
     if [ $(expr length $cn) -gt 64 ]; then
-        echo "ERR: CN is too long, cannot generate certificate."
+        log_error "CN is too long, cannot generate certificate."
         exit 1
     fi
 
@@ -172,7 +157,7 @@ unset_need_restart()
 
 customize_runtime()
 {
-    echo "INF: Customizing the runtime..."
+    log_info "Customizing the runtime..."
 
     # License key update
     if [ -n "$CFT_KEY" ]; then
@@ -211,66 +196,66 @@ customize_runtime()
         fi
 
         if [[ -n "$CFT_CG_AGENT_NAME" ]]; then
-            echo "INF: Setting the customized Agent Name $CFT_CG_AGENT_NAME..."
+            log_info "Setting the customized Agent Name $CFT_CG_AGENT_NAME..."
             CFTUTIL /m=14 uconfset id='cg.metadata.agent.value', value=$CFT_CG_AGENT_NAME
         fi
 
         # CG CA certificate
         if [[ -n "$USER_CG_CA_CERT"  && ! -e "$USER_CG_CA_CERT"  ]]; then
-            echo "ERR: CG CA certificate $USER_CG_CA_CERT not found."
+            log_error "CG CA certificate $USER_CG_CA_CERT not found."
             exit 1
         elif [[ -n "$USER_CG_CA_CERT" ]]; then
             sha1=$customdir"/USER_CG_CA_CERT.sha1"
             rc=`file_diff $sha1 $USER_CG_CA_CERT`
             if [ $rc != 0 ]; then
-                echo "INF: Setting the customized CG CA certificate $USER_CG_CA_CERT..."
+                log_info "Setting the customized CG CA certificate $USER_CG_CA_CERT..."
                 PKIUTIL /m=14 pkicer id='CG_CA', rootcid='CG_CA', itype='root', iname=$USER_CG_CA_CERT, pkipassw='CFT', mode='replace'
                 if [ $? != 0 ]; then
-                    echo "ERR: Failed to insert the CG CA certificate $USER_CG_CA_CERT"
+                    log_error "Failed to insert the CG CA certificate $USER_CG_CA_CERT"
                     exit 1
                 fi
                 CFTUTIL /m=14 uconfset id='cg.ca_cert_id', value='CG_CA'
                 file_checksum $USER_CG_CA_CERT >$sha1
-                echo "INF: Customized CG CA certificate $USER_CG_CA_CERT set."
+                log_info "Customized CG CA certificate $USER_CG_CA_CERT set."
             fi
         fi
     fi
 
     # Sentinel CA certificate
     if [[ -n "$USER_SENTINEL_CA_CERT" && ! -e "$USER_SENTINEL_CA_CERT" ]]; then
-        echo "ERR: Sentinel CA certificate $USER_SENTINEL_CA_CERT not found."
+        log_error "Sentinel CA certificate $USER_SENTINEL_CA_CERT not found."
         exit 1
     elif [[ -n "$USER_SENTINEL_CA_CERT" ]]; then
         sha1=$customdir"/USER_SENTINEL_CA_CERT.sha1"
         rc=`file_diff $sha1 $USER_SENTINEL_CA_CERT`
         if [ $rc != 0 ]; then
-            echo "INF: Setting the customized Sentinel CA certificate $USER_SENTINEL_CA_CERT..."
+            log_info "Setting the customized Sentinel CA certificate $USER_SENTINEL_CA_CERT..."
             PKIUTIL /m=14 pkicer id='SENTINEL_CA', rootcid='SENTINEL_CA', itype='root', iname=$USER_SENTINEL_CA_CERT, pkipassw='CFT', mode='replace'
             if [ $? != 0 ]; then
-                echo "ERR/ Failed to insert the Sentinel CA certificate $USER_SENTINEL_CA_CERT"
+                log_error "Failed to insert the Sentinel CA certificate $USER_SENTINEL_CA_CERT"
                 exit 1
             fi
             CFTUTIL /m=14 uconfset id='sentinel.xfb.ca_cert_id', value='SENTINEL_CA'
             file_checksum $USER_SENTINEL_CA_CERT >$sha1
-            echo "INF: Customized Sentinel CA certificate $USER_SENTINEL_CA_CERT set."
+            log_info "Customized Sentinel CA certificate $USER_SENTINEL_CA_CERT set."
         fi
     fi
 
     # Copilot server certificate
     if [[ -n "$USER_COPILOT_CERT" && ! -e "$USER_COPILOT_CERT" ]]; then
-        echo "ERR: Copilot server certificate $USER_COPILOT_CERT not found."
+        log_error "Copilot server certificate $USER_COPILOT_CERT not found."
         exit 1
     elif [[ -n "$USER_COPILOT_CERT" ]]; then
         sha1=$customdir"/USER_COPILOT_CERT.sha1"
         rc=`file_diff $sha1 $USER_COPILOT_CERT`
         if [ $rc != 0 ]; then
-            echo "INF: Setting the customized Copilot certificate $USER_COPILOT_CERT..."
+            log_info "Setting the customized Copilot certificate $USER_COPILOT_CERT..."
             CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertFile', value=$USER_COPILOT_CERT
             if [[ -n "$USER_COPILOT_CERT_PASSWORD" ]]; then
                 CFTUTIL /m=14 uconfset id='copilot.ssl.SslCertPassword', value=$(get_value $USER_COPILOT_CERT_PASSWORD)
             fi
             file_checksum $USER_COPILOT_CERT >$sha1
-            echo "INF: Customized Copilot certificate $USER_COPILOT_CERT set."
+            log_info "Customized Copilot certificate $USER_COPILOT_CERT set."
         fi
 
         # Checking for Copilot server key
@@ -296,14 +281,14 @@ customize_runtime()
 
     # User custom start-up script
     if [[ -n "$USER_SCRIPT_START" && ! -e "$USER_SCRIPT_START" ]]; then
-        echo "ERR: Custom start-up script $USER_SCRIPT_START not found."
+        log_error "Custom start-up script $USER_SCRIPT_START not found."
         exit 1
     elif [[ -n "$USER_SCRIPT_START" ]]; then
         $USER_SCRIPT_START
         if [[ $? = 0 ]]; then
-            echo "INF: Custom start-up script $USER_SCRIPT_START returns 0"
+            log_info "Custom start-up script $USER_SCRIPT_START returns 0"
         else
-            echo "ERR: Custom start-up script $USER_SCRIPT_START returns $?"
+            log_error "Custom start-up script $USER_SCRIPT_START returns $?"
             exit 1
         fi
     fi
@@ -322,7 +307,7 @@ customize_runtime()
             generate_certificate
 
             if [ "$CFT_CG_ENABLE" = "YES" ]; then
-                echo "INF: Certificates set as temporary, waiting for registration to be completed"
+                log_info "Certificates set as temporary, waiting for registration to be completed"
                 set_temporary_rest_api_cert 1
             fi
         fi
@@ -330,7 +315,7 @@ customize_runtime()
         CFTUTIL /m=14 uconfset id='copilot.restapi.enable', value='NO'
     fi
 
-    echo "INF: runtime customized."
+    log_info "runtime customized."
 }
 
 # Propagating signals
@@ -347,7 +332,7 @@ stop()
         fi
         copstop -f
         if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
-            echo "INF: Remove HOST $HOSTNAME"
+            log_info "Remove HOST $HOSTNAME"
             cft remove_host -hostname $HOSTNAME
         fi
     fi
@@ -371,10 +356,10 @@ healthz()
     out=$($cmd)
     rc=$?
     if [ "$rc" -ne "0" ]; then
-        echo "ERR: curl GET /healthz failed, rc=$rc, output=$out"
+        log_error "curl GET /healthz failed, rc=$rc, output=$out"
         return -1
     elif [ "$out" != "200" ]; then
-        echo "ERR: GET /healthz returned $out"
+        log_error "GET /healthz returned $out"
         return -1
     fi
     return 0
@@ -410,7 +395,7 @@ switch_cert()
         registration_id=$(cftuconf cg.registration_id)
         vers=$(get_cft_version_num)
         if [ "$registration_id" != "-1" ]; then
-            echo "INF: Registration completed, switching to certificate received during registration"
+            log_info "Registration completed, switching to certificate received during registration"
 
             CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertFile'
             CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertPassword'
@@ -427,9 +412,9 @@ switch_cert()
 delete_file()
 {
     fname=$1
-    echo "deleting $fname..."
+    log_info "deleting $fname..."
     rm -f ${fname}
-    echo "$fname deleted"
+    log_info "$fname deleted"
 }
 
 post_upgrade_success()
@@ -445,9 +430,9 @@ post_upgrade_success()
 # Testing EULA
 ACCEPT_GENERAL_CONDITIONS=`echo $ACCEPT_GENERAL_CONDITIONS | tr '[a-z]' '[A-Z]'`
 if [[ -n "$ACCEPT_GENERAL_CONDITIONS" && "$ACCEPT_GENERAL_CONDITIONS" = "YES" ]]; then
-    echo "General Terms and Conditions accepted."
+    log_info "General Terms and Conditions accepted."
 else
-    echo "General Terms and Conditions not accepted. EXIT"
+    log_fatal "General Terms and Conditions not accepted. EXIT"
     exit 1
 fi
 
@@ -463,27 +448,27 @@ lockfile=$parent_dir/runtimelock
 exec 7>$lockfile
 flock 7
 
-echo "INF: $HOSTNAME got lock"
+log_info "$HOSTNAME got lock"
 
 if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
     is_upgrade=true
-    echo "INF: runtime exists"
+    log_info "runtime exists"
     # import databases...
     ./import_bases.sh
 else
-    echo "INF: creating the runtime"
+    log_info "Creating the runtime"
     is_upgrade=false
     ./runtime_create.sh
     # user custom init script
     if [[ -n "$USER_SCRIPT_INIT" && ! -e "$USER_SCRIPT_INIT" ]]; then
-        echo "ERR: Custom initialization script $USER_SCRIPT_INIT not found."
+        log_error "Custom initialization script $USER_SCRIPT_INIT not found."
         exit 1
     elif [[ -n "$USER_SCRIPT_INIT" ]]; then
         $USER_SCRIPT_INIT
         if [[ $? = 0 ]]; then
-            echo "INF: Custom initialization script $USER_SCRIPT_INIT returns 0"
+            log_info "Custom initialization script $USER_SCRIPT_INIT returns 0"
         else
-            echo "ERR: Custom initialization script $USER_SCRIPT_INIT returns $?"
+            log_error "Custom initialization script $USER_SCRIPT_INIT returns $?"
             exit 1
         fi
     fi
@@ -495,11 +480,11 @@ cd $CFT_CFTDIRRUNTIME
 
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
     if [ "$(cft status | grep -wc running)" = 0 ]; then
-        echo "INF: customize runtime"
+        log_info "customize runtime"
         customize_runtime
     fi
 else
-    echo "INF: customize runtime"
+    log_info "customize runtime"
     customize_runtime
 fi
 
@@ -510,7 +495,7 @@ if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
     case $(cftuconf cft.multi_node.hostnames) in
     *${HOSTNAME}*) 
         # hostname could be already in the list after an upgrade
-        echo "INF: Remove host $HOSTNAME"
+        log_info "Remove host $HOSTNAME"
         cft remove_host -hostname $HOSTNAME
         ;;
     esac
@@ -522,7 +507,7 @@ if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
         # Non-orchestrated, use the user's customized value.
         address=$CFT_FQDN
     fi
-    echo "INF: Add host hostname=$HOSTNAME, address=$address"
+    log_info "Add host hostname=$HOSTNAME, address=$address"
     cft add_host -hostname $HOSTNAME -host $address
 fi
 
@@ -530,9 +515,9 @@ fi
 CFTUTIL /m=14 LISTUCONF scope=user
 
 if cft start ; then
-    echo "INF: cft start success"
+    log_info "cft start success"
 else
-    echo "ERR: cft start returns:"$?
+    log_error "cft start returns:"$?
     if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
         cat run/cft[0-9][0-9].out
         cat log/cftlog[0-9][0-9]
@@ -545,9 +530,9 @@ fi
 
 # start:
 if copstart ; then
-    echo "INF: copstart success"
+    log_info "copstart success"
 else
-    echo "ERR: copstart returns:"$?
+    log_error "copstart returns:"$?
     if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
         cat run/copsmng.$HOSTNAME.out
         cat run/copui.$HOSTNAME.trc
@@ -567,7 +552,7 @@ if $is_upgrade ; then
     post_upgrade_success
 fi
 
-echo "INF: $HOSTNAME released lock"
+log_info "$HOSTNAME released lock"
 flock -u 7 # explicitly unlock
 
 # logs on stdout
@@ -578,7 +563,7 @@ else
 fi
 
 # run loop
-echo "INF: waiting copilot..."
+log_info "waiting copilot..."
 healthz
 while [ $? -eq 0 ]; do
     sleep ${CFT_STATUS_SLEEP:-10}

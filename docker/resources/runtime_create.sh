@@ -6,24 +6,9 @@
 #
 set -Eeo pipefail
 
-get_value()
-{
-    in=$*
+source ./utils.sh
 
-    if [ -f "$in" ]; then
-        out=$(cat $in)
-    else
-        which $(echo $in | cut -d ' ' -f 1) >/dev/null 2>&1
-        if [ $? -eq 0 ]; then
-            out=$($in)
-        else
-            out=$in
-        fi
-    fi
-    echo $out
-}
-
-echo "Creating runtime..."
+log_info "Creating runtime..."
 shopt -s nocasematch
 
 # CREATE RUNTIME DIRECTORY
@@ -219,26 +204,25 @@ fi
 
 # XFBADM
 if [ -n "$USER_XFBADM_LOGIN" ] && [ -n "$USER_XFBADM_PASSWORD" ]; then
-    echo "Creating user $USER_XFBADM_LOGIN..."
+    log_info "Creating user $USER_XFBADM_LOGIN..."
     xfbadmusr add -l $(get_value $USER_XFBADM_LOGIN) -p $(get_value $USER_XFBADM_PASSWORD) -u AUTO -g AUTO
-    echo "User $USER_XFBADM_LOGIN created."
+    log_info "User $USER_XFBADM_LOGIN created."
 else
-    echo "------------------------"
-    echo "WARNING: Password required to create an user. Not creating one!"
+    log_warning "Password required to create an user. No user will be created!"
 fi
 
 #Enable nodes
 if [ $isMulti = 1 ]; then
-    echo "CFT Multinode"
-    echo "Enable nodes"
+    log_info "multinode enabled"
+    log_info "Enabling nodes..."
     for ((i=0;  i<$CFT_MULTINODE_NUMBER; i++ ))
     do
+        log_info "cft enable_node -n $i"
         cft enable_node -n $i
-        echo "cft enable_node -n $i"
     done
 fi
 
 cd
-echo "runtime created!"
+log_info "runtime created!"
 
 shopt -u nocasematch
