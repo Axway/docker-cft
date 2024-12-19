@@ -9,7 +9,7 @@ If needed, see [Get started with Docker](https://docs.docker.com/get-started/) f
 
 ### Prerequisites
 
-- Docker v20.10.13 or higher
+- Docker Engine 23.0 or higher
 - Docker Compose v2 or higher
 
 ## How to use the Transfer CFT compose YAML files

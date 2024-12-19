@@ -6,7 +6,7 @@ The delivered chart bootstraps a Transfer CFT deployment on a [Kubernetes](http:
 
 ## Prerequisites
 
-  - Kubernetes 1.14+ or Red Hat Openshift 3+
+  - Kubernetes 1.28 and higher or Red Hat OpenShift 4.10 and higher
   - Helm 3+
 
 ## Installing the chart
