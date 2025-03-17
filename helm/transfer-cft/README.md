@@ -31,7 +31,7 @@ $ helm upgrade --install transfer-cft ./transfer-cft
 
 The parameter `image.tag` in values.yaml should reflect the target version.
 
-> **Tip**: When the chart is deployed using helm, a pre-upgrade job is created (that uses parameters `cft.apiLogin` and `cft.apiPassword.secretName`). This job is automatically called when using `helm upgrade` and will do all the needed operations before the new version of Transfer CFT is deployed.
+> **Tip**: When the chart is deployed using Helm, a pre-upgrade job is created (that uses parameters `cft.apiLogin`/`cft.apiPassword.secretName` or `cft.apiToken.secretName`). This job is automatically called when using `helm upgrade` and will do all the needed operations before the new version of Transfer CFT is deployed.
 
 ## Uninstalling the chart
 
@@ -134,15 +134,15 @@ Parameter | Description | Default
 `cft.xfbadmPassword.createSecretFile` | Create the xfbadm user password secret at installation using a local file | `false`
 `cft.xfbadmPassword.localFile` | Relative path to the xfbadm user password (you can use conf directory in the helm chart) | `{}` (eg. `conf/xfbadm.pwd`)
 `cft.xfbadmPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
-`cft.apiToken.secretName` | Name of the secret used to store the API token (secretname is mandatory) | | `api-token`
-`cft.apiToken.createSecretFile` | Create the API token secret at installation using a local file | `false`
-`cft.apiToken.localFile` | Relative path to the file API token (you can use conf directory in the helm chart) | `{}` (eg. `conf/token.pwd`)
-`cft.apiToken.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
-`cft.apiLogin` | Login of a REST API user. This login is used to invoke a Transfer CFT REST API during the pre-upgrade step. When using an identity provider, this should be a valid user for the identity provider. | `admin`
+`cft.apiLogin` | `cft.apiLogin`/`cft.apiPassword` can be replaced by `cft.apiToken`. Login of a REST API user. This login is used to invoke a Transfer CFT REST API during the pre-upgrade step. When using an identity provider, this should be a valid user for the identity provider. | `admin`
 `cft.apiPassword.secretName` | Name of the secret used to store the API user password (secretname is mandatory) | `api-password`
 `cft.apiPassword.createSecretFile` | Create the API user password secret at installation using a local file | `false`
 `cft.apiPassword.localFile` | Relative path to the file API user password (you can use conf directory in the helm chart) | `{}` (eg. `conf/password.pwd`)
 `cft.apiPassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
+`cft.apiToken.secretName` | `cft.apiToken` can be used instead of `cft.apiLogin`/`cft.apiPassword`. Name of the secret used to store the API token (secretname is mandatory) | | `api-token`
+`cft.apiToken.createSecretFile` | Create the API token secret at installation using a local file | `false`
+`cft.apiToken.localFile` | Relative path to the file API token (you can use conf directory in the helm chart) | `{}` (eg. `conf/token.pwd`)
+`cft.apiToken.existingSecretFile.keyRef` | Name of the reference key inside an existing secret | `{}`
 `cft.initScript.fileName` | Name of a script to be executed at container initialization (filename is mandatory) | `init-sh`
 `cft.initScript.createConfigMap` | Create a configmap for the initialization script | `false`
 `cft.initScript.localFile` | Relative path to the initialization script (you can use conf directory in the helm chart) | `{}` (eg. `conf/init.sh`)

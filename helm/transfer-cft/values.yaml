@@ -254,16 +254,7 @@ cft:
     #   keyRef: {} # key inside the secret
 
   ## The next two values are used to specify the REST API credentials
-  ## required when upgrading the Transfer CFT service.
-  apiToken:
-    secretName: "token"
-    createSecretFile: false
-    # localFile: {} # conf/token.pwd
-    # existingSecretFile:
-    #   keyRef: {} # token inside the secret
-
-  ## The next two values are used to specify the REST API credentials
-  ## required when upgrading the Transfer CFT service.
+  ## required when upgrading the Transfer CFT service. (can be replaced by apiToken)
   ## When using an identity provider, this should be a valid user for the
   ## identity provider.
   apiLogin: "admin"
@@ -273,6 +264,15 @@ cft:
     # localFile: {} # conf/password.pwd
     # existingSecretFile:
     #   keyRef: {} # key inside the secret
+
+  ## The next value can be used instead of apiLogin/apiPassword to specify
+  ## the REST API credentials required when upgrading the Transfer CFT service.
+  apiToken:
+    secretName: "token"
+    createSecretFile: false
+    # localFile: {} # conf/token.pwd
+    # existingSecretFile:
+    #   keyRef: {} # token inside the secret
 
 ####################################
 # STORAGE
