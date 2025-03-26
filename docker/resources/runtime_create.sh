@@ -168,15 +168,15 @@ if [ $legacy = 0 ]; then
     fname=conf/generate_certs.sh
     if [ -f $fname ]; then
         sed -i 's/\[DAYS\]/30/g'                      $fname
-        sed -i 's/\[INSTANCE_ID\]/$CFT_INSTANCE_ID/g' $fname
-        sed -i 's/\[FULL_HOSTNAME\]/$CFT_FQDN/g'      $fname
+        sed -i 's/\[INSTANCE_ID\]/${CFT_INSTANCE_ID}/g' $fname
+        sed -i 's/\[FULL_HOSTNAME\]/${CFT_FQDN}/g'      $fname
     fi
 
     fname=conf/generate_copilot_cert.sh
     if [ -f $fname ]; then
         sed -i 's/\[DAYS\]/365/g'                     $fname
-        sed -i 's/\[INSTANCE_ID\]/$CFT_INSTANCE_ID/g' $fname
-        sed -i 's/\[FULL_HOSTNAME\]/$CFT_FQDN/g'      $fname
+        sed -i 's/\[INSTANCE_ID\]/${CFT_INSTANCE_ID}/g' $fname
+        sed -i 's/\[FULL_HOSTNAME\]/${CFT_FQDN}/g'      $fname
     fi
 fi
 # CREATE BASES
