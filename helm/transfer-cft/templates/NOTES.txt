@@ -9,13 +9,15 @@ Transfer CFT can be accessed:
 
       You can watch the status of by running 'kubectl get svc -w  --namespace {{ .Release.Namespace}} {{ include "transfer-cft.fullname" . }}'
 
+      export SERVICE_PORT=$(kubectl get svc --namespace {{ .Release.Namespace}} {{ include "transfer-cft.fullname" . }} -o jsonpath="{.spec.ports[0].port}")
+      
       On GKE/Azure:
       export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace}} {{ include "transfer-cft.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
       
       On AWS:
       export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace}} {{ include "transfer-cft.fullname" . }} -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
       
-      echo https://$SERVICE_IP:{{ include "cft.ports.restapi" . }}
+      echo https://${SERVICE_IP}:${SERVICE_PORT}
 
   {{- else if contains "ClusterIP" .Values.service.type }}
 

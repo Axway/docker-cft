@@ -94,42 +94,66 @@ Define variables to direct access to ports for different protocols (from service
 {{- define "cft.ports.pesit" -}}
 {{- range .Values.service.ports -}}
 {{- if (eq .name "pesit") -}}
+{{- if .targetPort -}}
+{{ default .targetPort }}
+{{- else -}}
 {{ default .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- define "cft.ports.pesitssl" -}}
 {{- range .Values.service.ports -}}
 {{- if (eq .name "pesitssl") -}}
+{{- if .targetPort -}}
+{{ default .targetPort }}
+{{- else -}}
 {{ default .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- define "cft.ports.sftp" -}}
 {{- range .Values.service.ports -}}
 {{- if (eq .name "sftp") -}}
+{{- if .targetPort -}}
+{{ default .targetPort }}
+{{- else -}}
 {{ default .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- define "cft.ports.copilot" -}}
 {{- range .Values.service.ports -}}
 {{- if (eq .name "copilot") -}}
+{{- if .targetPort -}}
+{{ default .targetPort }}
+{{- else -}}
 {{ default .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- define "cft.ports.copilotcg" -}}
 {{- range .Values.service.ports -}}
 {{- if (eq .name "copilotcg") -}}
+{{- if .targetPort -}}
+{{ default .targetPort }}
+{{- else -}}
 {{ default .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 {{- define "cft.ports.restapi" -}}
 {{- range .Values.service.ports -}}
 {{- if (eq .name "restapi") -}}
+{{- if .targetPort -}}
+{{ default .targetPort }}
+{{- else -}}
 {{ default .port }}
+{{- end -}}
 {{- end -}}
 {{- end -}}
 {{- end -}}
