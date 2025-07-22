@@ -411,6 +411,10 @@ service:
       # nodePort: 31767
       # targetPort: 1767
   
-  annotations: {}
-    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: https
+  annotations:
+    # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+    # service.beta.kubernetes.io/aws-load-balancer-type: external
+    # service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: instance
+    # service.beta.kubernetes.io/aws-load-balancer-scheme: "internet-facing"
+    # service.beta.kubernetes.io/aws-load-balancer-target-node-labels: node.kubernetes.io/instancegroup=desiredInstanceGroup
     # external-dns.alpha.kubernetes.io/hostname: CFT_FQDN.
