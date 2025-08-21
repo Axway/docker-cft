@@ -155,6 +155,32 @@ unset_need_restart()
     fi
 }
 
+create_update_xfbadm_user()
+{
+    if [ -n "$USER_XFBADM_LOGIN" ] && [ -n "$USER_XFBADM_PASSWORD" ]; then
+        userval=$(get_value $USER_XFBADM_LOGIN)
+        out=$(xfbadmusr print -l ${userval})
+
+        if [ -z "$out" ]; then
+            log_info "Creating user ${userval}..."
+        else
+            log_info "Updating user ${userval}..."
+        fi
+
+        xfbadmusr delete -l ${userval} >/dev/null 2>&1 || true
+        xfbadmgrp delete -G ${userval} >/dev/null 2>&1 || true
+        xfbadmusr add -l ${userval} -p $(get_value $USER_XFBADM_PASSWORD) -u AUTO -g AUTO
+
+        if [ -z "$out" ]; then
+            log_info "User ${userval} created."
+        else
+            log_info "User ${userval} updated."
+        fi
+    else
+        log_warning "Password required to create a user. No user will be created!"
+    fi
+}
+
 customize_runtime()
 {
     log_info "Customizing the runtime..."
@@ -190,11 +216,23 @@ customize_runtime()
     fi
 
     if [[ "$CFT_CG_ENABLE" = "YES" ]]; then
-
+        # CG configuration
+        if [ -n "$CFT_CG_HOST" ]; then
+            CFTUTIL /m=14 uconfset id='cg.host', value=$CFT_CG_HOST
+        fi
+        if [ -n "$CFT_CG_PORT" ]; then
+            CFTUTIL /m=14 uconfset id='cg.port', value=$CFT_CG_PORT
+            CFTUTIL /m=14 uconfset id='cg.restapi_port', value=$CFT_CG_PORT
+        fi
+        if [ -n "$CFT_CG_POLICY" ]; then
+            CFTUTIL /m=14 uconfset id='cg.configuration_policy', value=$CFT_CG_POLICY
+        fi
+        if [ -n "$CFT_CG_PERIODICITY" ]; then
+            CFTUTIL /m=14 uconfset id='cg.periodicity', value=$CFT_CG_PERIODICITY
+        fi
         if [ -n "$CFT_CG_SHARED_SECRET" ]; then
             CFTUTIL /m=14 uconfset id='cg.shared_secret', value=$(get_value $CFT_CG_SHARED_SECRET)
         fi
-
         if [[ -n "$CFT_CG_AGENT_NAME" ]]; then
             log_info "Setting the customized Agent Name $CFT_CG_AGENT_NAME..."
             CFTUTIL /m=14 uconfset id='cg.metadata.agent.value', value=$CFT_CG_AGENT_NAME
@@ -219,25 +257,44 @@ customize_runtime()
                 log_info "Customized CG CA certificate $USER_CG_CA_CERT set."
             fi
         fi
-    fi
+    else
+        # Sentinel Configuration
+        if [ -n "$CFT_SENTINEL_ENABLE" ]; then
+            CFTUTIL /m=14 uconfset id='sentinel.xfb.enable', value=$CFT_SENTINEL_ENABLE
+        fi
+        if [ -n "$CFT_SENTINEL_HOST" ]; then
+            CFTUTIL /m=14 uconfset id='sentinel.trkipaddr', value=$CFT_SENTINEL_HOST
+        fi
+        if [ -n "$CFT_SENTINEL_PORT" ]; then
+            CFTUTIL /m=14 uconfset id='sentinel.trkipport', value=$CFT_SENTINEL_PORT
+        fi
+        if [ -n "$CFT_SENTINEL_SSL" ]; then
+            CFTUTIL /m=14 uconfset id='sentinel.xfb.use_ssl', value=$CFT_SENTINEL_SSL
+        fi
+        CFTUTIL /m=14 uconfset id='sentinel.xfb.log', value=$CFT_SENTINEL_LOG_FILTER
+        if [ -n "$CFT_SENTINEL_TRANSFER_FILTER" ]; then
+            CFTUTIL /m=14 uconfset id='sentinel.xfb.transfer', value=$CFT_SENTINEL_TRANSFER_FILTER
+        fi
+        CFTUTIL /m=14 uconfset id='sentinel.trkmsgencoding', value='UTF-8'
 
-    # Sentinel CA certificate
-    if [[ -n "$USER_SENTINEL_CA_CERT" && ! -e "$USER_SENTINEL_CA_CERT" ]]; then
-        log_error "Sentinel CA certificate $USER_SENTINEL_CA_CERT not found."
-        exit 1
-    elif [[ -n "$USER_SENTINEL_CA_CERT" ]]; then
-        sha1=$customdir"/USER_SENTINEL_CA_CERT.sha1"
-        rc=`file_diff $sha1 $USER_SENTINEL_CA_CERT`
-        if [ $rc != 0 ]; then
-            log_info "Setting the customized Sentinel CA certificate $USER_SENTINEL_CA_CERT..."
-            PKIUTIL /m=14 pkicer id='SENTINEL_CA', rootcid='SENTINEL_CA', itype='root', iname=$USER_SENTINEL_CA_CERT, pkipassw='CFT', mode='replace'
-            if [ $? != 0 ]; then
-                log_error "Failed to insert the Sentinel CA certificate $USER_SENTINEL_CA_CERT"
-                exit 1
+        # Sentinel CA certificate
+        if [[ -n "$USER_SENTINEL_CA_CERT" && ! -e "$USER_SENTINEL_CA_CERT" ]]; then
+            log_error "Sentinel CA certificate $USER_SENTINEL_CA_CERT not found."
+            exit 1
+        elif [[ -n "$USER_SENTINEL_CA_CERT" ]]; then
+            sha1=$customdir"/USER_SENTINEL_CA_CERT.sha1"
+            rc=`file_diff $sha1 $USER_SENTINEL_CA_CERT`
+            if [ $rc != 0 ]; then
+                log_info "Setting the customized Sentinel CA certificate $USER_SENTINEL_CA_CERT..."
+                PKIUTIL /m=14 pkicer id='SENTINEL_CA', rootcid='SENTINEL_CA', itype='root', iname=$USER_SENTINEL_CA_CERT, pkipassw='CFT', mode='replace'
+                if [ $? != 0 ]; then
+                    log_error "Failed to insert the Sentinel CA certificate $USER_SENTINEL_CA_CERT"
+                    exit 1
+                fi
+                CFTUTIL /m=14 uconfset id='sentinel.xfb.ca_cert_id', value='SENTINEL_CA'
+                file_checksum $USER_SENTINEL_CA_CERT >$sha1
+                log_info "Customized Sentinel CA certificate $USER_SENTINEL_CA_CERT set."
             fi
-            CFTUTIL /m=14 uconfset id='sentinel.xfb.ca_cert_id', value='SENTINEL_CA'
-            file_checksum $USER_SENTINEL_CA_CERT >$sha1
-            log_info "Customized Sentinel CA certificate $USER_SENTINEL_CA_CERT set."
         fi
     fi
 
@@ -279,21 +336,6 @@ customize_runtime()
         CFTUTIL /m=14 uconfset id='am.passport.persistency.check_interval', value=$CFT_AM_PASSPORT_PERSISTENCY_CHECK_INTERVAL
     fi
 
-    # User custom start-up script
-    if [[ -n "$USER_SCRIPT_START" && ! -e "$USER_SCRIPT_START" ]]; then
-        log_error "Custom start-up script $USER_SCRIPT_START not found."
-        exit 1
-    elif [[ -n "$USER_SCRIPT_START" ]]; then
-        $USER_SCRIPT_START
-        if [[ $? = 0 ]]; then
-            log_info "Custom start-up script $USER_SCRIPT_START returns 0"
-        else
-            log_error "Custom start-up script $USER_SCRIPT_START returns $?"
-            exit 1
-        fi
-    fi
-
-
     # REST API CONFIGURATION
     if [ -n "$CFT_RESTAPI_PORT" ]; then
         CFTUTIL /m=14 uconfset id='copilot.restapi.serverport', value=$CFT_RESTAPI_PORT
@@ -313,6 +355,32 @@ customize_runtime()
         fi
     else
         CFTUTIL /m=14 uconfset id='copilot.restapi.enable', value='NO'
+    fi
+
+    # MISC
+    if [ -n "$CFT_INSTANCE_GROUP" ]; then
+        CFTUTIL /m=14 uconfset id='cft.instance_group', value=$CFT_INSTANCE_GROUP
+    fi
+    if [ -n "$CFT_JVM" ]; then
+        CFTUTIL /m=14 uconfset id='secure_relay.ma.start_options', value='-Xmx'$CFT_JVM'm'
+    fi
+    CFTUTIL /m=14 uconfset id='cft.jre.java_binary_path', value=\'$JAVA_HOME/bin/java\'
+
+    # XFBADM user management
+    create_update_xfbadm_user
+
+    # User custom start-up script
+    if [[ -n "$USER_SCRIPT_START" && ! -e "$USER_SCRIPT_START" ]]; then
+        log_error "Custom start-up script $USER_SCRIPT_START not found."
+        exit 1
+    elif [[ -n "$USER_SCRIPT_START" ]]; then
+        $USER_SCRIPT_START
+        if [[ $? = 0 ]]; then
+            log_info "Custom start-up script $USER_SCRIPT_START returned 0"
+        else
+            log_error "Custom start-up script $USER_SCRIPT_START returned $?"
+            exit 1
+        fi
     fi
 
     log_info "runtime customized."

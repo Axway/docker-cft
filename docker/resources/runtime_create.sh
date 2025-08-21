@@ -26,9 +26,7 @@ if [ -n "$CFT_INSTANCE_ID" ]; then
 else
     CFTUTIL /m=14 uconfset id='cft.instance_id', value=cft_`hostname`
 fi
-if [ -n "$CFT_INSTANCE_GROUP" ]; then
-    CFTUTIL /m=14 uconfset id='cft.instance_group', value=$CFT_INSTANCE_GROUP
-fi
+
 isMulti=0
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
     CFTUTIL /m=14 uconfset id='cft.multi_node.enable', value=$CFT_MULTINODE_ENABLE
@@ -102,46 +100,9 @@ else
     CFTUTIL /m=14 uconfset id='sentinel.xfb.enable', value='No'
     isCG=0
 fi
-if [ -n "$CFT_CG_HOST" ]; then
-    CFTUTIL /m=14 uconfset id='cg.host', value=$CFT_CG_HOST
-fi
-if [ -n "$CFT_CG_PORT" ]; then
-    CFTUTIL /m=14 uconfset id='cg.port', value=$CFT_CG_PORT
-    CFTUTIL /m=14 uconfset id='cg.restapi_port', value=$CFT_CG_PORT
-fi
-if [ -n "$CFT_CG_POLICY" ]; then
-    CFTUTIL /m=14 uconfset id='cg.configuration_policy', value=$CFT_CG_POLICY
-fi
-if [ -n "$CFT_CG_PERIODICITY" ]; then
-    CFTUTIL /m=14 uconfset id='cg.periodicity', value=$CFT_CG_PERIODICITY
-fi
 
-# SENTINEL CONFIGURATION
-if [ -n "$CFT_SENTINEL_ENABLE" ]; then
-    CFTUTIL /m=14 uconfset id='sentinel.xfb.enable', value=$CFT_SENTINEL_ENABLE
-fi
-if [ -n "$CFT_SENTINEL_HOST" ]; then
-    CFTUTIL /m=14 uconfset id='sentinel.trkipaddr', value=$CFT_SENTINEL_HOST
-fi
-if [ -n "$CFT_SENTINEL_PORT" ]; then
-    CFTUTIL /m=14 uconfset id='sentinel.trkipport', value=$CFT_SENTINEL_PORT
-fi
-if [ -n "$CFT_SENTINEL_SSL" ]; then
-    CFTUTIL /m=14 uconfset id='sentinel.xfb.use_ssl', value=$CFT_SENTINEL_SSL
-fi
-CFTUTIL /m=14 uconfset id='sentinel.xfb.log', value=$CFT_SENTINEL_LOG_FILTER
-if [ -n "$CFT_SENTINEL_TRANSFER_FILTER" ]; then
-    CFTUTIL /m=14 uconfset id='sentinel.xfb.transfer', value=$CFT_SENTINEL_TRANSFER_FILTER
-fi
-CFTUTIL /m=14 uconfset id='sentinel.trkmsgencoding', value='UTF-8'
-
-# OTHERS
-if [ -n "$CFT_JVM" ]; then
-    CFTUTIL /m=14 uconfset id='secure_relay.ma.start_options', value='-Xmx'$CFT_JVM'm'
-fi
+# MISC
 CFTUTIL /m=14 uconfset id='cft.unix.stop_timeout', value='6'
-#JAVA
-CFTUTIL /m=14 uconfset id='cft.jre.java_binary_path', value=\'$JAVA_HOME/bin/java\'
 
 # Test if file cft-cg.conf exists
 fname=conf/cft-tcp.conf
@@ -200,15 +161,6 @@ else # New conf files version
         fi
         PKIUTIL /m=14 @conf/cft-pki.conf
     fi
-fi
-
-# XFBADM
-if [ -n "$USER_XFBADM_LOGIN" ] && [ -n "$USER_XFBADM_PASSWORD" ]; then
-    log_info "Creating user $USER_XFBADM_LOGIN..."
-    xfbadmusr add -l $(get_value $USER_XFBADM_LOGIN) -p $(get_value $USER_XFBADM_PASSWORD) -u AUTO -g AUTO
-    log_info "User $USER_XFBADM_LOGIN created."
-else
-    log_warning "Password required to create an user. No user will be created!"
 fi
 
 #Enable nodes
