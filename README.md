@@ -26,7 +26,7 @@ If the GID is set to 0, the user can be any UID. If the UID is not 1000 (axway),
 
 ## Copyright
 
-Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2022 Axway Software SA and its affiliates.
 
 ## License
 

@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 
 source ./utils.sh
@@ -85,10 +85,25 @@ else
         exit 1
     fi
 
-    remote_version=$remote_version"."$remote_update
-    if [ "$new_version" = "$remote_version" ]; then
+    remote_version="$remote_version"."$remote_update"
+    remote_version_num=$(cft_version_str_to_num $remote_version)
+    if [ "$?" -ne "0" ]; then
+        log_error "failed to convert remote version $remote_version to number"
+        exit 1
+    fi
+
+    new_version_num=$(cft_version_str_to_num $new_version)
+    if [ "$?" -ne "0" ]; then
+        log_error "failed to convert new version $new_version to number"
+        exit 1
+    fi
+
+    if [ "$new_version_num" = "$remote_version_num" ]; then
         log_info "new version $new_version equals to deployment version $remote_version, skip export."
         exit 0
+    elif [ "$remote_version_num" -ge "0030102509" ]; then
+        # Remote export no longer required
+        log_info "remote version $remote_version greater than or equals to 3.10.2509, skip export."
     else
         log_info "new version $new_version differs from deployment version $remote_version, proceed to export."
     fi

@@ -10,21 +10,24 @@ set -euo pipefail
 main() {
     local service="${1:-cft}"
     
-    echo "Starting pre-upgrade tests for service: $service"
-    
+    echo "Starting downgrade tests for service: $service"
+
     ./test.sh "$service" wait-startup 30
-    
+
     ./test.sh "$service" smoke-tests
-    
-    ./test.sh "$service" test-run-transfer
-    
+
     ./test.sh "$service" test-check-transfer
-    
-    ./test.sh "$service" test-create-data
-    
+
+    ./test.sh "$service" test-check-data
+
+    ./test.sh "$service" export-database
+
+    # Check readiness with expected 503 HTTP code
+    ./test.sh "$service" check-readiness 503 debug
+
     ./test.sh "$service" check-liveness
-    
-    echo "Pre-upgrade tests completed successfully"
+
+    echo "Downgrade tests completed successfully"
     return 0
 }
 

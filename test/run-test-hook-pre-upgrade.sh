@@ -2,29 +2,31 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 
-service="cft"
+set -euo pipefail
 
-./test.sh $service wait-startup 30
-if [ $? -ne 0 ]; then
-  exit 1;
+main() {
+    local service="cft"
+    
+    echo "Starting hook pre-upgrade tests for service: $service"
+
+    ./test.sh "$service" wait-startup 30
+
+    ./test.sh "$service" smoke-tests
+
+    ./test.sh "$service" test-run-transfer
+
+    ./test.sh "$service" test-check-transfer
+
+    ./test.sh "$service" test-create-data
+
+    echo "Hook pre-upgrade tests completed successfully"
+    return 0
+}
+
+# Only run main if script is executed directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
 fi
-
-./test.sh $service smoke-tests
-if [ $? -ne 0 ]; then
-  exit 1;
-fi
-
-./test.sh $service test-run-transfer
-if [ $? -ne 0 ]; then
-  exit 1;
-fi
-
-./test.sh $service test-create-data
-if [ $? -ne 0 ]; then
-  exit 1;
-fi
-
-exit 0

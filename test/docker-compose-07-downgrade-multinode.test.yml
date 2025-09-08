@@ -12,19 +12,39 @@ services:
             dockerfile: Dockerfile
         depends_on:
         - cft
+        - nginx
         environment:
-            CFT_FQDN:               cft
+            CFT_FQDN:               nginx
             CFT_COPILOT_PORT:       1766
             CFT_RESTAPI_PORT:       1768
             USER_XFBADM_LOGIN:      "admin"
             USER_XFBADM_PASSWORD:   "alwaysCFT"
-        container_name:             test_sut_hook-pre-upgrade
-        command: [ "./run-test-hook-pre-upgrade.sh" ]
+        container_name:             test_sut_downgrade
+        command: [ "./run-test-downgrade.sh", "nginx" ]
+    nginx:
+        image: nginx:latest
+        depends_on:
+        - cft
+        expose:
+        - "1768"
+        - "1766"
+        volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf
     cft:
-        image: $RELEASE_REGISTRY_URL/cft:3.10.2303
+        scale: 2
+        image: cft:3.10.2503_upgradesupport
+        build:
+            context: ../docker
+            dockerfile: ../docker/Dockerfile
+            args:
+                DOCKER_TAG: 3.10.2503_upgradesupport
+                BUILD_VERSION: 3.10.2503
+                BUILD_REVISION: none
+                PACKAGE: Transfer_CFT_3.10.2503_Update_cf879f327c_linux-x86-64.zip
+                URL_BASE: $URL_BASE
         environment:
             ACCEPT_GENERAL_CONDITIONS:  "YES"
-            CFT_FQDN:                   cft
+            CFT_FQDN:                   ""
             CFT_INSTANCE_ID:            docker0_cft
             CFT_INSTANCE_GROUP:         dev.docker
             CFT_CATALOG_SIZE:           1000
@@ -45,10 +65,16 @@ services:
             CFT_JVM:                    1024
             CFT_KEY:                    "$CFTKEY"
             CFT_CFTDIRRUNTIME:          "/opt/axway/data/runtime"
+            CFT_MULTINODE_ENABLE:       "YES"
+            CFT_MULTINODE_NUMBER:        2
+            CFT_MULTINODE_NODE_PER_HOST: 1
             USER_XFBADM_LOGIN:          "admin"
             USER_XFBADM_PASSWORD:       "alwaysCFT"
         volumes:
         - cft_data:/opt/axway/data
+        expose:
+        - "1768"
+        - "1766"
 volumes:
     cft_data:
         driver: local

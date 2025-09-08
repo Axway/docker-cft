@@ -1,17 +1,15 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 ## Axway Transfer CFT 3.10 Docker-compose for automated test
 #
 
-version: "3.5"
-
 services:
-    sut:
+    test-runner:
         build:
             context: .
-            dockerfile: Dockerfile-upgrade
+            dockerfile: Dockerfile
         depends_on:
         - cft
         environment:
@@ -21,6 +19,7 @@ services:
             USER_XFBADM_LOGIN:      "admin"
             USER_XFBADM_PASSWORD:   "alwaysCFT"
         container_name:             test_sut_upgrade
+        command: [ "./run-test-upgrade.sh" ]
     cft:
         image: cft:$DOCKER_TAG
         environment:

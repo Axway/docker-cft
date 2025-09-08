@@ -56,53 +56,162 @@ test:
   - docker login $RELEASE_REGISTRY_URL -u $ARTIFACTORY_CI_USER -p $ARTIFACTORY_CI_API_KEY
   script:
   - cd test
-  - docker network prune --force
-  - echo test001_basic_run...
-  - docker-compose -f docker-compose-01.test.yml down -v
-  - docker-compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
-  - docker-compose -f docker-compose-01.test.yml logs || true
+  - docker ps -a
+  - docker system prune --force
+  - docker ps -a
+  - TEST="test001"
+  - echo Running ${TEST}:${STAGE:--}...
+  - docker compose -f docker-compose-01.test.yml down -v
+  - docker compose -f docker-compose-01.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-01.test.yml logs || true
   # redo a set of smoke tests with a runtime that already exists
-  - docker-compose -f docker-compose-01.test.yml down
+  - docker compose -f docker-compose-01.test.yml down
   - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
   -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
   - fi
-  - docker-compose -f docker-compose-01.test.yml up --abort-on-container-exit --remove-orphans
-  - docker-compose -f docker-compose-01.test.yml down -v
-  - echo test002 upgrade using external curl command...
+  - TEST="test002"
+  - echo Running ${TEST}:${STAGE:--}...
+  - docker compose -f docker-compose-01.test.yml up --abort-on-container-exit --remove-orphans
+  - docker compose -f docker-compose-01.test.yml down -v
+  - echo test003 upgrade using external curl command...
   # Run an old CFT image, add data (transfers and config), export the databases invoking the /export REST API
-  - docker-compose -f docker-compose-02-pre-upgrade.test.yml down -v
-  - docker-compose -f docker-compose-02-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
-  - docker-compose -f docker-compose-02-pre-upgrade.test.yml logs || true
-  - docker-compose -f docker-compose-02-pre-upgrade.test.yml down
+  - docker compose -f docker-compose-02-pre-upgrade-legacy.test.yml down -v
+  - docker compose -f docker-compose-02-pre-upgrade-legacy.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-02-pre-upgrade-legacy.test.yml logs || true
+  - docker compose -f docker-compose-02-pre-upgrade-legacy.test.yml down
   - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
   -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
   - fi
+  - TEST="test003"
+  - echo Running ${TEST}:${STAGE:--}...
   # Run the new CFT image
-  - docker-compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
-  - docker-compose -f docker-compose-03-upgrade.test.yml logs || true
-  - docker-compose -f docker-compose-03-upgrade.test.yml down -v
+  - docker compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-03-upgrade.test.yml logs || true
+  - docker compose -f docker-compose-03-upgrade.test.yml down -v
   - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
   -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
   - fi
-  - echo test003 upgrade using pre-upgrade-job hook...
+  - TEST="test004"
+  - STAGE="pre-upgrade"
+  - echo Running ${TEST}:${STAGE:--}...
   # Run an old CFT image and add data (transfers and config)
   - docker compose -f docker-compose-04-hook-pre-upgrade.test.yml down -v
-  - docker compose -f docker-compose-04-hook-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
+  - docker compose -f docker-compose-04-hook-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
   - docker compose -f docker-compose-04-hook-pre-upgrade.test.yml logs || true
   - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
   -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
   - fi
   # Run the pre-upgrade-job hook from a new CFT image and then stop the old CFT
+  - STAGE="pre-upgrade-job"
   - docker compose -f docker-compose-05-hook-pre-upgrade-job.test.yml up --build --abort-on-container-exit || FAILED=true
   - docker compose -f docker-compose-05-hook-pre-upgrade-job.test.yml logs || true
   - docker compose -f docker-compose-04-hook-pre-upgrade.test.yml down
   - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
   -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
   - fi
   # Run the new CFT image
-  - docker compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate sut || FAILED=true
+  - STAGE="upgrade"
+  - docker compose -f docker-compose-03-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
   - docker compose -f docker-compose-03-upgrade.test.yml logs || true
   - docker compose -f docker-compose-03-upgrade.test.yml down -v
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  - TEST="test005"
+  - STAGE="pre-upgrade"
+  - echo Running ${TEST}:${STAGE:--}...
+  # Run an old CFT image, add data (transfers and config)
+  - docker compose -f docker-compose-06-pre-upgrade.test.yml down -v
+  - docker compose -f docker-compose-06-pre-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-06-pre-upgrade.test.yml logs cft || true
+  - docker compose -f docker-compose-06-pre-upgrade.test.yml down
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  # Run the new CFT image
+  - STAGE="upgrade"
+  - docker compose -f docker-compose-06-upgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-06-upgrade.test.yml logs cft || true
+  - docker compose -f docker-compose-06-upgrade.test.yml down
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  # Run an old CFT image, check data
+  - STAGE="downgrade"
+  - docker compose -f docker-compose-06-downgrade.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-06-downgrade.test.yml logs cft || true
+  - docker compose -f docker-compose-06-downgrade.test.yml down -v
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  - TEST="test006"
+  - STAGE="pre-upgrade"
+  - echo Running ${TEST}:${STAGE:--}...
+  # Run an old CFT image, add data (transfers and config)
+  - docker compose -f docker-compose-07-pre-upgrade-multinode.test.yml down -v
+  - docker compose -f docker-compose-07-pre-upgrade-multinode.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-07-pre-upgrade-multinode.test.yml logs cft --index 1 || true
+  - docker compose -f docker-compose-07-pre-upgrade-multinode.test.yml logs cft --index 2 || true
+  - docker compose -f docker-compose-07-pre-upgrade-multinode.test.yml down
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  # Run the new CFT image
+  - STAGE="upgrade"
+  - docker compose -f docker-compose-07-upgrade-multinode.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-07-upgrade-multinode.test.yml logs cft --index 1 || true
+  - docker compose -f docker-compose-07-upgrade-multinode.test.yml logs cft --index 2 || true
+  - docker compose -f docker-compose-07-upgrade-multinode.test.yml down
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  # Run an old CFT image, add data (transfers and config)
+  - STAGE="downgrade"
+  - docker compose -f docker-compose-07-downgrade-multinode.test.yml up --build --abort-on-container-exit --remove-orphans --force-recreate test-runner || FAILED=true
+  - docker compose -f docker-compose-07-downgrade-multinode.test.yml logs cft --index 1 || true
+  - docker compose -f docker-compose-07-downgrade-multinode.test.yml logs cft --index 2 || true
+  - docker compose -f docker-compose-07-downgrade-multinode.test.yml down -v
+  - if [ ${FAILED} ]; then
+  -   echo "Test ${TEST}:${STAGE:--} failed, exiting..."
+  -   exit 1
+  - else
+  -   echo "Test ${TEST}:${STAGE:--} passed."
+  - fi
+  - echo "All tests completed successfully."
+  - docker system prune --force --volumes
   - cd ..
 
 security:

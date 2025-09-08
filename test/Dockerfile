@@ -1,9 +1,10 @@
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 FROM debian:bullseye-slim
 RUN apt-get update && apt-get install -y \
+    jq \ 
     curl \
     bash \
     netcat && \

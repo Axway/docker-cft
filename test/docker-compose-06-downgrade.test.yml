@@ -18,10 +18,19 @@ services:
             CFT_RESTAPI_PORT:       1768
             USER_XFBADM_LOGIN:      "admin"
             USER_XFBADM_PASSWORD:   "alwaysCFT"
-        container_name:             test_sut_hook-pre-upgrade
-        command: [ "./run-test-hook-pre-upgrade.sh" ]
+        container_name:             test_sut_downgrade
+        command: [ "./run-test-downgrade.sh" ]
     cft:
-        image: $RELEASE_REGISTRY_URL/cft:3.10.2303
+        image: cft:3.10.2503_upgradesupport
+        build:
+            context: ../docker
+            dockerfile: ../docker/Dockerfile
+            args:
+                DOCKER_TAG: 3.10.2503_upgradesupport
+                BUILD_VERSION: 3.10.2503
+                BUILD_REVISION: none
+                PACKAGE: Transfer_CFT_3.10.2503_Update_cf879f327c_linux-x86-64.zip
+                URL_BASE: $URL_BASE
         environment:
             ACCEPT_GENERAL_CONDITIONS:  "YES"
             CFT_FQDN:                   cft

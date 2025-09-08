@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 set -Eeo pipefail
 trap 'rm $lockfile' SIGTERM SIGHUP SIGINT EXIT
@@ -53,31 +53,6 @@ get_service_host()
 get_service_copilotcg()
 {
     get_service_value "COPILOTCG"
-}
-
-get_cft_version()
-{
-    vers=$(CFTUTIL /m=14 about type=cft|sed -nr 's/.*version\s*=\s*([0-9.]+).*/\1/p')
-    if [ $? -ne 0 ]; then
-        return -1
-    fi
-    echo $vers
-    return 0
-}
-
-get_cft_version_num()
-{
-    vers=$(get_cft_version)
-    if [[ $? -ne 0 || "$vers" = "" ]]; then
-        return -1
-    fi
-
-    x=$(echo $vers | cut -d '.' -f 1)
-    y=$(echo $vers | cut -d '.' -f 2)
-    x=$(printf "%03d" $x)
-    y=$(printf "%03d" $y)
-    echo $x$y
-    return 0
 }
 
 check_fqdn()
@@ -467,7 +442,7 @@ switch_cert()
 
             CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertFile'
             CFTUTIL /m=14 uconfunset id='copilot.ssl.SslCertPassword'
-            if [ $vers -ge 003010 ]; then
+            if [ $vers -ge 0030100000 ]; then
                 CFTUTIL /m=14 uconfunset id='copilot.ssl.cert_id'
                 unset_need_restart
             fi
@@ -485,14 +460,79 @@ delete_file()
     log_info "$fname deleted"
 }
 
+save_upgrade_tools()
+{
+    log_info "Backing up upgrade tools..."
+    if [ -z "$UPGRADEDIR" ]; then
+        log_error "UPGRADEDIR is not set, cannot backup upgrade tools."
+        exit 1
+    fi
+
+    version=$1
+    if [ -z "$version" ]; then
+        log_error "Version is not specified, cannot backup upgrade tools."
+        exit 1
+    fi
+
+    dir="${UPGRADEDIR}/${version}"
+    if [ ! -d "${dir}" ]; then
+        mkdir -p "${dir}/bin"
+        mkdir -p "${dir}/lib"
+        cp "${CFTDIRINSTALL}/bin/CFTUTIL" "${dir}/bin/"
+        cp "${CFTDIRINSTALL}/bin/CFTMI" "${dir}/bin/"
+        cp "${CFTDIRINSTALL}/bin/PKIUTIL" "${dir}/bin/"
+        cp "${CFTDIRINSTALL}/bin/cftping" "${dir}/bin/"
+        cp -r "${CFTDIRINSTALL}/lib" "${dir}"
+        log_info "Upgrade tools backed up successfully to ${dir}."
+    else
+        log_info "Upgrade tools already exist at ${dir}, skipping backup."
+    fi
+}
+
+delete_upgrade_tools()
+{
+    version="$1"
+    if [ -z "$version" ]; then
+        log_error "Version is not specified, cannot delete upgrade tools."
+        exit 1
+    fi
+
+    if [ -z "$UPGRADEDIR" ]; then
+        log_error "UPGRADEDIR is not set, cannot backup upgrade tools."
+        exit 1
+    fi
+
+    log_info "Deleting upgrade tools for version $version..."
+    dir="${UPGRADEDIR}/${version}"
+
+    if [ -d "${dir}" ]; then
+        rm -rf "${dir}"
+        log_info "Upgrade tools deleted successfully from ${dir}."
+    else
+        log_warning "No upgrade tools found to delete in ${dir}."
+    fi
+}
+
 post_upgrade_success()
 {
+    version=$1
+
     # Delete backups
     delete_file $CFT_CFTDIRRUNTIME/profile.bak
     delete_file $CFT_CFTDIRRUNTIME/data/cftuconf.dat.bak
 
-    # Remove bases directory
-    rm -rf $CFT_EXPORTDIR/export
+    # Remove export directory
+    if [ -d "$CFT_CFTDIRRUNTIME/$CFT_EXPORTDIR/export" ]; then
+        log_info "Removing export directory $CFT_CFTDIRRUNTIME/$CFT_EXPORTDIR/export"
+        rm -rf $CFT_CFTDIRRUNTIME/$CFT_EXPORTDIR/export
+    else
+        log_warning "Export directory $CFT_CFTDIRRUNTIME/$CFT_EXPORTDIR/export not found, nothing to remove."
+    fi
+
+    # Delete upgrade tools for previous version if exists
+    if [ -n "$version" ]; then
+        delete_upgrade_tools "$version"
+    fi
 }
 
 # Testing EULA
@@ -519,13 +559,16 @@ flock 7
 log_info "$HOSTNAME got lock"
 
 if [ -f $CFT_CFTDIRRUNTIME/profile ]; then
-    is_upgrade=true
-    log_info "runtime exists"
-    # import databases...
+    old_version=$(get_runtime_version_num)
+    is_runtime_new=false
+    log_info "The runtime already exists"
+    # try legacy upgrade procedure
     ./import_bases.sh
+    # try new upgrade procedure
+    ./upgrade_bases.sh
 else
     log_info "Creating the runtime"
-    is_upgrade=false
+    is_runtime_new=true
     ./runtime_create.sh
     # user custom init script
     if [[ -n "$USER_SCRIPT_INIT" && ! -e "$USER_SCRIPT_INIT" ]]; then
@@ -568,7 +611,8 @@ if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
         ;;
     esac
 
-    if [ -n "$CFT_KUBERNETES_SERVICE" ]; then
+    is_kubernetes
+    if [[ $? -eq 1 ]]; then
         # Orchestrated container
         address=$(hostname -f)
     else
@@ -616,9 +660,15 @@ else
 fi
 
 # Perform post upgrade success only if cft and copilot start
-if $is_upgrade ; then
-    post_upgrade_success
+new_version=$(get_cft_version_num)
+if [[ $is_runtime_new == false && "$new_version" != "$old_version" ]] ; then
+    post_upgrade_success $old_version
 fi
+
+# Backup tools required for upgrade for current version
+save_upgrade_tools $new_version
+# Set the runtime version number to current version
+set_runtime_version_num $new_version
 
 log_info "$HOSTNAME released lock"
 flock -u 7 # explicitly unlock

@@ -97,7 +97,7 @@ axway/cft             3.10.2206           26fe6e1aa1fb        4 days ago        
 
 ## Copyright
 
-Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2022 Axway Software SA and its affiliates.
 
 ## License
 

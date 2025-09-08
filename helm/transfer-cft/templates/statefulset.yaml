@@ -106,6 +106,8 @@ spec:
           {{- if $cftRestapi }}
           - name: "CFT_RESTAPI_PORT"
             value: {{ $cftRestapi | quote }}
+          - name: "CFT_RESTAPI_HOST"
+            value: {{ include "transfer-cft.fullname" . | quote }}
           {{- end }}
         {{- with .Values.cft }}
           {{- if .accept_general_conditions }}
@@ -260,6 +262,28 @@ spec:
           {{- end }}
           {{- end }}
           {{- end }}
+          {{- if .apiToken }}
+          - name: "CFT_API_TOKEN"
+          {{- if .apiToken.createSecretFile }}
+            value: "/run/secrets/cft/{{ .apiToken.secretName }}/{{ .apiToken.secretName }}"
+          {{- else }}
+          {{- if .apiToken.existingSecretFile }}
+            value: "/run/secrets/cft/{{ .apiToken.secretName }}/{{ .apiToken.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{ if and .apiLogin .apiPassword }}
+          - name: "CFT_API_LOGIN"
+            value: {{ .apiLogin | quote }}
+          - name: "CFT_API_PASSWORD"
+          {{- if .apiPassword.createSecretFile }}
+            value: "/run/secrets/cft/{{ .apiPassword.secretName }}/{{ .apiPassword.secretName }}"
+          {{- else }}
+          {{- if .apiPassword.existingSecretFile }}
+            value: "/run/secrets/cft/{{ .apiPassword.secretName }}/{{ .apiPassword.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
+          {{- end }}
           {{- if .jvm }}
           - name: "CFT_JVM"
             value: {{ .jvm | quote }}
@@ -368,6 +392,15 @@ spec:
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.xfbadmPassword.secretName }}"
       {{- end }}
+      {{- end }}
+      {{- if and (.Values.cft.apiPassword.secretName) (or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile) }}
+        - name: {{ .Values.cft.apiPassword.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.apiPassword.secretName }}
+      {{- else if and (.Values.cft.apiToken.secretName) (or .Values.cft.apiToken.createSecretFile .Values.cft.apiToken.existingSecretFile) }}
+        - name: {{ .Values.cft.apiToken.secretName }}
+          readOnly: true
+          mountPath: /run/secrets/cft/{{ .Values.cft.apiToken.secretName }}
       {{- end }}
       {{- if .Values.cft.sentinel }}
       {{- if and (.Values.cft.sentinel.enabled) (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}
@@ -500,6 +533,25 @@ spec:
           {{ end }}
           defaultMode: 0777 
     {{- end }}
+    {{- end }}
+    {{- if and (.Values.cft.apiPassword.secretName) (or .Values.cft.apiPassword.createSecretFile .Values.cft.apiPassword.existingSecretFile) }}
+      - name: {{ .Values.cft.apiPassword.secretName }}
+        secret:
+          {{- if .Values.cft.apiPassword.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.apiPassword.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.apiPassword.secretName }}
+          {{- end }}
+          defaultMode: 0777
+    {{- else if and (.Values.cft.apiToken.secretName) (or .Values.cft.apiToken.createSecretFile .Values.cft.apiToken.existingSecretFile) }}
+      - name: {{ .Values.cft.apiToken.secretName }}
+        secret:
+          {{- if .Values.cft.apiToken.createSecretFile }}
+          secretName: {{ include "transfer-cft.fullname" . }}-{{ .Values.cft.apiToken.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.apiToken.secretName }}
+          {{- end }}
+          defaultMode: 0777
     {{- end }}
     {{- if .Values.cft.sentinel }}
       {{- if and (.Values.cft.sentinel.enabled) (.Values.cft.sentinel.caCert.secretName) (or .Values.cft.sentinel.caCert.createSecretFile .Values.cft.sentinel.caCert.existingSecretFile) }}

@@ -2,7 +2,7 @@
 #
 # DO NOT ALTER OR REMOVE COPYRIGHT NOTICES OR THIS HEADER.
 #
-# Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+# Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
@@ -17,46 +17,6 @@ init_multinode()
     else
         MULTINODE=0
     fi
-}
-
-get_cft_version()
-{
-    ret=$(CFTUTIL about type=cft|sed -nr 's/.*version\s*=\s*([0-9]+.[0-9]+)/\1/p')
-    if [ $? -ne 0 ]; then
-        return -1
-    fi
-    echo $ret
-    return 0
-}
-
-get_cft_update()
-{
-    ret=$(CFTUTIL about type=cft|sed -nr 's/.*update\s*=\s*([0-9]+)/\1/p')
-    if [ $? -ne 0 ]; then
-        return -1
-    fi
-    echo $ret
-    return 0
-}
-
-get_cft_version_num()
-{
-    vers=$(get_cft_version)
-    if [[ $? -ne 0 || "$vers" = "" ]]; then
-        return -1
-    fi
-
-    update=$(get_cft_update)
-    if [[ $? -ne 0 || "$update" = "" ]]; then
-        return -1
-    fi
-
-    x=$(echo $vers | cut -d '.' -f 1)
-    y=$(echo $vers | cut -d '.' -f 2)
-    x=$(printf "%03d" $x)
-    y=$(printf "%03d" $y)
-    echo $x$y$update
-    return 0
 }
 
 copy_file()
@@ -113,7 +73,7 @@ else
     log_info "Backup directory: $backupdir"
     if [ -d $backupdir ]; then
         rm -rf $backupdir
-        log_info "Directory $exportdir removed."
+        log_info "Directory $backupdir removed."
     fi
     mkdir -p $backupdir
     if [ $? -ne 0 ]; then

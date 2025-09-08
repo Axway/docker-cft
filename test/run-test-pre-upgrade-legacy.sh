@@ -8,9 +8,9 @@
 set -euo pipefail
 
 main() {
-    local service="${1:-cft}"
+    local service="cft"
     
-    echo "Starting pre-upgrade tests for service: $service"
+    echo "Starting legacy pre-upgrade tests for service: $service"
     
     ./test.sh "$service" wait-startup 30
     
@@ -22,9 +22,15 @@ main() {
     
     ./test.sh "$service" test-create-data
     
+    ./test.sh "$service" export-database
+    
+    # Check readiness with expected 503 HTTP code
+    ./test.sh "$service" check-readiness 503
+    
+    # Check liveness
     ./test.sh "$service" check-liveness
     
-    echo "Pre-upgrade tests completed successfully"
+    echo "Legacy pre-upgrade tests completed successfully"
     return 0
 }
 

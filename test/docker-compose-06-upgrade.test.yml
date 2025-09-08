@@ -18,10 +18,10 @@ services:
             CFT_RESTAPI_PORT:       1768
             USER_XFBADM_LOGIN:      "admin"
             USER_XFBADM_PASSWORD:   "alwaysCFT"
-        container_name:             test_sut_hook-pre-upgrade
-        command: [ "./run-test-hook-pre-upgrade.sh" ]
+        container_name:             test_sut_upgrade
+        command: [ "./run-test-upgrade.sh", "cft", "noexport" ]
     cft:
-        image: $RELEASE_REGISTRY_URL/cft:3.10.2303
+        image: cft:$DOCKER_TAG
         environment:
             ACCEPT_GENERAL_CONDITIONS:  "YES"
             CFT_FQDN:                   cft

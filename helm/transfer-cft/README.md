@@ -313,7 +313,7 @@ For a catalog with 10000 records, to perform transfers with only one partner hav
 
 ## Copyright
 
-Copyright (c) 2025 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2025 Axway Software SA and its affiliates.
 
 ## License
 

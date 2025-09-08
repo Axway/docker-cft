@@ -413,7 +413,7 @@ spec:
 
 ## Copyright
 
-Copyright (c) 2022 Axway Software SA and its affiliates. All rights reserved.
+Copyright (c) 2022 Axway Software SA and its affiliates.
 
 ## License
 
