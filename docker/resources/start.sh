@@ -5,6 +5,7 @@
 # Copyright (c) 2022 Axway Software SA and its affiliates.
 #
 set -Eeo pipefail
+trap 'log_error "Error on line $LINENO: $BASH_COMMAND"' ERR
 trap 'rm $lockfile' SIGTERM SIGHUP SIGINT EXIT
 trap 'finish' SIGTERM SIGHUP SIGINT EXIT
 
@@ -611,8 +612,7 @@ if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
         ;;
     esac
 
-    is_kubernetes
-    if [[ $? -eq 1 ]]; then
+    if [[ $(is_kubernetes) == "1" ]]; then
         # Orchestrated container
         address=$(hostname -f)
     else

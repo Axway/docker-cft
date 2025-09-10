@@ -162,9 +162,9 @@ set_runtime_version_num()
 
 is_kubernetes() {
     if [[ -n "$KUBERNETES_SERVICE_HOST" ]] || [[ -d "/var/run/secrets/kubernetes.io" ]]; then
-        return 1
+        echo "1"
     else
-        return 0
+        echo "0"
     fi
 }
 

@@ -149,8 +149,7 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
-is_kubernetes
-if [[ $? -eq 1 ]] && [[ "$CFT_MULTINODE_ENABLE" = "YES" ]] && [[ $CFT_MULTINODE_NUMBER -gt 1 ]]; then
+if [[ $(is_kubernetes) == "1" ]] && [[ "$CFT_MULTINODE_ENABLE" == "YES" ]] && [[ "$CFT_MULTINODE_NUMBER" -gt 1 ]]; then
     # In Kubernetes multinode context, we need to:
     # - stop other worker nodes
     # - set REST API servers in unavailable mode
