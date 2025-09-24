@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: docker.repository.axway.com/transfercft-docker-prod/3.10/cft
-  tag: 3.10.2506
+  tag: 3.10.2509
 
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
