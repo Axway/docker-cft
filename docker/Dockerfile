@@ -13,7 +13,7 @@
 
 FROM ubuntu:24.04 AS builder
 
-RUN apt-get -y update && apt-get install -y \
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
         curl \
         unzip \
         binutils && \
@@ -57,7 +57,7 @@ COPY --chown=axway:0 resources/*.sh resources/uid_entrypoint ./
 
 FROM ubuntu:24.04
 
-RUN apt-get -y update && apt-get upgrade -y && apt-get install -y \
+RUN apt-get -y update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         curl \
         file \
         jq \
