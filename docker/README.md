@@ -24,6 +24,7 @@ The following parameters can be set in the [`Dockerfile`](./Dockerfile). Use the
 CFT_FQDN                   |  \<string>   |  Host address of the local server.
 CFT_INSTANCE_ID            |  \<string>   |  Name of the Transfer CFT instance.
 CFT_INSTANCE_GROUP         |  \<string>   |  The Transfer CFT instance's group.
+CFT_ENVIRONMENT            |  \<string>   |  An environment name to identify the environment in which this Transfer CFT instance is deployed (e.g., Production, Pre-Production, Staging, UAT, QA, Test, Dev, Playground, etc.).
 CFT_CATALOG_SIZE           |  \<number>   |  Catalog size.
 CFT_COM_SIZE               |  \<number>   |  Communication file size.
 CFT_PESIT_PORT             |  \<number>   |  Port number of the PeSIT protocol called PESITANY.

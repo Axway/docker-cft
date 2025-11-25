@@ -123,6 +123,8 @@ spec:
             value: {{ .instanceId | quote }}
           - name: "CFT_INSTANCE_GROUP"
             value: {{ .instanceGroup | quote }}
+          - name: "CFT_ENVIRONMENT"
+            value: {{ .environment | quote }}
           {{- if and (.licenseKey.secretName) (or .licenseKey.createSecretFile .licenseKey.existingSecretFile) }}
           - name: "CFT_KEY"
           {{- if .licenseKey.createSecretFile }}

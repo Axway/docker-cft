@@ -20,6 +20,7 @@ services:
       CFT_FQDN:                    cft
       CFT_INSTANCE_ID:             docker0_cft
       CFT_INSTANCE_GROUP:          dev.docker
+      CFT_ENVIRONMENT:             ""
       CFT_CATALOG_SIZE:            1000
       CFT_COM_SIZE:                1000
       CFT_KEY:                     "cat /run/secrets/cft.key"

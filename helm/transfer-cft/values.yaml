@@ -125,6 +125,7 @@ cft:
   fqdn: "" # A fully qualified domain name (FQDN) or an  IP address used to connect to your Transfer CFT deployment.
   instanceId: docker0_cft
   instanceGroup: dev.docker
+  environment: "" # An environment name to identify the environment in which this Transfer CFT instance is deployed (e.g., Production, Pre-Production, Staging, UAT, QA, Test, Dev, Playground, etc.).
   ## When changing catalogSize, the value of persistence.cftData.size
   catalogSize: 1000
   comSize: 1000

@@ -60,6 +60,8 @@ spec:
           value: container0_cft
         - name: CFT_INSTANCE_GROUP
           value: dev.container
+        - name: CFT_ENVIRONMENT
+          value: ""
         - name: CFT_CATALOG_SIZE
           value: 1000
         - name: CFT_COM_SIZE

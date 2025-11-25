@@ -108,6 +108,7 @@ The following table lists the configurable Transfer CFT chart parameters and the
 `cft.fqdn` | A fully qualified domain name (FQDN) or an IP address used to connect to your Transfer CFT deployment. | `nil` |
 `cft.instanceId` | Name of the Transfer CFT instance. | `docker0_cft` |
 `cft.instanceGroup` | The Transfer CFT instance group. | `dev.docker` |
+`cft.environment` | An environment name to identify the environment in which this Transfer CFT instance is deployed (e.g., Production, Pre-Production, Staging, UAT, QA, Test, Dev, Playground, etc.). | `nil` |
 `cft.catalogSize` | Number of records in the catalog. | `1000` |
 `cft.comSize` | Number of records for the communication file. | `1000` |
 `cft.licenseKey.secretName` | Name of the secret used to store the license key. | `license-key`  | Yes

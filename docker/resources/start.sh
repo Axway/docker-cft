@@ -337,6 +337,9 @@ customize_runtime()
     if [ -n "$CFT_INSTANCE_GROUP" ]; then
         CFTUTIL /m=14 uconfset id='cft.instance_group', value=$CFT_INSTANCE_GROUP
     fi
+    if [ -n "$CFT_ENVIRONMENT" ]; then
+        CFTUTIL /m=14 uconfset id='cft.environment', value=$CFT_ENVIRONMENT
+    fi
     if [ -n "$CFT_JVM" ]; then
         CFTUTIL /m=14 uconfset id='secure_relay.ma.start_options', value='-Xmx'$CFT_JVM'm'
     fi
