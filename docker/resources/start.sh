@@ -11,6 +11,135 @@ trap 'finish' SIGTERM SIGHUP SIGINT EXIT
 
 source ./utils.sh
 
+start_cftcloudbackup_sync()
+{
+    # Run cftcloudbackup in background. Configuration is expected via env vars and/or Docker/K8s secrets.
+    #
+    # Enable/disable: CFT_CLOUD_BACKUP_ENABLE=YES|NO (default: NO)
+    # Cloud file:     CFT_CLOUD_BACKUP_FILE (required) - Format: s3://bucket.region/path/file or s3://https://endpoint/bucket/path/file
+    # Credentials:    CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID / CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY (optional - can use ~/.aws/credentials or EC2 IAM roles)
+    # Optional:       CFT_CLOUD_BACKUP_TMPDIR, CFT_CLOUD_BACKUP_DELAY (default: 5), CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD, CFT_CLOUD_BACKUP_WITH_CATALOG (YES/NO)
+
+    local enable=${CFT_CLOUD_BACKUP_ENABLE:-NO}
+    enable=$(echo "$enable" | tr '[a-z]' '[A-Z]')
+    if [[ "$enable" != "YES" ]]; then
+        return 0
+    fi
+
+    if ! command -v cftcloudbackup >/dev/null 2>&1; then
+        log_warning "CFT_CLOUD_BACKUP_ENABLE=YES but cftcloudbackup not found in PATH; skipping"
+        return 0
+    fi
+
+    local cloud_file=${CFT_CLOUD_BACKUP_FILE:-}
+    local tmpdir=${CFT_CLOUD_BACKUP_TMPDIR:-}
+    local delay=${CFT_CLOUD_BACKUP_DELAY:-5}
+    local archive_password=${CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD:-}
+    local with_catalog=${CFT_CLOUD_BACKUP_WITH_CATALOG:-NO}
+    with_catalog=$(echo "$with_catalog" | tr '[a-z]' '[A-Z]')
+
+    if [[ -z "$cloud_file" ]]; then
+        log_warning "CFT_CLOUD_BACKUP_ENABLE=YES but CFT_CLOUD_BACKUP_FILE not set; skipping"
+        return 0
+    fi
+
+    log_info "Starting cftcloudbackup sync in background (file: $cloud_file)"
+    
+    local cmd_args=(
+        sync
+        "$cloud_file"
+        --delay="$delay"
+        "-vv"
+    )
+    
+    [[ -n "$tmpdir" ]] && cmd_args+=(--tmpdir="$tmpdir")
+    [[ -n "$archive_password" ]] && cmd_args+=(--archive-password="$archive_password")
+    [[ "$with_catalog" == "YES" ]] && cmd_args+=(--with-catalog)
+    
+    (
+        local logdir="${TMPDIR:-/tmp}/cftcloudbackup/$BASHPID"
+        mkdir -p "$logdir"
+        
+        # Export AWS credentials as environment variables to avoid exposure in ps/proc.
+        if [[ -n "${CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID:-}" ]]; then
+            export AWS_ACCESS_KEY_ID=$(get_value "$CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID")
+        fi
+        if [[ -n "${CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY:-}" ]]; then
+            export AWS_SECRET_ACCESS_KEY=$(get_value "$CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY")
+        fi
+        
+        exec cftcloudbackup "${cmd_args[@]}"
+    ) &
+}
+
+start_cftcloudbackup_restore()
+{
+    # Run cftcloudbackup restore. Configuration is expected via env vars and/or Docker/K8s secrets.
+    #
+    # Enable/disable: CFT_CLOUD_BACKUP_ENABLE=YES|NO (default: NO)
+    # Cloud file:     CFT_CLOUD_BACKUP_FILE (required) - Format: s3://bucket.region/path/file or s3://https://endpoint/bucket/path/file
+    # Credentials:    CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID / CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY (optional - can use ~/.aws/credentials or EC2 IAM roles)
+    # Optional:       CFT_CLOUD_BACKUP_TMPDIR, CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD, CFT_CLOUD_BACKUP_WITH_CATALOG (YES/NO)
+
+    local enable=${CFT_CLOUD_BACKUP_ENABLE:-NO}
+    enable=$(echo "$enable" | tr '[a-z]' '[A-Z]')
+    if [[ "$enable" != "YES" ]]; then
+        return 0
+    fi
+
+    if ! command -v cftcloudbackup >/dev/null 2>&1; then
+        log_warning "CFT_CLOUD_BACKUP_RESTORE_ENABLE=YES but cftcloudbackup not found in PATH; skipping"
+        return 0
+    fi
+
+    local cloud_file=${CFT_CLOUD_BACKUP_FILE:-}
+    local tmpdir=${CFT_CLOUD_BACKUP_TMPDIR:-}
+    local archive_password=${CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD:-}
+    local with_catalog=${CFT_CLOUD_BACKUP_WITH_CATALOG:-NO}
+    with_catalog=$(echo "$with_catalog" | tr '[a-z]' '[A-Z]')
+
+    if [[ -z "$cloud_file" ]]; then
+        log_warning "CFT_CLOUD_BACKUP_ENABLE=YES but CFT_CLOUD_BACKUP_FILE not set; skipping"
+        return 0
+    fi
+
+    log_info "Starting cftcloudbackup restore (file: $cloud_file)"
+    
+    local cmd_args=(
+        restore
+        "$cloud_file"
+        "-vv"
+    )
+    
+    [[ -n "$tmpdir" ]] && cmd_args+=(--tmpdir="$tmpdir")
+    [[ -n "$archive_password" ]] && cmd_args+=(--archive-password="$archive_password")
+    [[ "$with_catalog" == "YES" ]] && cmd_args+=(--with-catalog)
+    
+    set +e
+    (
+        local logdir="${TMPDIR:-/tmp}/cftcloudbackup/$BASHPID"
+        mkdir -p "$logdir"
+        
+        # Export AWS credentials as environment variables to avoid exposure in ps/proc.
+        if [[ -n "${CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID:-}" ]]; then
+            export AWS_ACCESS_KEY_ID=$(get_value "$CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID")
+        fi
+        if [[ -n "${CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY:-}" ]]; then
+            export AWS_SECRET_ACCESS_KEY=$(get_value "$CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY")
+        fi
+        
+        exec cftcloudbackup "${cmd_args[@]}"
+    )
+    local rc=$?
+    set -e
+    
+    if [[ $rc -eq 0 ]]; then
+        log_info "cftcloudbackup restore completed successfully"
+    else
+        log_warning "cftcloudbackup restore failed with exit code $rc (OK if backup doesn't exist yet)"
+    fi
+}
+
 file_diff()
 {
     sha1=$1
@@ -593,6 +722,10 @@ fi
 cd $CFT_CFTDIRRUNTIME
 . ./profile
 
+if [[ "$is_runtime_new" == true ]]; then
+    start_cftcloudbackup_restore
+fi
+
 if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
     if [ "$(cft status | grep -wc running)" = 0 ]; then
         log_info "customize runtime"
@@ -646,6 +779,7 @@ fi
 # start:
 if copstart ; then
     log_info "copstart success"
+    start_cftcloudbackup_sync
 else
     log_error "copstart returns:"$?
     if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then

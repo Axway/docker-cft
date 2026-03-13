@@ -73,6 +73,14 @@ USER_COPILOT_KEY            |  \<string>   |  Separate key file needed if USER_C
 USER_COPILOT_KEY_PASSWORD   |  \<string>   |  A command that returns the password for the key in USER_COPILOT_KEY.
 USER_XFBADM_LOGIN           |  \<string>   |  Xfbadm user login to create when creating the container. If both USER_XFBADM_LOGIN and USER_XFBADM_PASSWORD are defined, the corresponding user is added to xfbadmusr database.
 USER_XFBADM_PASSWORD        |  \<string>   |  A command that returns the XFBADM user's password.
+CFT_CLOUD_BACKUP_ENABLE     |  "YES"/"NO"  |  Enable/disable CFT cloud backup.
+CFT_CLOUD_BACKUP_FILE       |  \<string>   |  Cloud path to backup file.
+CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID     |  \<string>   |  AWS S3 access key.
+CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY |  \<string>   |  AWS S3 secret access key.
+CFT_CLOUD_BACKUP_TMPDIR     |  \<string>   |  Temporary directory for CFT cloud backup.
+CFT_CLOUD_BACKUP_DELAY      |  \<number>   |  Delay in seconds between synchronizations.
+CFT_CLOUD_BACKUP_WITH_CATALOG |  "YES"/"NO"  |  Include CFT catalog.
+CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD |  \<string>   |  Archive encryption password.
 
 ### How to use the official Transfer CFT Docker image
 

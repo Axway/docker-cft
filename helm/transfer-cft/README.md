@@ -180,6 +180,23 @@ The following table lists the configurable Transfer CFT chart parameters and the
 `cft.startScript.localFile` | Relative path to the start-up script. You can use the conf directory in the Helm chart. | `{}`<br>(for example, `conf/startup.sh`) |
 `cft.startScript.existingConfigMap.keyRef` | Name of the reference key inside an existing configmap. | `{}` |
 `cft.passportPersistencyCheckInterval` | Interval in seconds between two checks of Passport access management updates. | `60` |
+`cft.cloudbackup.enabled` | Enable/disable CFT cloud backup. | `false` |
+`cft.cloudbackup.file` | Cloud path to backup file. | `""` |
+`cft.cloudbackup.s3accessKeyId.secretName` | Name of the secret used to store the AWS S3 access key. | `cftcloudbackup-s3-access-key-id` |
+`cft.cloudbackup.s3accessKeyId.createSecretFile` | Create the AWS S3 access key secret at installation using a local file. | `false` |
+`cft.cloudbackup.s3accessKeyId.localFile` | Relative path to the AWS S3 access key file. You can use the conf directory in the Helm chart. | `{}`<br>(for example, `conf/cftcloudbackup_access_key_id`) |
+`cft.cloudbackup.s3accessKeyId.existingSecretFile.keyRef` | Name of the reference key inside an existing secret. | `{}` |
+`cft.cloudbackup.s3secretAccessKey.secretName` | Name of the secret used to store the AWS S3 secret access key. | `cftcloudbackup-s3-secret-access-key` |
+`cft.cloudbackup.s3secretAccessKey.createSecretFile` | Create the AWS S3 secret access key secret at installation using a local file. | `false` |
+`cft.cloudbackup.s3secretAccessKey.localFile` | Relative path to the AWS S3 secret access key file. You can use the conf directory in the Helm chart. | `{}`<br>(for example, `conf/cftcloudbackup_secret_access_key`) |
+`cft.cloudbackup.s3secretAccessKey.existingSecretFile.keyRef` | Name of the reference key inside an existing secret. | `{}` |
+`cft.cloudbackup.tmpdir` | Temporary directory for CFT cloud backup. | `""` |
+`cft.cloudbackup.delay` | Delay in seconds between synchronizations. | `5` |
+`cft.cloudbackup.withCatalog` | Include CFT catalog. | `false` |
+`cft.cloudbackup.archivePassword.secretName` | Name of the secret used to store the archive encryption password. | `cftcloudbackup-archive-password` |
+`cft.cloudbackup.archivePassword.createSecretFile` | Create the archive encryption password secret at installation using a local file. | `false` |
+`cft.cloudbackup.archivePassword.localFile` | Relative path to the archive encryption password file. You can use the conf directory in the Helm chart. | `{}`<br>(for example, `conf/cftcloudbackup_archive_password`) |
+`cft.cloudbackup.archivePassword.existingSecretFile.keyRef` | Name of the reference key inside an existing secret. | `{}` |
 `persistence.enabled` | Enable config persistence using PVC. | `true` |
 `persistence.keep` | Keep persistent volume after a Helm delete. | `false` |
 `persistence.cftData.storageClass` | Persistent Volume Claim Storage Class for config volume. | `nil` |

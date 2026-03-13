@@ -275,6 +275,36 @@ cft:
     # existingSecretFile:
     #   keyRef: {} # token inside the secret
 
+  ## Cloud Sync Configuration
+  ## cftcloudbackup - backup/restore runtime to/from cloud (restore on init if new runtime, continuous sync after startup)
+  cloudbackup:
+    enabled: false
+    ## Cloud file path - Format: s3://bucket.region/path/file or s3://https://endpoint/bucket/path/file
+    file: ""
+    ## AWS credentials (optional - can use ~/.aws/credentials or EC2 IAM roles)
+    s3accessKeyId:
+      secretName: cftcloudbackup-s3-access-key-id
+      createSecretFile: false
+      # localFile: {} # conf/cftcloudbackup_access_key_id
+      # existingSecretFile:
+      #   keyRef: {} # key inside the secret
+    s3secretAccessKey:
+      secretName: cftcloudbackup-s3-secret-access-key
+      createSecretFile: false
+      # localFile: {} # conf/cftcloudbackup_secret_access_key
+      # existingSecretFile:
+      #   keyRef: {} # key inside the secret
+    ## Optional parameters
+    tmpdir: ""
+    delay: 5
+    withCatalog: false
+    archivePassword:
+      secretName: cftcloudbackup-archive-password
+      createSecretFile: false
+      # localFile: {} # conf/cftcloudbackup_archive_password
+      # existingSecretFile:
+      #   keyRef: {} # key inside the secret
+
 ####################################
 # STORAGE
 ####################################

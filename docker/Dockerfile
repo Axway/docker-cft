@@ -13,10 +13,15 @@
 
 FROM ubuntu:24.04 AS builder
 
+# Symlink for tools expecting CA bundle at this path (e.g. cURL, AWS SDK)
+RUN mkdir -p /etc/pki/tls/certs \
+        && ln -sf /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
+
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
         curl \
         unzip \
-        binutils && \
+        binutils \
+        ca-certificates && \
         rm -rf /var/lib/apt/lists && \
         mkdir -p /opt/axway && \
         userdel --remove ubuntu && \
@@ -57,11 +62,16 @@ COPY --chown=axway:0 resources/*.sh resources/uid_entrypoint ./
 
 FROM ubuntu:24.04
 
+# Symlink for tools expecting CA bundle at this path (e.g. cURL, AWS SDK)
+RUN mkdir -p /etc/pki/tls/certs \
+        && ln -sf /etc/ssl/certs/ca-certificates.crt /etc/pki/tls/certs/ca-bundle.crt
+
 RUN apt-get -y update && apt-get upgrade -y && apt-get install -y --no-install-recommends \
         curl \
         file \
         jq \
-        openssl && \
+        openssl \
+        ca-certificates && \
         rm -rf /var/lib/apt/lists && \
         userdel --remove ubuntu && \
         useradd --home-dir /opt/axway --no-create-home --uid 1000 --gid 0 axway && \

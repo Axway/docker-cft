@@ -298,6 +298,59 @@ spec:
           - name: "CFT_JVM"
             value: {{ .jvm | quote }}
           {{- end }}
+          {{- if .cloudbackup }}
+          {{- if .cloudbackup.enabled }}
+          - name: "CFT_CLOUD_BACKUP_ENABLE"
+            value: "YES"
+          - name: "CFT_CLOUD_BACKUP_FILE"
+            value: {{ .cloudbackup.file | quote }}
+          {{- if .cloudbackup.tmpdir }}
+          - name: "CFT_CLOUD_BACKUP_TMPDIR"
+            value: {{ .cloudbackup.tmpdir | quote }}
+          {{- end }}
+          {{- if .cloudbackup.delay }}
+          - name: "CFT_CLOUD_BACKUP_DELAY"
+            value: {{ .cloudbackup.delay | quote }}
+          {{- end }}
+          {{- if .cloudbackup.withCatalog }}
+          - name: "CFT_CLOUD_BACKUP_WITH_CATALOG"
+            value: "YES"
+          {{- end }}
+          {{- if .cloudbackup.s3accessKeyId }}
+          {{- if and (.cloudbackup.s3accessKeyId.secretName) (or .cloudbackup.s3accessKeyId.createSecretFile .cloudbackup.s3accessKeyId.existingSecretFile) }}
+          - name: "CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID"
+          {{- if .cloudbackup.s3accessKeyId.createSecretFile }}
+            value: "/run/secrets/cft/{{ .cloudbackup.s3accessKeyId.secretName }}/{{ .cloudbackup.s3accessKeyId.secretName }}"
+          {{- else }}
+            value: "/run/secrets/cft/{{ .cloudbackup.s3accessKeyId.secretName }}/{{ .cloudbackup.s3accessKeyId.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .cloudbackup.s3secretAccessKey }}
+          {{- if and (.cloudbackup.s3secretAccessKey.secretName) (or .cloudbackup.s3secretAccessKey.createSecretFile .cloudbackup.s3secretAccessKey.existingSecretFile) }}
+          - name: "CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY"
+          {{- if .cloudbackup.s3secretAccessKey.createSecretFile }}
+            value: "/run/secrets/cft/{{ .cloudbackup.s3secretAccessKey.secretName }}/{{ .cloudbackup.s3secretAccessKey.secretName }}"
+          {{- else }}
+            value: "/run/secrets/cft/{{ .cloudbackup.s3secretAccessKey.secretName }}/{{ .cloudbackup.s3secretAccessKey.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- if .cloudbackup.archivePassword }}
+          {{- if and (.cloudbackup.archivePassword.secretName) (or .cloudbackup.archivePassword.createSecretFile .cloudbackup.archivePassword.existingSecretFile) }}
+          - name: "CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD"
+          {{- if .cloudbackup.archivePassword.createSecretFile }}
+            value: "/run/secrets/cft/{{ .cloudbackup.archivePassword.secretName }}/{{ .cloudbackup.archivePassword.secretName }}"
+          {{- else }}
+            value: "/run/secrets/cft/{{ .cloudbackup.archivePassword.secretName }}/{{ .cloudbackup.archivePassword.existingSecretFile.keyRef }}"
+          {{- end }}
+          {{- end }}
+          {{- end }}
+          {{- else }}
+          - name: "CFT_CLOUD_BACKUP_ENABLE"
+            value: "NO"
+          {{- end }}
+          {{- end }}
           {{- if .initScript }}
           {{- if and (.initScript.fileName) (or .initScript.createConfigMap .initScript.existingConfigMap) }}
           - name: "USER_SCRIPT_INIT"
@@ -425,6 +478,31 @@ spec:
         - name: {{ .Values.cft.sentinel.caCert.secretName }}
           readOnly: true
           mountPath: "/run/secrets/cft/{{ .Values.cft.sentinel.caCert.secretName }}"
+      {{- end }}
+      {{- end }}
+      {{- if .Values.cft.cloudbackup }}
+      {{- if .Values.cft.cloudbackup.enabled }}
+      {{- if .Values.cft.cloudbackup.s3accessKeyId }}
+      {{- if and (.Values.cft.cloudbackup.s3accessKeyId.secretName) (or .Values.cft.cloudbackup.s3accessKeyId.createSecretFile .Values.cft.cloudbackup.s3accessKeyId.existingSecretFile) }}
+        - name: {{ .Values.cft.cloudbackup.s3accessKeyId.secretName }}
+          readOnly: true
+          mountPath: "/run/secrets/cft/{{ .Values.cft.cloudbackup.s3accessKeyId.secretName }}"
+      {{- end }}
+      {{- end }}
+      {{- if .Values.cft.cloudbackup.s3secretAccessKey }}
+      {{- if and (.Values.cft.cloudbackup.s3secretAccessKey.secretName) (or .Values.cft.cloudbackup.s3secretAccessKey.createSecretFile .Values.cft.cloudbackup.s3secretAccessKey.existingSecretFile) }}
+        - name: {{ .Values.cft.cloudbackup.s3secretAccessKey.secretName }}
+          readOnly: true
+          mountPath: "/run/secrets/cft/{{ .Values.cft.cloudbackup.s3secretAccessKey.secretName }}"
+      {{- end }}
+      {{- end }}
+      {{- if .Values.cft.cloudbackup.archivePassword }}
+      {{- if and (.Values.cft.cloudbackup.archivePassword.secretName) (or .Values.cft.cloudbackup.archivePassword.createSecretFile .Values.cft.cloudbackup.archivePassword.existingSecretFile) }}
+        - name: {{ .Values.cft.cloudbackup.archivePassword.secretName }}
+          readOnly: true
+          mountPath: "/run/secrets/cft/{{ .Values.cft.cloudbackup.archivePassword.secretName }}"
+      {{- end }}
+      {{- end }}
       {{- end }}
       {{- end }}
         ## ConfigMaps
@@ -591,6 +669,46 @@ spec:
           defaultMode: 0777
       {{- end }}
     {{- end }}
+    {{- if .Values.cft.cloudbackup }}
+    {{- if .Values.cft.cloudbackup.enabled }}
+    {{- if .Values.cft.cloudbackup.s3accessKeyId }}
+    {{- if and (.Values.cft.cloudbackup.s3accessKeyId.secretName) (or .Values.cft.cloudbackup.s3accessKeyId.createSecretFile .Values.cft.cloudbackup.s3accessKeyId.existingSecretFile) }}
+      - name: {{ .Values.cft.cloudbackup.s3accessKeyId.secretName }}
+        secret:
+          {{- if .Values.cft.cloudbackup.s3accessKeyId.createSecretFile }}
+          secretName: {{ $fullName }}-{{ .Values.cft.cloudbackup.s3accessKeyId.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.cloudbackup.s3accessKeyId.secretName }}
+          {{- end }}
+          defaultMode: 0777
+    {{- end }}
+    {{- end }}
+    {{- if .Values.cft.cloudbackup.s3secretAccessKey }}
+    {{- if and (.Values.cft.cloudbackup.s3secretAccessKey.secretName) (or .Values.cft.cloudbackup.s3secretAccessKey.createSecretFile .Values.cft.cloudbackup.s3secretAccessKey.existingSecretFile) }}
+      - name: {{ .Values.cft.cloudbackup.s3secretAccessKey.secretName }}
+        secret:
+          {{- if .Values.cft.cloudbackup.s3secretAccessKey.createSecretFile }}
+          secretName: {{ $fullName }}-{{ .Values.cft.cloudbackup.s3secretAccessKey.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.cloudbackup.s3secretAccessKey.secretName }}
+          {{- end }}
+          defaultMode: 0777
+    {{- end }}
+    {{- end }}
+    {{- if .Values.cft.cloudbackup.archivePassword }}
+    {{- if and (.Values.cft.cloudbackup.archivePassword.secretName) (or .Values.cft.cloudbackup.archivePassword.createSecretFile .Values.cft.cloudbackup.archivePassword.existingSecretFile) }}
+      - name: {{ .Values.cft.cloudbackup.archivePassword.secretName }}
+        secret:
+          {{- if .Values.cft.cloudbackup.archivePassword.createSecretFile }}
+          secretName: {{ $fullName }}-{{ .Values.cft.cloudbackup.archivePassword.secretName }}
+          {{- else }}
+          secretName: {{ .Values.cft.cloudbackup.archivePassword.secretName }}
+          {{- end }}
+          defaultMode: 0777
+    {{- end }}
+    {{- end }}
+    {{- end }}
+    {{- end }}
     {{- if .Values.cft.initScript }}
       {{- if and (.Values.cft.initScript.fileName) (or .Values.cft.initScript.createConfigMap .Values.cft.initScript.existingConfigMap) }}
       - name: {{ .Values.cft.initScript.fileName }}
@@ -647,3 +765,4 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
+
