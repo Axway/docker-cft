@@ -89,6 +89,14 @@ services:
       #USER_SCRIPT_INIT:            "/opt/app/custom/init.sh"
       # Script executed at each container start-up
       #USER_SCRIPT_START:           "/opt/app/custom/startup.sh"
+      # Uncomment the next two lines to specify AWS credentials (optional - can use ~/.aws/credentials or EC2 IAM roles).
+      #CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID:     "cat /run/secrets/cftcloudbackup_access_key_id"
+      #CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY: "cat /run/secrets/cftcloudbackup_secret_access_key"
+      #CFT_CLOUD_BACKUP_TMPDIR:            "/tmp"
+      #CFT_CLOUD_BACKUP_DELAY:             "5"
+      #CFT_CLOUD_BACKUP_WITH_CATALOG:      "NO"
+      # Uncomment the next line to specify archive password.
+      #CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD:  "cat /run/secrets/cftcloudbackup_archive_password"
 
     expose:
       # PESIT + PESITSSL:
@@ -117,6 +125,10 @@ services:
     #- copilot.key.pwd
     # Uncomment this for customizing the default XFBADM user.
     #- xfbadm.pwd
+    # Uncomment the next lines for cftcloudbackup AWS credentials and archive password.
+    #- cftcloudbackup_access_key_id
+    #- cftcloudbackup_secret_access_key
+    #- cftcloudbackup_archive_password
 
     volumes:
     # Docker local volume where the runtime is stored
@@ -154,6 +166,14 @@ secrets:
   # Uncomment the next two lines to customize the default XFBADM user.
   #xfbadm.pwd:
   #    file: ./conf/xfbadm.pwd
+  # Files containing cftcloudbackup AWS credentials and archive password.
+  # Uncomment the next lines as needed.
+  #cftcloudbackup_access_key_id:
+  #    file: ./conf/cftcloudbackup_access_key_id
+  #cftcloudbackup_secret_access_key:
+  #    file: ./conf/cftcloudbackup_secret_access_key
+  #cftcloudbackup_archive_password:
+  #    file: ./conf/cftcloudbackup_archive_password
 
 volumes:
   cft_data:

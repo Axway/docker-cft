@@ -138,6 +138,10 @@ start_cftcloudbackup_restore()
     else
         log_warning "cftcloudbackup restore failed with exit code $rc (OK if backup doesn't exist yet)"
     fi
+
+    if [[ "$CFT_MULTINODE_ENABLE" = "YES" ]]; then
+        CFTUTIL /m=14 uconfunset id=cft.multi_node.hostnames
+    fi
 }
 
 file_diff()
