@@ -128,6 +128,14 @@ CFT_SENTINEL_TRANSFER_FILTER|  \<string>   |  Sentinel Transfer Filter. Possible
 CFT_JVM                     |  \<number>   |  Amount of memory that the Secure Relay JVM can use.
 CFT_KEY                     |  \<string>   |  A command that returns the Transfer CFT license key.
 CFT_CFTDIRRUNTIME           |  \<string>   |  Location of the Transfer CFT runtime.
+CFT_CLOUD_BACKUP_ENABLE     |  "YES"/"NO"  |  Enable/disable CFT cloud backup.
+CFT_CLOUD_BACKUP_FILE       |  \<string>   |  The cloud path to the backup file. Use one of the following formats, starting with s3:// followed by the items in the order listed:<br>• `s3://bucket.region/pathname`<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ The bucket name<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ A period (.)<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ The region<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ The pathname<br>• `s3://http[s]://endpoint[:port]/bucket/pathname`<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ http:// or https:// for secure communication<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ The endpoint, which can be an IP address or the server's hostname<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ A colon (`:`) and port number, if not using the default (80 for HTTP, 443 for HTTPS)<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ A slash (/)<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ The bucket name<br>&nbsp;&nbsp;&nbsp;&nbsp;◦ The pathname<br><br>The pathname can reference either a standalone filename or a full directory path, for example: folder1/folder2/backup_cft01.<br><br>You can embed environment variables in the pathname using the %env:XYZ% syntax, for example: %env:CFT_INSTANCE_GROUP%/%env:CFT_INSTANCE_ID%.
+CFT_CLOUD_BACKUP_S3_ACCESS_KEY_ID     |  \<string>   |  A command that returns the S3 Access key ID, a 20‑character alphanumeric identifier used to authenticate requests to S3. This parameter is optional when running the container on AWS with an instance profile that grants read/write permissions to the target S3 bucket.
+CFT_CLOUD_BACKUP_S3_SECRET_ACCESS_KEY |  \<string>   |  A command that returns the S3 Secret access key, a 40-character sequence. This parameter is optional when running the container on AWS with an instance profile that grants read/write permissions to the target S3 bucket.
+CFT_CLOUD_BACKUP_TMPDIR     |  \<string>   |  The temporary directory used for Transfer CFT cloud backup.
+CFT_CLOUD_BACKUP_DELAY      |  \<number>   |  Delay in seconds between synchronizations. The default value is "5".
+CFT_CLOUD_BACKUP_WITH_CATALOG |  "YES"/"NO"  |  Includes the Transfer CFT catalog in the backup. The default value is "NO".
+CFT_CLOUD_BACKUP_ARCHIVE_PASSWORD |  \<string>   |  Archive encryption password.
 CFT_MULTINODE_ENABLE        |  "YES"/"NO"  |  Activate multinode architecture.
 CFT_MULTINODE_NUMBER        |  \<number>   |  Number of nodes.
 CFT_MULTINODE_NODE_PER_HOST |  \<number>   |  Number of Transfer CFT nodes per container. The recommended value is 1. Be sure to have as many or more replicas as the number of nodes.
