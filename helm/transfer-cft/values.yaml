@@ -4,7 +4,7 @@ replicaCount: 1
 
 image:
   repository: docker.repository.axway.com/transfercft-docker-prod/3.10/cft
-  tag: 3.10.2603
+  tag: 3.10.2606
 
   ## Specify a imagePullPolicy
   ## Defaults to 'Always' if image tag is 'latest', else set to 'IfNotPresent'
@@ -441,7 +441,7 @@ service:
       # protocol: TCP
       # nodePort: 31767
       # targetPort: 1767
-  
+
   annotations:
     # service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
     # service.beta.kubernetes.io/aws-load-balancer-type: external
